@@ -1,0 +1,13 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+*.csv
+*.parquet
+*.feather
+*.sqlite
+*.db
+data/
+artifacts/
+logs/
+transcripts/

@@ -1,0 +1,17 @@
+name: Agent+ Doctor
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate project controls
+        run: scripts/agent-plus-doctor.sh --target .

@@ -74,6 +74,10 @@ Agent+ does not treat generated text as evidence. Deterministic code, schemas, s
 
 Read [public safety and claim boundaries](docs/public-safety-and-claim-boundaries.md) before using the package for published analysis. Read [integrated tools](docs/integrated-tools.md) to distinguish Agent+ custom procedures from external workflows.
 
+## Use Agent+ in another baseball project
+
+Create a project-local control plane with the [baseball-project bootstrap guide](docs/bootstrap-a-baseball-project.md). Choose a `research`, `product`, or `scouting` profile. The initializer will not overwrite existing project controls.
+
 ## Public operating-system mirror
 
 The synthetic [planning stack](.planning/STATE.md) mirrors the control flow of a serious baseball research program. It includes an accepted contract, a deterministic coverage evaluation, an independent review, and a valid `BLOCK`. It deliberately stops before modeling. Run `scripts/validate-public-package.sh` before publishing changes.

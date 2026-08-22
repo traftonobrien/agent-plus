@@ -15,6 +15,11 @@ update an existing Agent+ project from an official release.
 Audit first. Synchronize only after explicit authorization. Use the canonical transactional
 lifecycle instead of copying control files by hand.
 
+For an existing project that has no Agent+ manifest, use the separate exact-byte admission route:
+`scripts/agent-plus adopt --target "/absolute/path/to/project" --profile research|product|scouting`.
+Adoption is not synchronization. It writes `.agent-plus/legacy-adoption.json` only after all
+managed bytes match the current canonical source and never overwrites project-owned state.
+
 ## Required inputs
 
 - The target project root. Use the current Git root only when it is unambiguous.
@@ -27,19 +32,22 @@ lifecycle instead of copying control files by hand.
 
 1. Read the target's `.agent-plus/install-manifest.json`, `.agent-plus/PROFILE.md`, and
    `.agent-plus/PROJECT.md` when present.
-2. Confirm that the manifest names `https://github.com/traftonobrien/agent-plus` as its source.
-3. Resolve an exact stable Agent+ tag. Do not use an untagged branch or dirty checkout as release
+2. If the manifest is absent and the target declares `.agent-plus/legacy-adoption.json`, validate
+   that declaration and the fixed required `.agent-plus/project-startup-check.sh` seam. A malformed
+   or partial declaration is `BLOCK`; do not infer adoption from directory names.
+3. Confirm that the manifest names `https://github.com/traftonobrien/agent-plus` as its source.
+4. Resolve an exact stable Agent+ tag. Do not use an untagged branch or dirty checkout as release
    authority.
-4. From that release checkout, run:
+5. From that release checkout, run:
 
    ```sh
    scripts/agent-plus status --target "/absolute/path/to/project"
    scripts/agent-plus doctor --target "/absolute/path/to/project"
    ```
 
-5. Classify the result as `CURRENT`, `UPDATE_AVAILABLE`, `LOCAL_DRIFT`, `PENDING_RECOVERY`, or
+6. Classify the result as `CURRENT`, `UPDATE_AVAILABLE`, `LOCAL_DRIFT`, `PENDING_RECOVERY`, or
    `BLOCK`.
-6. Report installed version, available version, profile, source tag, and the exact next command.
+7. Report installed version, available version, profile, source tag, and the exact next command.
 
 ### Sync
 

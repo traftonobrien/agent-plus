@@ -1,0 +1,26 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_OUTCOME_AUDIT_ARCHITECTURE_REVIEW_003",
+  "packet_type": "review",
+  "boundary_id": "AGENT_PLUS_OUTCOME_AUDIT",
+  "failure_class": "closed-outcome-record-and-private-evidence-receipt",
+  "ledger_ref": "AGENT_PLUS_OUTCOME_AUDIT/closed-outcome-record-and-private-evidence-receipt",
+  "review_mode": "engineering_sweep",
+  "change_kind": "architecture_reset",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": ["closed-outcome-record-and-private-evidence-receipt"],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "complete",
+  "attack_matrix": {
+    "status": "complete",
+    "items": ["exact-schema-rejection", "ordered-terminal-authority", "attempt-disposition-separation", "scientific-status-separation", "first-pass-denominator", "eventual-success-grouping", "reviewer-escape-denominator", "wilson-small-sample", "zero-denominator-null", "duration-measured-only", "retry-efficiency", "abstention-no-inference", "fixed-receipt-interface", "evidence-omission-substitution", "traversal-symlink-tamper", "strict-json-duplicate", "receipt-privacy", "deterministic-replay", "cwd-only-receipt-root", "fixed-receipt-write", "public-hot-memory-portability", "recursive-public-safety-preserved", "router-doc-discovery", "public-validator"]
+  },
+  "named_coverage": {
+    "status": "complete",
+    "items": ["skill-contract", "record-schema", "validator", "reporter", "statistical-method", "provenance-receipt", "privacy", "receipt-api-surface", "public-hot-memory", "synthetic-fixtures", "synthetic-tests", "agent-plus-router", "public-docs", "public-validator"]
+  },
+  "reset_namespace": "agent-plus/0.2.0-release",
+  "attempt_id": "attempt-03",
+  "removed_caller_choices": ["caller-selected-receipt-root", "caller-supplied-receipt-payload", "machine-local-hot-memory-restart-command"]
+}

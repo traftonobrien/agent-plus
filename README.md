@@ -28,6 +28,25 @@ filesystem failure interrupts the commit; resume that transaction with `recover 
 Project data, memory, plans, evidence, and ledgers are project-owned and are never replaced by an
 Agent+ upgrade.
 
+To admit an existing project, first copy the exact managed controls from this checkout, then run:
+
+```sh
+scripts/agent-plus adopt \
+  --target "/absolute/path/to/legacy-baseball-project" \
+  --profile research
+```
+
+`adopt` records `.agent-plus/legacy-adoption.json` only after every managed file is byte-identical
+to this checkout. It does not create initializer-only examples or replace project-owned files.
+The declaration requires one project-owned startup check at
+`.agent-plus/project-startup-check.sh`. For adoption, `scripts/agent-plus adopt` and
+`scripts/ai-context.sh` validate that executable regular file; the context command runs it before
+printing managed context, and doctor runs it before reporting `PASS`. A missing, malformed,
+symlinked, or failed check stops the command.
+Ordinary initialized projects may omit the hook.
+Adopted context also includes existing `.claude-memory.md` and `.planning/STATE.md` files; absent
+legacy files are omitted, while initialized projects retain their required routing.
+
 ## What Agent+ is
 
 - A research operating system for baseball questions.
@@ -94,6 +113,9 @@ voice-preserving detect and edit workflow with deterministic evidence-token chec
 [source record](skills/editorial-pass/references/attribution.md) pins every adapted upstream skill.
 [`agent-plus-sync`](skills/agent-plus-sync/SKILL.md) audits an installed project against an exact
 official release and uses the transactional lifecycle for an explicitly authorized update.
+[`outcome-audit`](skills/outcome-audit/SKILL.md) records closed prospective workflow outcomes,
+reports honest reliability measures, and verifies a sanitized private-evidence receipt through a
+fixed project-local interface.
 The external engineering skills used alongside Agent+ are documented in
 [integrated tools](docs/integrated-tools.md).
 
@@ -110,12 +132,13 @@ remain authoritative.
 1. Install `$agent-plus-discovery-grill` when the project may begin before its decision is contract-ready.
 2. Install `$editorial-pass` when the project publishes prose that needs an attributed editorial workflow.
 3. Install `$agent-plus-sync` when the project must audit or update its installed Agent+ controls.
-4. If the idea is still unclear, create one project-local decision brief and obtain owner confirmation before contract drafting.
-5. Copy the contract, source log, evidence record, and handoff templates into your project.
-6. Run `scripts/ai-context.sh` to load the same compact control packet used by the public example.
-7. Write a question with a decision and an explicit null or BLOCK path.
-8. Complete the [necessity card](.planning/templates/ESSENTIAL-TASK.md), then run the smallest deterministic check that can resolve the task.
-9. Request fresh verification before promoting any result to a claim.
+4. Install `$outcome-audit` when the project needs prospective workflow measures or a sanitized private-evidence review receipt.
+5. If the idea is still unclear, create one project-local decision brief and obtain owner confirmation before contract drafting.
+6. Copy the contract, source log, evidence record, and handoff templates into your project.
+7. Run `scripts/ai-context.sh` to load the same compact control packet used by the public example.
+8. Write a question with a decision and an explicit null or BLOCK path.
+9. Complete the [necessity card](.planning/templates/ESSENTIAL-TASK.md), then run the smallest deterministic check that can resolve the task.
+10. Request fresh verification before promoting any result to a claim.
 
 The anti-loop guard uses a closed structured schema. Every decision field is a fixed enum or an
 exact identifier from the guard-owned outcome catalog. A ledger may select a subset of catalog

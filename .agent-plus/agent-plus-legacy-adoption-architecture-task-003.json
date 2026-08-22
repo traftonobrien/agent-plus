@@ -1,0 +1,23 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_LEGACY_ADOPTION_ARCHITECTURE_TASK_003",
+  "packet_type": "task",
+  "boundary_id": "AGENT_PLUS_0_2_0_RELEASE",
+  "failure_class": "legacy-adoption-hook-and-doctor-seam",
+  "ledger_ref": "AGENT_PLUS_0_2_0_RELEASE/legacy-adoption-hook-and-doctor-seam",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": ["legacy-adoption-hook-and-doctor-seam"],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "planned",
+  "attack_matrix": {
+    "status": "pending",
+    "items": ["exact-managed-before-record", "divergent-managed-block", "project-owned-preservation", "fixed-hook-path", "hook-failure-before-context", "hook-symlink-and-nonregular-block", "absent-hook-policy", "legacy-doctor-without-initializer-examples", "initialized-doctor-unchanged", "status-current-requires-exactness", "upgrade-preserves-adoption-seam", "partial-adoption-fail-closed", "public-validator"]
+  },
+  "named_coverage": {
+    "status": "pending",
+    "items": ["lifecycle-cli", "manager-record-and-adopt-interface", "manifest-schema", "adoption-declaration", "context-script", "project-hook", "doctor", "initializer", "status", "upgrade-and-recovery", "sync-workflow", "bootstrap", "public-docs", "synthetic-tests", "public-validator"]
+  }
+}

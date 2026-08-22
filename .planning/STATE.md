@@ -2,9 +2,95 @@
 
 Updated: 2026-08-22
 
+## Agent+ 0.2.0 released (2026-08-22)
+
+- Commit: `7e07511a8620f6447f3e6817379d62fa5f94726e`.
+- Annotated tag: `v0.2.0`.
+- Public release: `https://github.com/traftonobrien/agent-plus/releases/tag/v0.2.0`.
+- Remote `main` and the tag resolve to the same release commit.
+- The release is public, not draft, and not prerelease.
+- No consumer project or SECOND LOOK synchronization occurred.
+
+Status: `AGENT_PLUS_0_2_0_RELEASED — CONSUMER SYNCHRONIZATION REQUIRES SEPARATE AUTHORIZATION`.
+
+## Outcome audit optional capability — deterministic evaluator BLOCK (2026-08-22)
+
+- One Luna xhigh maker added the optional public-safe outcome-audit skill, deterministic report,
+  fixed-layout private-evidence receipt, synthetic tests, routing, docs, and public validation.
+- The focused `14` tests, full `122` tests, Python compilation, public validator, guard bindings,
+  links, and new-surface privacy scan passed.
+- A deterministic evaluator then added an unlisted JSON file inside the fixed evidence directory.
+  Verification still returned `PASS` with an unchanged receipt.
+- The verifier therefore authenticates only the manifest-declared subset, not the exact directory
+  population. The registered evidence-omission attack remains open.
+- The evaluator BLOCK is recorded under
+  `AGENT_PLUS_OUTCOME_AUDIT/closed-outcome-record-and-private-evidence-receipt` with `block_count=1`.
+- No fresh reviewer, repair, release, Git operation, or downstream synchronization followed.
+
+Status: `AGENT_PLUS_OUTCOME_AUDIT_EVALUATOR_BLOCK — NEW OWNER AUTHORIZATION REQUIRED`.
+
+Attempt 02 implemented exact fixed-directory enumeration and passed `16` focused plus `124` total
+tests, but its maker returned `MAKER_BLOCK` because the required public validator found a private
+absolute restart path in canonical `.claude-memory.md`. That path was outside maker ownership. No
+evaluator or reviewer was dispatched, and no same-chain repair followed. This is the second recorded
+BLOCK at the outcome-audit failure class, so another local patch is forbidden.
+
+Status: `AGENT_PLUS_OUTCOME_AUDIT_BLOCK_2 — ARCHITECTURE RESET REQUIRED`.
+
+Attempt 03 architecture implementation and deterministic evaluation passed the complete technical
+matrix: `18` focused tests, `126` total tests, fixed receipt attacks, unchanged recursive safety
+validator, and isolated private-path rejection attacks. The fresh integrated reviewer nevertheless
+returned `BLOCK` because the evaluator dossier recorded the literal private-path attack examples,
+which the unchanged public validator correctly rejected. This is record contamination, not an
+outcome-audit implementation defect. The reviewer did not repair it.
+
+Status: `AGENT_PLUS_OUTCOME_AUDIT_ARCHITECTURE_REVIEW_BLOCK — NEW OWNER AUTHORIZATION REQUIRED`.
+
+Attempt 04 replaced literal private attack payloads in the public dossier with safe symbolic labels.
+The outcome implementation remained byte-identical to attempt 03. Deterministic evaluation and one
+fresh independent integrated review passed all `25` attacks and `15` named coverage items. Focused
+tests passed `18/18`; the full suite passed `126/126`; compilation, privacy checks, frozen hashes,
+the unchanged recursive safety validator, and final public package validation passed.
+
+Closeout receipt:
+`sha256:ef242f6a2f605a1b112a67d1d1f128d3451480ef463c0c38c4c53cf3901c0a13`.
+
+No release, Git operation, downstream synchronization, legacy-adoption repair, or SECOND LOOK work
+followed.
+
+Status: `AGENT_PLUS_OUTCOME_AUDIT_ARCHITECTURE_REVIEW_ACCEPTED — RELEASE NOT AUTHORIZED`.
+
 ## Current phase
 
 Phase 1: Public example research gate.
+
+## Legacy-adoption interface repair — review accepted (2026-08-22)
+
+- Attempt 003 closed both attempt-002 findings without adding a managed surface or expanding the
+  adoption interface.
+- FIFO startup hooks now reject without waiting for a writer across adopt, status, canonical
+  doctor, copied doctor, canonical context, and bootstrap context.
+- Canonical and copied consumers now require the exact 13-file managed manifest set; first,
+  middle, and last omissions reject before context output.
+- Deterministic evaluation passed `11` focused tests, `29` lifecycle tests, `128` complete tests,
+  public validation, compilation, shell syntax, and frozen adjacent hashes.
+- One fresh Luna xhigh reviewer passed all `13/13` registered attacks and `15/15` named coverage
+  items. Closeout receipt:
+  `sha256:09058cb34a4cc6b4d36efa4d740825cbe08ff8fb364bb404e73b079e3c8640e6`.
+- No release, Git operation, consumer synchronization, SECOND LOOK change, or scientific work
+  followed.
+
+Status: `AGENT_PLUS_LEGACY_ADOPTION_REVIEW_003_ACCEPTED — NEW RELEASE DECISION REQUIRED`.
+
+## Agent+ 0.3.0 release decision — authorized (2026-08-22)
+
+- The exact scope is the accepted outcome-audit and legacy-adoption capabilities plus their public
+  routing, documentation, deterministic tests, ledger packets, and evidence records.
+- Local outputs, locks, editor/macOS metadata, local registries, consumer state, and SECOND LOOK
+  files are excluded.
+- Version `0.3.0` is selected because the release adds public capabilities after `0.2.0`.
+
+Status: `AGENT_PLUS_0_3_0_RELEASE_READY — ONE AUTHORIZED PUBLICATION ATTEMPT`.
 
 ## Verified state
 
@@ -80,7 +166,9 @@ Status: `AGENT_PLUS_0_2_0_RELEASE_READY — EXPLICIT RELEASE AUTHORIZATION REQUI
 
 ## Exact next action
 
-Add a synthetic independent inventory receipt only if it is clearly labeled as illustrative. Then rerun the public validator and request a new synthetic verifier record.
+Publish the exact accepted `0.3.0` scope once. Stop on any error. After an exact release exists,
+SECOND LOOK consumer synchronization and its preserved architecture review remain separate
+authorization gates.
 
 ## System routing update — 2026-08-15
 

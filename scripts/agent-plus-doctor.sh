@@ -1,6 +1,160 @@
 #!/usr/bin/env sh
 set -eu
 
+DOCTOR_ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+
+# This function is also sourced by copied context scripts. Keep the legacy
+# verifier in one place so every copied consumer enforces the same contract.
+agent_plus_check_legacy_adoption() {
+  [ "$#" -eq 1 ] || {
+    printf '%s\n' 'Usage: agent_plus_check_legacy_adoption DIRECTORY' >&2
+    return 2
+  }
+  TARGET_DIR="$1" python3 - <<'PY'
+import hashlib
+import json
+import os
+import stat
+import subprocess
+from pathlib import Path
+
+root = Path(os.environ["TARGET_DIR"])
+agent = root / ".agent-plus"
+declaration_path = agent / "legacy-adoption.json"
+managed_files = {
+    "AGENTS.md",
+    "CLAUDE.md",
+    "AI_WORKFLOW.md",
+    "AI_AGENT_OUTPUT_POLICY.md",
+    "ESSENTIAL_WORK_PROTOCOL.md",
+    ".cursor/rules/agent-plus-output.mdc",
+    ".agent-plus/PROFILE.md",
+    ".planning/templates/ESSENTIAL-TASK.md",
+    "scripts/ai-context.sh",
+    "scripts/anti_loop_guard.py",
+    "scripts/interface_consumer_guard.py",
+    "scripts/agent-plus-doctor.sh",
+    "tests/test_interface_consumer_guard.py",
+}
+
+def no_duplicates(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate JSON object key")
+        value[key] = item
+    return value
+
+if agent.is_symlink() or not agent.is_dir():
+    raise SystemExit("Agent+ legacy adoption directory is not a regular directory")
+if declaration_path.is_symlink() or not declaration_path.is_file():
+    raise SystemExit("Legacy adoption declaration must be a regular file")
+try:
+    declaration = json.loads(
+        declaration_path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates
+    )
+except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+    raise SystemExit(f"Invalid legacy adoption declaration: {exc}") from exc
+if not isinstance(declaration, dict):
+    raise SystemExit("Invalid legacy adoption declaration")
+if set(declaration) != {"schema_version", "mode", "profile", "startup_check_path"}:
+    raise SystemExit("Invalid legacy adoption declaration fields")
+if declaration.get("schema_version") != "agent-plus-legacy-adoption/v1":
+    raise SystemExit("Unsupported legacy adoption declaration")
+if declaration.get("mode") != "legacy-adopted":
+    raise SystemExit("Invalid legacy adoption mode")
+if declaration.get("profile") not in {"research", "product", "scouting"}:
+    raise SystemExit("Invalid legacy adoption profile")
+if declaration.get("startup_check_path") != ".agent-plus/project-startup-check.sh":
+    raise SystemExit("Legacy adoption startup-check path is not fixed")
+
+manifest_path = root / ".agent-plus" / "install-manifest.json"
+if manifest_path.is_symlink() or not manifest_path.is_file():
+    raise SystemExit("Legacy adoption manifest is missing or unsafe")
+try:
+    manifest = json.loads(
+        manifest_path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates
+    )
+except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+    raise SystemExit(f"Invalid install manifest: {exc}") from exc
+if not isinstance(manifest, dict):
+    raise SystemExit("Invalid install manifest")
+if set(manifest) != {
+    "schema_version",
+    "agent_plus_version",
+    "profile",
+    "source_repository",
+    "managed_files",
+}:
+    raise SystemExit("Unsupported install manifest")
+if manifest.get("schema_version") != "agent-plus-install/v1":
+    raise SystemExit("Unsupported install manifest")
+if manifest.get("source_repository") != "https://github.com/traftonobrien/agent-plus":
+    raise SystemExit("Invalid Agent+ source identity")
+if manifest.get("profile") != declaration["profile"]:
+    raise SystemExit("Legacy adoption profile does not match install manifest")
+managed = manifest.get("managed_files")
+if not isinstance(managed, dict) or set(managed) != managed_files:
+    raise SystemExit("Install manifest managed-file set is not exact")
+for relative, expected in managed.items():
+    if not isinstance(expected, str):
+        raise SystemExit(f"Invalid managed digest: {relative}")
+    if len(expected) != 64 or any(character not in "0123456789abcdef" for character in expected):
+        raise SystemExit(f"Invalid managed digest: {relative}")
+    path = root / relative
+    if path.is_symlink() or not path.is_file():
+        raise SystemExit(f"Unsafe or missing managed file: {relative}")
+    try:
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError as exc:
+        raise SystemExit(f"Cannot read managed file: {relative}") from exc
+    if actual != expected:
+        raise SystemExit(f"Managed file drift: {relative}")
+
+hook = root / ".agent-plus" / "project-startup-check.sh"
+try:
+    hook_fd = os.open(
+        hook,
+        os.O_RDONLY
+        | os.O_NONBLOCK
+        | os.O_NOFOLLOW
+        | getattr(os, "O_CLOEXEC", 0),
+    )
+except OSError as exc:
+    raise SystemExit("Legacy adoption requires the fixed project startup check") from exc
+try:
+    details = os.fstat(hook_fd)
+    if not stat.S_ISREG(details.st_mode):
+        raise SystemExit("Project startup check must be a regular file")
+    if not details.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH):
+        raise SystemExit("Project startup check must be executable")
+    try:
+        result = subprocess.run(
+            ["/bin/sh", f"/dev/fd/{hook_fd}"],
+            cwd=root,
+            check=False,
+            pass_fds=(hook_fd,),
+        )
+    except OSError as exc:
+        raise SystemExit("Cannot execute project startup check") from exc
+finally:
+    os.close(hook_fd)
+if result.returncode != 0:
+    raise SystemExit(f"Project startup check failed with exit status {result.returncode}")
+PY
+}
+
+if [ "${AGENT_PLUS_DOCTOR_SOURCE_ONLY-}" = '1' ]; then
+  return 0 2>/dev/null || exit 0
+fi
+
+# The canonical checkout routes doctor through the Python lifecycle manager. A
+# copied project doctor has no canonical manager beside it and uses the
+# standalone checks below.
+if [ "${AGENT_PLUS_DOCTOR_FALLBACK-}" != '1' ] && [ -f "$DOCTOR_ROOT_DIR/scripts/agent_plus_manager.py" ] && [ -f "$DOCTOR_ROOT_DIR/bootstrap/base/scripts/ai-context.sh" ]; then
+  exec python3 "$DOCTOR_ROOT_DIR/scripts/agent_plus_manager.py" doctor "$@"
+fi
+
 usage() {
   printf '%s\n' 'Usage: scripts/agent-plus-doctor.sh --target DIRECTORY'
   exit 2
@@ -17,6 +171,29 @@ done
 [ -n "$TARGET_DIR" ] || usage
 [ -d "$TARGET_DIR" ] || { printf 'Target directory does not exist: %s\n' "$TARGET_DIR" >&2; exit 1; }
 TARGET_DIR=$(cd "$TARGET_DIR" && pwd)
+
+# Legacy-adopted projects intentionally do not need initializer-only examples.
+# Keep this route strict: the declaration, manifest, managed regular files, and
+# required fixed startup seam must all be valid before doctor can pass.
+if [ -e "$TARGET_DIR/.agent-plus/legacy-adoption.json" ] || [ -L "$TARGET_DIR/.agent-plus/legacy-adoption.json" ]; then
+  agent_plus_check_legacy_adoption "$TARGET_DIR"
+  printf 'Agent+ doctor: PASS (%s) [legacy-adopted]\n' "$TARGET_DIR"
+  exit 0
+fi
+
+TARGET_DIR="$TARGET_DIR" python3 - <<'PY'
+import os
+import stat
+from pathlib import Path
+
+hook = Path(os.environ["TARGET_DIR"]) / ".agent-plus" / "project-startup-check.sh"
+if hook.exists() or hook.is_symlink():
+    details = hook.lstat()
+    if stat.S_ISLNK(details.st_mode) or not stat.S_ISREG(details.st_mode):
+        raise SystemExit("Project startup check must be a regular file")
+    if not details.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH):
+        raise SystemExit("Project startup check must be executable")
+PY
 
 for file in AGENTS.md CLAUDE.md AI_WORKFLOW.md AI_AGENT_OUTPUT_POLICY.md ESSENTIAL_WORK_PROTOCOL.md .cursor/rules/agent-plus-output.mdc .claude-memory.md .agent-plus/project.yaml .agent-plus/PROFILE.md .agent-plus/PROJECT.md .agent-plus/install-manifest.json .agent-plus/claim-evidence-register.md .agent-plus/engineering-boundaries.json .agent-plus/engineering-closure-example.json .agent-plus/interface-consumer-closure-example.json scripts/anti_loop_guard.py scripts/interface_consumer_guard.py tests/test_interface_consumer_guard.py .planning/PROJECT.md .planning/ROADMAP.md .planning/STATE.md .planning/templates/ESSENTIAL-TASK.md scripts/ai-context.sh; do
   [ -f "$TARGET_DIR/$file" ] || { printf 'Missing required control: %s\n' "$file" >&2; exit 1; }

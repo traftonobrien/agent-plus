@@ -675,6 +675,20 @@ occurred.
 
 Status: `AGENT_PLUS_0_2_0_RELEASE_READY — EXPLICIT RELEASE AUTHORIZATION REQUIRED`.
 
+## Agent+ 0.2.0 release — COMPLETE
+
+- Owner authorization: explicit.
+- Release commit: `7e07511a8620f6447f3e6817379d62fa5f94726e`.
+- Annotated tag: `v0.2.0`.
+- Push: `origin/main` and `v0.2.0` succeeded.
+- Public GitHub release:
+  `https://github.com/traftonobrien/agent-plus/releases/tag/v0.2.0`.
+- Remote verification: branch and tag resolve to the release commit.
+- GitHub verification: public, not draft, not prerelease.
+- Consumer and SECOND LOOK synchronization: not performed and not authorized by this release.
+
+Status: `AGENT_PLUS_0_2_0_RELEASED — CONSUMER SYNCHRONIZATION REQUIRES SEPARATE AUTHORIZATION`.
+
 ## Pending-journal publication reset — attempt-07 fresh review BLOCK
 
 - The fresh reviewer completed `42` lifecycle attacks and `32` named coverage items.

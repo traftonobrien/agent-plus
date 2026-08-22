@@ -2,7 +2,57 @@
   "boundaries": {
     "AGENT_PLUS_0_2_0_RELEASE": {
       "failure_classes": {
-      "discovery-handoff-durability": {
+        "agent-plus-sync-orchestration": {
+          "architecture_reset_required": false,
+          "authorized_attempt_id": "attempt-01",
+          "block_count": 0,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "implicit-release-authority",
+            "unaudited-agent-plus-upgrade",
+            "automatic-same-chain-recovery",
+            "unverified-project-owned-state"
+          ],
+          "required_attack_matrix": [
+            "exact-official-release-tag",
+            "reject-untagged-branch",
+            "reject-dirty-release-checkout",
+            "audit-before-mutation",
+            "local-drift-block",
+            "pending-recovery-block",
+            "invalid-manifest-block",
+            "untrusted-source-block",
+            "explicit-target-version-authorization",
+            "canonical-transactional-upgrade",
+            "no-fallback-or-same-chain-recovery",
+            "project-owned-control-preservation",
+            "post-sync-status-and-doctor",
+            "calibration-gap-reporting",
+            "router-and-bootstrap-discovery",
+            "public-validator"
+          ],
+          "required_named_coverage": [
+            "skill-contract",
+            "audit-mode",
+            "sync-mode",
+            "verify-mode",
+            "release-authority",
+            "lifecycle-cli",
+            "authorization-boundary",
+            "recovery-stop",
+            "local-drift",
+            "project-owned-state",
+            "calibration-report",
+            "agent-plus-router",
+            "public-docs",
+            "skill-metadata",
+            "public-validator"
+          ],
+          "reset_namespace": "agent-plus/0.2.0-release"
+        },
+        "discovery-handoff-durability": {
           "architecture_reset_required": false,
           "authorized_attempt_id": "attempt-01",
           "block_count": 0,
@@ -35,100 +85,99 @@
             "lifecycle-tests",
             "public-validator"
           ],
-        "reset_namespace": "agent-plus/0.2.0-release"
-      },
-      "editorial-pass-and-subtraction": {
-        "architecture_reset_required": false,
-        "authorized_attempt_id": "attempt-01",
-        "block_count": 0,
-        "permitted_outcomes": {
-          "agent-plus-control-plane-capability": "user_visible_capability"
+          "reset_namespace": "agent-plus/0.2.0-release"
         },
-        "permitted_removed_choices": [
-          "unattributed-editorial-source",
-          "unbounded-style-rule",
-          "build-before-reuse-check"
-        ],
-        "required_attack_matrix": [
-          "attribution-pins",
-          "license-notices",
-          "preservation-pass",
-          "preservation-block-complete",
-          "unknown-protected-term",
-          "no-authorship-score",
-          "no-blanket-style-ban",
-          "protocol-ladder-order",
-          "protocol-safety-exceptions",
-          "canonical-bootstrap-binding",
-          "router-and-bootstrap-discovery",
-          "public-validator"
-        ],
-        "required_named_coverage": [
-          "skill-contract",
-          "editorial-method",
-          "source-attribution",
-          "license-notices",
-          "preservation-checker",
-          "synthetic-tests",
-          "agent-plus-router",
-          "public-docs",
-          "essential-work-protocol",
-          "bootstrap-binding",
-          "public-validator"
-        ],
-        "reset_namespace": "agent-plus/0.2.0-release"
-      },
-      "agent-plus-sync-orchestration": {
-        "architecture_reset_required": false,
-        "authorized_attempt_id": "attempt-01",
-        "block_count": 0,
-        "permitted_outcomes": {
-          "agent-plus-control-plane-capability": "user_visible_capability"
+        "editorial-pass-and-subtraction": {
+          "architecture_reset_required": false,
+          "authorized_attempt_id": "attempt-01",
+          "block_count": 0,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "unattributed-editorial-source",
+            "unbounded-style-rule",
+            "build-before-reuse-check"
+          ],
+          "required_attack_matrix": [
+            "attribution-pins",
+            "license-notices",
+            "preservation-pass",
+            "preservation-block-complete",
+            "unknown-protected-term",
+            "no-authorship-score",
+            "no-blanket-style-ban",
+            "protocol-ladder-order",
+            "protocol-safety-exceptions",
+            "canonical-bootstrap-binding",
+            "router-and-bootstrap-discovery",
+            "public-validator"
+          ],
+          "required_named_coverage": [
+            "skill-contract",
+            "editorial-method",
+            "source-attribution",
+            "license-notices",
+            "preservation-checker",
+            "synthetic-tests",
+            "agent-plus-router",
+            "public-docs",
+            "essential-work-protocol",
+            "bootstrap-binding",
+            "public-validator"
+          ],
+          "reset_namespace": "agent-plus/0.2.0-release"
         },
-        "permitted_removed_choices": [
-          "implicit-release-authority",
-          "unaudited-agent-plus-upgrade",
-          "automatic-same-chain-recovery",
-          "unverified-project-owned-state"
-        ],
-        "required_attack_matrix": [
-          "exact-official-release-tag",
-          "reject-untagged-branch",
-          "reject-dirty-release-checkout",
-          "audit-before-mutation",
-          "local-drift-block",
-          "pending-recovery-block",
-          "invalid-manifest-block",
-          "untrusted-source-block",
-          "explicit-target-version-authorization",
-          "canonical-transactional-upgrade",
-          "no-fallback-or-same-chain-recovery",
-          "project-owned-control-preservation",
-          "post-sync-status-and-doctor",
-          "calibration-gap-reporting",
-          "router-and-bootstrap-discovery",
-          "public-validator"
-        ],
-        "required_named_coverage": [
-          "skill-contract",
-          "audit-mode",
-          "sync-mode",
-          "verify-mode",
-          "release-authority",
-          "lifecycle-cli",
-          "authorization-boundary",
-          "recovery-stop",
-          "local-drift",
-          "project-owned-state",
-          "calibration-report",
-          "agent-plus-router",
-          "public-docs",
-          "skill-metadata",
-          "public-validator"
-        ],
-        "reset_namespace": "agent-plus/0.2.0-release"
-      },
-      "portable-lifecycle-integrity": {
+        "legacy-adoption-hook-and-doctor-seam": {
+          "architecture_reset_required": false,
+          "authorized_attempt_id": "attempt-03",
+          "block_count": 1,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "manifest-over-divergent-bytes",
+            "manual-only-project-check",
+            "initializer-required-legacy-adoption",
+            "blocking-startup-hook-open",
+            "duplicate-legacy-manifest-parser",
+            "subset-managed-set-acceptance"
+          ],
+          "required_attack_matrix": [
+            "exact-managed-before-record",
+            "divergent-managed-block",
+            "project-owned-preservation",
+            "fixed-hook-path",
+            "hook-failure-before-context",
+            "hook-symlink-and-nonregular-block",
+            "absent-hook-policy",
+            "legacy-doctor-without-initializer-examples",
+            "initialized-doctor-unchanged",
+            "status-current-requires-exactness",
+            "upgrade-preserves-adoption-seam",
+            "partial-adoption-fail-closed",
+            "public-validator"
+          ],
+          "required_named_coverage": [
+            "lifecycle-cli",
+            "manager-record-and-adopt-interface",
+            "manifest-schema",
+            "adoption-declaration",
+            "context-script",
+            "project-hook",
+            "doctor",
+            "initializer",
+            "status",
+            "upgrade-and-recovery",
+            "sync-workflow",
+            "bootstrap",
+            "public-docs",
+            "synthetic-tests",
+            "public-validator"
+          ],
+          "reset_namespace": "agent-plus/0.2.0-release"
+        },
+        "portable-lifecycle-integrity": {
           "architecture_reset_required": true,
           "authorized_attempt_id": "attempt-08",
           "block_count": 7,
@@ -260,6 +309,74 @@
             "canonical-release-ledger",
             "bootstrap-example-ledger",
             "dispatch-packets",
+            "public-validator"
+          ],
+          "reset_namespace": "agent-plus/0.2.0-release"
+        }
+      }
+    },
+    "AGENT_PLUS_OUTCOME_AUDIT": {
+      "failure_classes": {
+        "closed-outcome-record-and-private-evidence-receipt": {
+          "architecture_reset_required": true,
+          "authorized_attempt_id": "attempt-04",
+          "block_count": 3,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "caller-supplied-attempt-outcome",
+            "duplicate-terminal-status",
+            "transcript-derived-outcome",
+            "reviewer-private-evidence-read",
+            "automatic-grade-threshold",
+            "caller-selected-receipt-root",
+            "caller-supplied-receipt-payload",
+            "machine-local-hot-memory-restart-command",
+            "literal-private-payload-in-public-evidence-record"
+          ],
+          "required_attack_matrix": [
+            "exact-schema-rejection",
+            "ordered-terminal-authority",
+            "attempt-disposition-separation",
+            "scientific-status-separation",
+            "first-pass-denominator",
+            "eventual-success-grouping",
+            "reviewer-escape-denominator",
+            "wilson-small-sample",
+            "zero-denominator-null",
+            "duration-measured-only",
+            "retry-efficiency",
+            "abstention-no-inference",
+            "fixed-receipt-interface",
+            "evidence-omission-substitution",
+            "traversal-symlink-tamper",
+            "strict-json-duplicate",
+            "receipt-privacy",
+            "deterministic-replay",
+            "cwd-only-receipt-root",
+            "fixed-receipt-write",
+            "public-hot-memory-portability",
+            "recursive-public-safety-preserved",
+            "symbolic-public-evidence-record",
+            "router-doc-discovery",
+            "public-validator"
+          ],
+          "required_named_coverage": [
+            "skill-contract",
+            "record-schema",
+            "validator",
+            "reporter",
+            "statistical-method",
+            "provenance-receipt",
+            "privacy",
+            "receipt-api-surface",
+            "public-hot-memory",
+            "public-evidence-sanitization",
+            "synthetic-fixtures",
+            "synthetic-tests",
+            "agent-plus-router",
+            "public-docs",
             "public-validator"
           ],
           "reset_namespace": "agent-plus/0.2.0-release"

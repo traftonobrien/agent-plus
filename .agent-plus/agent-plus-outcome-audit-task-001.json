@@ -1,0 +1,23 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_OUTCOME_AUDIT_TASK_001",
+  "packet_type": "task",
+  "boundary_id": "AGENT_PLUS_OUTCOME_AUDIT",
+  "failure_class": "closed-outcome-record-and-private-evidence-receipt",
+  "ledger_ref": "AGENT_PLUS_OUTCOME_AUDIT/closed-outcome-record-and-private-evidence-receipt",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": ["closed-outcome-record-and-private-evidence-receipt"],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "planned",
+  "attack_matrix": {
+    "status": "pending",
+    "items": ["exact-schema-rejection", "ordered-terminal-authority", "attempt-disposition-separation", "scientific-status-separation", "first-pass-denominator", "eventual-success-grouping", "reviewer-escape-denominator", "wilson-small-sample", "zero-denominator-null", "duration-measured-only", "retry-efficiency", "abstention-no-inference", "fixed-receipt-interface", "evidence-omission-substitution", "traversal-symlink-tamper", "strict-json-duplicate", "receipt-privacy", "deterministic-replay", "router-doc-discovery", "public-validator"]
+  },
+  "named_coverage": {
+    "status": "pending",
+    "items": ["skill-contract", "record-schema", "validator", "reporter", "statistical-method", "provenance-receipt", "privacy", "synthetic-fixtures", "synthetic-tests", "agent-plus-router", "public-docs", "public-validator"]
+  }
+}

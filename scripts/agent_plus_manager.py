@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import fcntl
 import hashlib
 import json
@@ -19,13 +20,20 @@ from types import TracebackType
 from typing import Any, Literal, Self
 
 SCHEMA = "agent-plus-install/v1"
+ADOPTION_SCHEMA = "agent-plus-legacy-adoption/v1"
 TRANSACTION_SCHEMA = "agent-plus-upgrade-transaction/v2"
 JOURNAL_NAME = "upgrade-transaction.json"
 JOURNAL_PENDING_NAME = "upgrade-transaction.pending"
+ADOPTION_NAME = "legacy-adoption.json"
+ADOPTION_RELATIVE = f".agent-plus/{ADOPTION_NAME}"
+STARTUP_CHECK_RELATIVE = ".agent-plus/project-startup-check.sh"
 SOURCE_REPOSITORY = "https://github.com/traftonobrien/agent-plus"
 ALLOWED_PROFILES = frozenset({"research", "product", "scouting"})
 MANIFEST_KEYS = frozenset(
     {"schema_version", "agent_plus_version", "profile", "source_repository", "managed_files"}
+)
+ADOPTION_KEYS = frozenset(
+    {"schema_version", "mode", "profile", "startup_check_path"}
 )
 JOURNAL_KEYS = frozenset(
     {
@@ -624,6 +632,90 @@ def _manifest(fs: TransactionFilesystem) -> dict[str, Any]:
     return data
 
 
+def _adoption(fs: TransactionFilesystem) -> dict[str, Any] | None:
+    fd = _optional_target_file(fs, ADOPTION_RELATIVE)
+    if fd is None:
+        return None
+    try:
+        data = _read_json(_read_fd(fd, "legacy adoption declaration"), "legacy adoption declaration")
+    finally:
+        os.close(fd)
+    if set(data) != ADOPTION_KEYS:
+        raise ManagerError("Unsupported Agent+ legacy adoption declaration")
+    if data.get("schema_version") != ADOPTION_SCHEMA or data.get("mode") != "legacy-adopted":
+        raise ManagerError("Invalid Agent+ legacy adoption mode")
+    if data.get("profile") not in ALLOWED_PROFILES:
+        raise ManagerError("Invalid Agent+ legacy adoption profile")
+    if data.get("startup_check_path") != STARTUP_CHECK_RELATIVE:
+        raise ManagerError("Legacy adoption startup-check path is not the fixed Agent+ seam")
+    return data
+
+
+def _open_startup_check(fs: TransactionFilesystem, *, required: bool = False) -> int | None:
+    fd = _optional_target_file(fs, STARTUP_CHECK_RELATIVE, nonblocking=True)
+    if fd is None:
+        if required:
+            raise ManagerError("Legacy adoption requires the fixed project startup check")
+        return None
+    details = os.fstat(fd)
+    if not stat.S_ISREG(details.st_mode):
+        os.close(fd)
+        raise ManagerError("Project startup check is not a regular file")
+    if not details.st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH):
+        os.close(fd)
+        raise ManagerError("Project startup check is not executable")
+    return fd
+
+
+def _startup_check_state(fs: TransactionFilesystem, *, required: bool = False) -> str:
+    fd = _open_startup_check(fs, required=required)
+    if fd is None:
+        return "absent"
+    os.close(fd)
+    return "present"
+
+
+def _run_startup_check(fs: TransactionFilesystem, *, required: bool = False) -> str:
+    """Run the validated hook bytes through a stable inherited descriptor."""
+    fd = _open_startup_check(fs, required=required)
+    if fd is None:
+        return "absent"
+    try:
+        try:
+            result = subprocess.run(
+                ["/bin/sh", f"/dev/fd/{fd}"],
+                cwd=fs.target_path,
+                check=False,
+                pass_fds=(fd,),
+            )
+        except OSError as exc:
+            raise _os_failure("Cannot execute project startup check", exc) from exc
+        if result.returncode != 0:
+            raise ManagerError(
+                f"Project startup check failed with exit status {result.returncode}"
+            )
+    finally:
+        os.close(fd)
+    return "present"
+
+
+def _validate_adoption(
+    fs: TransactionFilesystem,
+    adoption: dict[str, Any],
+    manifest: dict[str, Any],
+    *,
+    execute_startup_check: bool = False,
+) -> None:
+    if adoption["profile"] != manifest["profile"]:
+        raise ManagerError("Legacy adoption profile does not match install manifest")
+    if execute_startup_check:
+        _run_startup_check(fs, required=True)
+    else:
+        _startup_check_state(fs, required=True)
+    if _drift(fs, manifest):
+        raise ManagerError("Legacy adoption has managed-file drift")
+
+
 def _safe_manifest_entry(relative: Any, digest: Any) -> bool:
     if type(relative) is not str or type(digest) is not str:
         return False
@@ -640,6 +732,36 @@ def _read_target(fs: TransactionFilesystem, relative: str) -> bytes:
         return _read_fd(fd, relative)
     finally:
         os.close(fd)
+
+
+def _optional_target_file(
+    fs: TransactionFilesystem, relative: str, *, nonblocking: bool = False
+) -> int | None:
+    """Open an optional target file without following a leaf symlink."""
+    parent, leaf = fs.target_parent(relative)
+    try:
+        try:
+            flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
+            if nonblocking:
+                flags |= os.O_NONBLOCK
+            fd = os.open(
+                leaf,
+                flags,
+                dir_fd=parent,
+            )
+        except FileNotFoundError:
+            return None
+        except OSError as exc:
+            if exc.errno == errno.ELOOP:
+                raise ManagerError(f"Unsafe optional target file: {relative}") from exc
+            raise _os_failure(f"Cannot inspect optional target file {relative}", exc) from exc
+        details = os.fstat(fd)
+        if not stat.S_ISREG(details.st_mode):
+            os.close(fd)
+            raise ManagerError(f"Unsafe optional target file: {relative}")
+        return fd
+    finally:
+        os.close(parent)
 
 
 def _target_digest(fs: TransactionFilesystem, relative: str) -> str:
@@ -668,6 +790,16 @@ def _manifest_data(fs: TransactionFilesystem, profile: str) -> dict[str, Any]:
     }
 
 
+def _assert_canonical_targets(fs: TransactionFilesystem, profile: str) -> dict[str, Any]:
+    """Return canonical manifest data only when every managed target byte matches it."""
+    candidate = _manifest_data(fs, profile)
+    for relative, expected in candidate["managed_files"].items():
+        actual = _target_digest(fs, relative)
+        if actual != expected:
+            raise ManagerError(f"Refusing adoption because managed bytes differ: {relative}")
+    return candidate
+
+
 def _version_from_fs(fs: TransactionFilesystem) -> str:
     source = fs.source_file(fs.source_path / "VERSION")
     try:
@@ -688,17 +820,7 @@ def _write_manifest_at(fs: TransactionFilesystem, parent_fd: int, profile: str) 
 
 
 def _record_manifest_data(fs: TransactionFilesystem, profile: str) -> dict[str, Any]:
-    sources = _managed_sources(fs.source_path, profile)
-    hashes: dict[str, str] = {}
-    for relative in sorted(sources):
-        hashes[relative] = _target_digest(fs, relative)
-    return {
-        "schema_version": SCHEMA,
-        "agent_plus_version": _version_from_fs(fs),
-        "profile": profile,
-        "source_repository": SOURCE_REPOSITORY,
-        "managed_files": hashes,
-    }
+    return _assert_canonical_targets(fs, profile)
 
 
 def _drift(fs: TransactionFilesystem, manifest: dict[str, Any]) -> list[str]:
@@ -1047,10 +1169,47 @@ def _preflight_recovery_sources(
 def record(target: Path, profile: str) -> None:
     if profile not in ALLOWED_PROFILES:
         raise ManagerError(f"Unknown profile: {profile}")
-    with TransactionFilesystem(target) as fs:
+    with TransactionFilesystem(target) as fs, fs.lock(allow_stale=False):
+        if _adoption(fs) is not None:
+            raise ManagerError("Refusing to record over a legacy adoption declaration")
         agent_fd = fs.open_agent()
         value = _record_manifest_data(fs, profile)
         _atomic_write_json_at(agent_fd, "install-manifest.json", (json.dumps(value, indent=2, sort_keys=True) + "\n").encode())
+
+
+def adopt(target: Path, profile: str) -> None:
+    """Adopt an existing project after exact canonical-byte verification."""
+    if profile not in ALLOWED_PROFILES:
+        raise ManagerError(f"Unknown profile: {profile}")
+    with TransactionFilesystem(target) as fs, fs.lock(allow_stale=False):
+        if _adoption(fs) is not None:
+            raise ManagerError("Legacy adoption is already declared")
+        existing_manifest = _optional_target_file(fs, ".agent-plus/install-manifest.json")
+        if existing_manifest is not None:
+            os.close(existing_manifest)
+            raise ManagerError("An Agent+ install manifest already exists; use status or upgrade")
+        value = _assert_canonical_targets(fs, profile)
+        _startup_check_state(fs, required=True)
+        agent_fd = fs.open_agent(create=True)
+        declaration = {
+            "schema_version": ADOPTION_SCHEMA,
+            "mode": "legacy-adopted",
+            "profile": profile,
+            "startup_check_path": STARTUP_CHECK_RELATIVE,
+        }
+        # Publish the declaration first. If manifest publication fails, the marker makes
+        # the partial adoption visible and every lifecycle command fails closed.
+        _atomic_write_json_at(
+            agent_fd,
+            ADOPTION_NAME,
+            (json.dumps(declaration, indent=2, sort_keys=True) + "\n").encode(),
+        )
+        _atomic_write_json_at(
+            agent_fd,
+            "install-manifest.json",
+            (json.dumps(value, indent=2, sort_keys=True) + "\n").encode(),
+        )
+    print(f"Agent+ legacy adoption recorded at {target.expanduser().resolve()}")
 
 
 def status(target: Path) -> int:
@@ -1058,6 +1217,9 @@ def status(target: Path) -> int:
             if fs.transaction_record_exists():
                 raise ManagerError("Pending Agent+ transaction; run recover --target")
             manifest = _manifest(fs)
+            adoption = _adoption(fs)
+            if adoption is not None:
+                _validate_adoption(fs, adoption, manifest)
             drift = _drift(fs, manifest)
             if drift:
                 for item in drift:
@@ -1076,6 +1238,9 @@ def upgrade(target: Path) -> None:
             if fs.transaction_record_exists():
                 raise ManagerError("Pending Agent+ transaction; run recover --target")
             manifest = _manifest(fs)
+            adoption = _adoption(fs)
+            if adoption is not None:
+                _validate_adoption(fs, adoption, manifest)
             drift = _drift(fs, manifest)
             if drift:
                 raise ManagerError("Refusing upgrade because a managed file changed locally: " + drift[0])
@@ -1206,6 +1371,33 @@ def context(name: str) -> int:
     return subprocess.run([str(command)], cwd=root, check=False).returncode
 
 
+def doctor(target: Path) -> int:
+    """Validate an installed project, including the legacy-adoption seam."""
+    with TransactionFilesystem(target) as fs:
+        adoption = _adoption(fs)
+        if adoption is not None:
+            with fs.lock(allow_stale=False):
+                if fs.transaction_record_exists():
+                    raise ManagerError("Pending Agent+ transaction; run recover --target")
+                manifest = _manifest(fs)
+                _validate_adoption(fs, adoption, manifest, execute_startup_check=True)
+            print(f"Agent+ doctor: PASS ({fs.target_path}) [legacy-adopted]")
+            return 0
+
+    # The copied target doctor remains standalone. The canonical checkout uses this
+    # manager for the route, then delegates the unchanged initialized-project checks
+    # through an explicit environment flag to avoid recursion.
+    fallback = _source_root() / "scripts" / "agent-plus-doctor.sh"
+    environment = os.environ.copy()
+    environment["AGENT_PLUS_DOCTOR_FALLBACK"] = "1"
+    return subprocess.run(
+        [str(fallback), "--target", str(target)],
+        cwd=_source_root(),
+        env=environment,
+        check=False,
+    ).returncode
+
+
 def _version(root: Path) -> str:
     return (root / "VERSION").read_text(encoding="utf-8").strip()
 
@@ -1213,12 +1405,15 @@ def _version(root: Path) -> str:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="agent-plus-manager")
     subparsers = parser.add_subparsers(dest="command", required=True)
-    for command in ("status", "upgrade", "recover"):
+    for command in ("status", "upgrade", "recover", "doctor"):
         child = subparsers.add_parser(command)
         child.add_argument("--target", required=True, type=Path)
     record_parser = subparsers.add_parser("record")
     record_parser.add_argument("--target", required=True, type=Path)
     record_parser.add_argument("--profile", required=True)
+    adopt_parser = subparsers.add_parser("adopt")
+    adopt_parser.add_argument("--target", required=True, type=Path)
+    adopt_parser.add_argument("--profile", required=True)
     subparsers.add_parser("projects")
     context_parser = subparsers.add_parser("context")
     context_parser.add_argument("name")
@@ -1230,12 +1425,16 @@ def main() -> int:
     try:
         if args.command == "record":
             record(args.target, args.profile)
+        elif args.command == "adopt":
+            adopt(args.target, args.profile)
         elif args.command == "status":
             return status(args.target)
         elif args.command == "upgrade":
             upgrade(args.target)
         elif args.command == "recover":
             recover(args.target)
+        elif args.command == "doctor":
+            return doctor(args.target)
         elif args.command == "projects":
             projects()
         elif args.command == "context":

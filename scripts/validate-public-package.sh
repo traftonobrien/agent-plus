@@ -57,7 +57,11 @@ scripts/agent-plus-init.sh
 scripts/agent-plus-doctor.sh
 scripts/agent_plus_manager.py
 tests/test_agent_plus_lifecycle.py
+tests/test_agent_plus_legacy_adoption.py
+tests/test_outcome_audit.py
 skills/agent-plus/SKILL.md
+skills/outcome-audit/SKILL.md
+skills/outcome-audit/outcome_audit.py
 skills/agent-plus-sync/SKILL.md
 skills/agent-plus-sync/agents/openai.yaml
 skills/agent-plus-discovery-grill/SKILL.md
@@ -153,6 +157,34 @@ grep -qF '$agent-plus-sync' skills/agent-plus/SKILL.md || {
 }
 grep -qF '$agent-plus-sync' docs/bootstrap-a-baseball-project.md || {
   printf '%s\n' 'Bootstrap guide does not expose the sync route.' >&2
+  exit 1
+}
+grep -qF '$outcome-audit' skills/agent-plus/SKILL.md || {
+  printf '%s\n' 'Agent+ router does not expose the outcome-audit route.' >&2
+  exit 1
+}
+grep -qF 'outcome-audit' docs/bootstrap-a-baseball-project.md || {
+  printf '%s\n' 'Bootstrap guide does not expose the outcome-audit route.' >&2
+  exit 1
+}
+grep -qF 'scripts/agent-plus adopt' README.md || {
+  printf '%s\n' 'README does not expose the legacy-adoption route.' >&2
+  exit 1
+}
+grep -qF 'scripts/agent-plus adopt' docs/bootstrap-a-baseball-project.md || {
+  printf '%s\n' 'Bootstrap guide does not expose the legacy-adoption route.' >&2
+  exit 1
+}
+grep -qF 'legacy-adoption.json' skills/agent-plus-sync/SKILL.md || {
+  printf '%s\n' 'Sync guidance does not describe legacy adoption.' >&2
+  exit 1
+}
+grep -qF 'project-startup-check.sh' bootstrap/base/scripts/ai-context.sh || {
+  printf '%s\n' 'Bootstrap context does not expose the fixed startup seam.' >&2
+  exit 1
+}
+grep -qF 'legacy-adoption.json' scripts/agent_plus_manager.py || {
+  printf '%s\n' 'Lifecycle manager does not expose legacy adoption.' >&2
   exit 1
 }
 for commit in \

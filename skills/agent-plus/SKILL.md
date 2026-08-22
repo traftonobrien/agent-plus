@@ -32,7 +32,10 @@ Confirm the project control plane, load bounded context, and route the task to t
 5. Route publication-oriented detect, humanize, or de-slop requests to `$editorial-pass`. Keep the
    project's output policy active for ordinary status and technical responses.
 6. Route Agent+ version, calibration, upgrade, and synchronization requests to `$agent-plus-sync`.
-7. Select one bounded procedure from the installed Agent+ skill set and create the required
+7. Route prospective workflow outcome measurement and sanitized private-evidence checks to
+   `$outcome-audit`. Keep its record, report, and receipt boundaries separate from the workflow
+   ledger.
+8. Select one bounded procedure from the installed Agent+ skill set and create the required
    necessity card before substantive work.
 
 ## Required outputs
@@ -53,6 +56,8 @@ Confirm the project control plane, load bounded context, and route the task to t
 - The selected work has a decision, stop condition, and acceptance check.
 - Editorial work routes to `$editorial-pass` without claiming authorship detection.
 - Agent+ update work routes to `$agent-plus-sync` and audits before mutation.
+- Outcome measurement routes to `$outcome-audit` and uses prospective records, deterministic
+  reports, and the fixed project-local receipt interface.
 - The task does not exceed the active claim or data authority.
 
 ## Handoff requirements
@@ -65,3 +70,5 @@ Record the outcome, evidence, limits, next action, and restart command in projec
 - This skill does not treat discovery as evidence, contract acceptance, or work authorization.
 - This skill does not grant data, live, scientific, or promotion authority.
 - This skill does not make a chat transcript the system of record.
+- This skill does not infer outcomes from ambiguous history or expose private evidence paths and
+  content.

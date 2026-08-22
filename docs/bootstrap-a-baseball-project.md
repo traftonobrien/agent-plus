@@ -44,6 +44,18 @@ npx skills@latest add traftonobrien/agent-plus --skill=agent-plus-sync
 Run `$agent-plus-sync` in `audit` mode first. It requires an exact official release tag and explicit
 authorization before it calls the transactional upgrade command.
 
+Install the optional outcome-audit skill when the project needs prospective workflow measures or a
+sanitized receipt for private evidence:
+
+```sh
+npx skills@latest add traftonobrien/agent-plus --skill=outcome-audit
+```
+
+Run its record and report commands on a closed prospective record set. Run the receipt command from
+the project root. It reads only `.agent-plus/outcome-audit/evidence-manifest.json` and regular files
+below `.agent-plus/outcome-audit/evidence/`. It emits no private path, source reference, or source
+content. Missing, denied, mismatched, or unstructured evidence is `BLOCK`.
+
 ## Safety behavior
 
 - The target directory must already exist.
@@ -53,6 +65,27 @@ authorization before it calls the transactional upgrade command.
 - Generic Agent+ controls remain version-managed. Put local rules in `.agent-plus/PROJECT.md`.
 - Every generated project receives the plain-language output policy and adapters for Codex, Claude,
   and Cursor. An external `i-have-adhd` skill or plugin is optional.
+
+## Adopt an existing project
+
+For an existing project, prepare the exact managed controls from this checkout and use the closed
+adoption command:
+
+```sh
+scripts/agent-plus adopt \
+  --target "/absolute/path/to/legacy-baseball-project" \
+  --profile research
+```
+
+The command writes `.agent-plus/legacy-adoption.json` only after every managed target file matches
+the canonical source byte-for-byte. It preserves project-owned files and does not require the
+initializer-only example records. The declaration requires one project-owned startup seam:
+`.agent-plus/project-startup-check.sh`. It must be an executable regular file. The managed
+`scripts/ai-context.sh` and doctor run this fixed hook before context output or `PASS` and stop on
+hook failure. Existing `.claude-memory.md` and `.planning/STATE.md` files are included in adopted
+context when they are regular files; if legacy projects do not have them, those optional sections
+are omitted. Normal initialized projects still require both files. No caller-selected hook path is
+supported.
 
 ## Verify the new project
 

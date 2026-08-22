@@ -1,0 +1,33 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "EXAMPLE-ENGINEERING-CLOSURE-001",
+  "packet_type": "review",
+  "boundary_id": "EXAMPLE_LAUNCHER_INTERFACE",
+  "failure_class": "root-binding",
+  "ledger_ref": "EXAMPLE_LAUNCHER_INTERFACE/root-binding",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "scientific_readiness_decision",
+  "outcome_id": "example-readiness-decision",
+  "failure_class_coverage": [
+    "root-binding",
+    "alias-and-nesting"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "complete",
+  "attack_matrix": {
+    "status": "complete",
+    "items": [
+      "missing-root",
+      "alias-and-nesting",
+      "single-boundary-spawn"
+    ]
+  },
+  "named_coverage": {
+    "status": "complete",
+    "items": [
+      "launcher-root-binding",
+      "adjacent-path-invariants"
+    ]
+  }
+}

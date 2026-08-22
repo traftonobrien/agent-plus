@@ -1,0 +1,47 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_0_2_0_DISCOVERY_REVIEW_001",
+  "packet_type": "review",
+  "boundary_id": "AGENT_PLUS_0_2_0_RELEASE",
+  "failure_class": "discovery-handoff-durability",
+  "ledger_ref": "AGENT_PLUS_0_2_0_RELEASE/discovery-handoff-durability",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "review-closeout-enforcement",
+    "portable-lifecycle-integrity",
+    "discovery-handoff-durability"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "complete",
+  "attack_matrix": {
+    "status": "complete",
+    "items": [
+      "awaiting-confirmation-resume",
+      "confirmed-ready-resume",
+      "evidence-task-persistence",
+      "prototype-task-persistence",
+      "single-file-state",
+      "unknown-answer",
+      "scope-split",
+      "privacy-omission",
+      "contract-ready-bypass",
+      "typed-exits"
+    ]
+  },
+  "named_coverage": {
+    "status": "complete",
+    "items": [
+      "discovery-schema",
+      "owner-confirmation",
+      "bounded-handoff",
+      "resume-routing",
+      "agent-plus-router",
+      "bootstrap-template",
+      "lifecycle-tests",
+      "public-validator"
+    ]
+  }
+}

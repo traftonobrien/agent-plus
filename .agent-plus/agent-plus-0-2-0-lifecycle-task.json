@@ -1,0 +1,27 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_0_2_0_LIFECYCLE_TASK_001",
+  "packet_type": "task",
+  "boundary_id": "AGENT_PLUS_0_2_0_RELEASE",
+  "failure_class": "portable-lifecycle-integrity",
+  "ledger_ref": "AGENT_PLUS_0_2_0_RELEASE/portable-lifecycle-integrity",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "review-closeout-enforcement",
+    "portable-lifecycle-integrity",
+    "discovery-handoff-durability"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "planned",
+  "attack_matrix": {
+    "status": "pending",
+    "items": []
+  },
+  "named_coverage": {
+    "status": "pending",
+    "items": []
+  }
+}

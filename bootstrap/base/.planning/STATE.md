@@ -4,12 +4,13 @@ Updated: YYYY-MM-DD
 
 ## Current phase
 
-Phase 1: Contract and source gate.
+Phase 0: Discovery or contract gate.
 
 ## Current BLOCK
 
-`BLOCK-CONTRACT-REQUIRED`
+`BLOCK-DISCOVERY-OR-CONTRACT-REQUIRED`
 
 ## Exact next action
 
-Create the first contract and complete an essential task card.
+If the decision is unclear, use `$agent-plus-discovery-grill` and obtain owner confirmation of its
+final synthesis. Otherwise create the first contract and complete an essential task card.

@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+COMMAND=${1-}
+[ -n "$COMMAND" ] || {
+  printf '%s\n' 'Usage: scripts/agent-plus init|doctor|status|upgrade|recover|projects|context [arguments]'
+  exit 2
+}
+shift
+
+case "$COMMAND" in
+  init) exec "$ROOT_DIR/scripts/agent-plus-init.sh" "$@" ;;
+  doctor) exec "$ROOT_DIR/scripts/agent-plus-doctor.sh" "$@" ;;
+  status|upgrade|recover|projects|context)
+    exec python3 "$ROOT_DIR/scripts/agent_plus_manager.py" "$COMMAND" "$@"
+    ;;
+  *)
+    printf 'Unknown Agent+ command: %s\n' "$COMMAND" >&2
+    exit 2
+    ;;
+esac

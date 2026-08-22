@@ -1,0 +1,27 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_SYNC_TASK_001",
+  "packet_type": "task",
+  "boundary_id": "AGENT_PLUS_0_2_0_RELEASE",
+  "failure_class": "agent-plus-sync-orchestration",
+  "ledger_ref": "AGENT_PLUS_0_2_0_RELEASE/agent-plus-sync-orchestration",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "agent-plus-sync-orchestration",
+    "editorial-pass-and-subtraction",
+    "portable-lifecycle-integrity"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "planned",
+  "attack_matrix": {
+    "status": "pending",
+    "items": []
+  },
+  "named_coverage": {
+    "status": "pending",
+    "items": []
+  }
+}

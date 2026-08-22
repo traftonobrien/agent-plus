@@ -18,9 +18,16 @@ done
 [ -d "$TARGET_DIR" ] || { printf 'Target directory does not exist: %s\n' "$TARGET_DIR" >&2; exit 1; }
 TARGET_DIR=$(cd "$TARGET_DIR" && pwd)
 
-for file in AGENTS.md CLAUDE.md AI_WORKFLOW.md ESSENTIAL_WORK_PROTOCOL.md .claude-memory.md .agent-plus/project.yaml .agent-plus/PROFILE.md .agent-plus/claim-evidence-register.md .planning/PROJECT.md .planning/ROADMAP.md .planning/STATE.md .planning/templates/ESSENTIAL-TASK.md scripts/ai-context.sh; do
+for file in AGENTS.md CLAUDE.md AI_WORKFLOW.md AI_AGENT_OUTPUT_POLICY.md ESSENTIAL_WORK_PROTOCOL.md .cursor/rules/agent-plus-output.mdc .claude-memory.md .agent-plus/project.yaml .agent-plus/PROFILE.md .agent-plus/PROJECT.md .agent-plus/install-manifest.json .agent-plus/claim-evidence-register.md .agent-plus/engineering-boundaries.json .agent-plus/engineering-closure-example.json .agent-plus/interface-consumer-closure-example.json scripts/anti_loop_guard.py scripts/interface_consumer_guard.py tests/test_interface_consumer_guard.py .planning/PROJECT.md .planning/ROADMAP.md .planning/STATE.md .planning/templates/ESSENTIAL-TASK.md scripts/ai-context.sh; do
   [ -f "$TARGET_DIR/$file" ] || { printf 'Missing required control: %s\n' "$file" >&2; exit 1; }
 done
+
+python3 "$TARGET_DIR/scripts/anti_loop_guard.py" \
+  --ledger "$TARGET_DIR/.agent-plus/engineering-boundaries.json" \
+  --packet "$TARGET_DIR/.agent-plus/engineering-closure-example.json" >/dev/null
+python3 "$TARGET_DIR/scripts/interface_consumer_guard.py" \
+  --root "$TARGET_DIR" \
+  --receipt "$TARGET_DIR/.agent-plus/interface-consumer-closure-example.json" >/dev/null
 
 grep -qE '^Updated: [0-9]{4}-[0-9]{2}-[0-9]{2}$' "$TARGET_DIR/.claude-memory.md" || {
   printf '%s\n' 'Hot memory must contain an ISO Updated date.' >&2

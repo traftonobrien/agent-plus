@@ -1,0 +1,9 @@
+{
+  "schema_version": "agent-plus-local-projects/v1",
+  "projects": {
+    "example-project": {
+      "role": "consumer",
+      "root": "/absolute/path/to/example-project"
+    }
+  }
+}

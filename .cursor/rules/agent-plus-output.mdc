@@ -1,0 +1,10 @@
+---
+description: Agent+ plain-language output contract
+alwaysApply: true
+---
+
+Read and apply `AI_AGENT_OUTPUT_POLICY.md` for every response.
+
+Lead with the result or current action. Use basic everyday English before technical details. Make
+the current state, blocker, and one next step visible. Do not shorten away a failure, missing
+evidence, stop condition, or required approval.

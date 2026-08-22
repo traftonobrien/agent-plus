@@ -42,3 +42,24 @@ flowchart LR
 | Evaluator | Run approved deterministic checks. | Interpret beyond the contract. |
 | Verifier | Independently inspect changed evidence. | Rewrite the maker artifact silently. |
 | Human owner | Accept, narrow, defer, or stop a claim. | Treat generated prose as proof. |
+
+## Canonical distribution seam
+
+The Agent+ repository is the canonical module. Its external interface has four project-lifecycle
+operations:
+
+1. `init` creates a project-local control plane.
+2. `doctor` verifies required controls and public-safety invariants.
+3. `status` compares managed controls with the recorded installation manifest.
+4. `upgrade` stages unchanged managed controls, records an immutable recovery snapshot and durable
+   transaction journal, and commits only after staged validation.
+5. `recover --target` is the single idempotent recovery route. It verifies every snapshot hash,
+   restores through copy-to-temp plus atomic replace, and retains recovery assets across partial
+   restore failures.
+
+Project instructions, memory, planning state, evidence, data, and mutable ledgers stay behind the
+consumer project seam. They are not Agent+ managed files. Project-specific rules live in
+`.agent-plus/PROJECT.md`. This separation lets Agent+ evolve without replacing scientific state.
+
+Skills provide bounded procedures after installation. They do not replace the repository,
+installation manifest, project controls, or verification commands.

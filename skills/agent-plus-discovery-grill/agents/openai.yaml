@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent+ Discovery Grill"
+  short_description: "Turn a baseball idea into a durable decision brief"
+  default_prompt: "Use $agent-plus-discovery-grill to question me one step at a time and shape this idea into an Agent+ project brief."

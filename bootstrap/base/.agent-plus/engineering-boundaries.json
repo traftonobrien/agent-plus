@@ -1,0 +1,49 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "boundaries": {
+    "EXAMPLE_LAUNCHER_INTERFACE": {
+      "failure_classes": {
+        "root-binding": {
+          "block_count": 0,
+          "architecture_reset_required": false,
+          "reset_namespace": "rehearsals/wave-b-f16-read-only",
+          "authorized_attempt_id": "attempt-03",
+          "permitted_removed_choices": [
+            "arbitrary-rehearsal-root",
+            "arbitrary-diagnostic-root"
+          ],
+          "permitted_outcomes": {
+            "example-readiness-decision": "scientific_readiness_decision"
+          },
+          "required_attack_matrix": [
+            "missing-root",
+            "alias-and-nesting",
+            "single-boundary-spawn"
+          ],
+          "required_named_coverage": [
+            "launcher-root-binding",
+            "adjacent-path-invariants"
+          ]
+        },
+        "alias-and-nesting": {
+          "block_count": 0,
+          "architecture_reset_required": false,
+          "reset_namespace": "rehearsals/wave-b-f16-read-only",
+          "authorized_attempt_id": "attempt-03",
+          "permitted_removed_choices": [
+            "arbitrary-rehearsal-root"
+          ],
+          "permitted_outcomes": {
+            "example-readiness-decision": "scientific_readiness_decision"
+          },
+          "required_attack_matrix": [
+            "alias-and-nesting"
+          ],
+          "required_named_coverage": [
+            "adjacent-path-invariants"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -14,6 +14,10 @@ Agent+ accepts improvements that make AI-assisted baseball research easier to in
 
 State the purpose, affected files, evidence used, and limits of the change. Keep procedures bounded. Each new skill must contain the required sections in the existing skills. Each example must include an explicit synthetic-data notice.
 
+If a proving project reveals the improvement, port only the generic control and synthetic test.
+Do not copy the proving project's state or evidence. Follow
+[project integration and upstream improvements](docs/project-integration-and-upstream.md).
+
 ## Review standard
 
 Reviewers check public safety, accurate authority boundaries, link integrity, and whether a `BLOCK` outcome remains possible. A contribution is not accepted because it sounds plausible. It must be inspectable and safe to publish.

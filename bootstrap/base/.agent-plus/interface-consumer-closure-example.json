@@ -1,0 +1,32 @@
+{
+  "schema_version": "agent-plus-interface-consumer-closure/v1",
+  "interfaces": [
+    {
+      "interface_id": "interface-consumer-schema-version",
+      "definition_path": "scripts/interface_consumer_guard.py",
+      "search_roots": [
+        "scripts",
+        "tests"
+      ],
+      "search_tokens": [
+        "INTERFACE_CONSUMER_SCHEMA_VERSION"
+      ],
+      "consumers": [
+        {
+          "path": "tests/test_interface_consumer_guard.py",
+          "kind": "test",
+          "disposition": "updated",
+          "acceptance_checks": [
+            "python3 -m unittest discover -s tests -p 'test_interface_consumer_guard.py'"
+          ]
+        }
+      ]
+    }
+  ],
+  "real_shape_smoke": {
+    "required": true,
+    "status": "PASS",
+    "command": "python3 -m unittest discover -s tests -p 'test_interface_consumer_guard.py'",
+    "evidence": "synthetic changed-interface consumer closure matrix"
+  }
+}

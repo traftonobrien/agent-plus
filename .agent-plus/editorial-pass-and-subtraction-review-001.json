@@ -1,0 +1,50 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_EDITORIAL_PASS_AND_SUBTRACTION_REVIEW_001",
+  "packet_type": "review",
+  "boundary_id": "AGENT_PLUS_0_2_0_RELEASE",
+  "failure_class": "editorial-pass-and-subtraction",
+  "ledger_ref": "AGENT_PLUS_0_2_0_RELEASE/editorial-pass-and-subtraction",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "editorial-pass-and-subtraction"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "complete",
+  "attack_matrix": {
+    "status": "complete",
+    "items": [
+      "attribution-pins",
+      "license-notices",
+      "preservation-pass",
+      "preservation-block-complete",
+      "unknown-protected-term",
+      "no-authorship-score",
+      "no-blanket-style-ban",
+      "protocol-ladder-order",
+      "protocol-safety-exceptions",
+      "canonical-bootstrap-binding",
+      "router-and-bootstrap-discovery",
+      "public-validator"
+    ]
+  },
+  "named_coverage": {
+    "status": "complete",
+    "items": [
+      "skill-contract",
+      "editorial-method",
+      "source-attribution",
+      "license-notices",
+      "preservation-checker",
+      "synthetic-tests",
+      "agent-plus-router",
+      "public-docs",
+      "essential-work-protocol",
+      "bootstrap-binding",
+      "public-validator"
+    ]
+  }
+}

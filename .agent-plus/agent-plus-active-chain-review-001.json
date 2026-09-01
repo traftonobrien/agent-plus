@@ -1,0 +1,63 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_ACTIVE_CHAIN_REVIEW_001",
+  "packet_type": "review",
+  "boundary_id": "AGENT_PLUS_ACTIVE_CHAIN_ROUTING",
+  "failure_class": "active-chain-routing-and-cost-isolation",
+  "ledger_ref": "AGENT_PLUS_ACTIVE_CHAIN_ROUTING/active-chain-routing-and-cost-isolation",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "active-chain-routing-and-cost-isolation"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "complete",
+  "attack_matrix": {
+    "status": "complete",
+    "items": [
+      "active-first-pending-routing",
+      "pass-closeout-complete",
+      "null-block-closeout",
+      "early-closeout-rejection",
+      "terminal-continue-rejection",
+      "stage-order-rejection",
+      "stage-evidence-binding",
+      "authority-path-containment",
+      "authority-symlink-rejection",
+      "long-authority-path",
+      "unknown-duplicate-json-rejection",
+      "nonfinite-and-boolean-count-rejection",
+      "capsule-location-containment",
+      "capsule-size-boundary",
+      "two-failure-reset-enforcement",
+      "anti-loop-authority-separation",
+      "canonical-bootstrap-byte-binding",
+      "template-policy-routing",
+      "exact-target-graph-default",
+      "public-validator"
+    ]
+  },
+  "named_coverage": {
+    "status": "complete",
+    "items": [
+      "guard-schema",
+      "guard-cli",
+      "terminal-semantics",
+      "path-safety",
+      "failure-limit",
+      "anti-loop-authority",
+      "canonical-script",
+      "bootstrap-script",
+      "example-capsules",
+      "synthetic-tests",
+      "workflow-policy",
+      "essential-protocol",
+      "task-template",
+      "research-profile",
+      "public-docs",
+      "public-validator"
+    ]
+  }
+}

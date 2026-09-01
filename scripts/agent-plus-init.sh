@@ -132,7 +132,7 @@ COMMITTED="$COMMITTED .agent-plus"
 mv "$STAGE_DIR/.planning" "$TARGET_DIR/.planning"
 COMMITTED="$COMMITTED .planning"
 mkdir -p "$TARGET_DIR/scripts"
-for control in ai-context.sh anti_loop_guard.py interface_consumer_guard.py agent-plus-doctor.sh; do
+for control in ai-context.sh active_chain_guard.py anti_loop_guard.py interface_consumer_guard.py agent-plus-doctor.sh; do
   mv "$STAGE_DIR/scripts/$control" "$TARGET_DIR/scripts/$control"
   COMMITTED="$COMMITTED scripts/$control"
 done

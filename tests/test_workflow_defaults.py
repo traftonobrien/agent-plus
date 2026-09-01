@@ -32,7 +32,12 @@ class WorkflowDefaultTests(unittest.TestCase):
                     self.assertIn(phrase, canonical, relative)
                     self.assertIn(phrase, bootstrap, relative)
             elif relative == ".planning/templates/ESSENTIAL-TASK.md":
-                for field in ("unattended_execution:", "polling_policy:"):
+                for field in (
+                    "unattended_execution:",
+                    "polling_policy:",
+                    "active_chain_capsule:",
+                    "authority_refs:",
+                ):
                     self.assertIn(field, canonical)
                     self.assertIn(field, bootstrap)
             if relative in (
@@ -88,6 +93,60 @@ class WorkflowDefaultTests(unittest.TestCase):
         protocol = (ROOT / "ESSENTIAL_WORK_PROTOCOL.md").read_text(encoding="utf-8")
         self.assertIn("preserve that interface as the default", protocol)
         self.assertIn("Reopening removed choices requires a new necessity card", protocol)
+
+    def test_lean_r_migration_defaults_are_portable(self) -> None:
+        for relative in (
+            "ESSENTIAL_WORK_PROTOCOL.md",
+            "bootstrap/base/ESSENTIAL_WORK_PROTOCOL.md",
+        ):
+            protocol = (ROOT / relative).read_text(encoding="utf-8")
+            for phrase in (
+                "Port complete accepted behavior",
+                "representative volume",
+                "Cache expensive stable stages separately",
+                "Preserve failed attempts alongside the eventual result",
+                "do not create a second metrics ledger",
+            ):
+                self.assertIn(phrase, protocol)
+
+        profile = (ROOT / "bootstrap/profiles/research/PROFILE.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("trace complete source behavior", profile)
+        self.assertIn("Retain failed attempts as evidence", profile)
+
+    def test_complexity_is_a_diagnostic_not_a_score_gate(self) -> None:
+        protocol = (ROOT / "ESSENTIAL_WORK_PROTOCOL.md").read_text(encoding="utf-8")
+        for phrase in (
+            "Complexity is a diagnostic",
+            "Do not impose one universal numeric threshold",
+            "same branching across meaningless helpers",
+            "not proof of correctness or quality",
+        ):
+                self.assertIn(phrase, protocol)
+
+    def test_active_chain_and_exact_target_defaults_are_portable(self) -> None:
+        for relative in (
+            "AI_WORKFLOW.md",
+            "bootstrap/base/AI_WORKFLOW.md",
+            "ESSENTIAL_WORK_PROTOCOL.md",
+            "bootstrap/base/ESSENTIAL_WORK_PROTOCOL.md",
+        ):
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            for phrase in (
+                ".agent-plus/active-chain.json",
+                "live authority",
+                "OWNER_DECISION_REQUIRED",
+                "LOOP_DETECTED",
+                "routing state only",
+            ):
+                self.assertIn(phrase, text, relative)
+
+        protocol = (ROOT / "ESSENTIAL_WORK_PROTOCOL.md").read_text(encoding="utf-8")
+        self.assertIn("inspect the exact dependency graph", protocol)
+        self.assertRegex(protocol, re.compile(r"Reuse\s+current expensive ancestors"))
+        profile = (ROOT / "bootstrap/profiles/research/PROFILE.md").read_text(encoding="utf-8")
+        self.assertIn("smallest target that reaches the decision endpoint", profile)
 
 
 if __name__ == "__main__":

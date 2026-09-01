@@ -467,6 +467,15 @@ class ArchitectureResetTests(GuardTestCase):
         state = validated["boundaries"]["TEST_INTERFACE"]["failure_classes"]["root-binding"]
         self.assertEqual(state["reset_namespace"], "agent-plus/0.2.0-release")
 
+    def test_active_chain_reset_namespace_is_approved(self) -> None:
+        current = ledger()
+        current["boundaries"]["TEST_INTERFACE"]["failure_classes"]["root-binding"][  # type: ignore[index]
+            "reset_namespace"
+        ] = "agent-plus/active-chain-routing"
+        validated = validate_ledger(current)
+        state = validated["boundaries"]["TEST_INTERFACE"]["failure_classes"]["root-binding"]
+        self.assertEqual(state["reset_namespace"], "agent-plus/active-chain-routing")
+
     def test_unauthorized_reset_namespace_is_rejected(self) -> None:
         self.assert_code(
             "E_UNAUTHORIZED_NAMESPACE",

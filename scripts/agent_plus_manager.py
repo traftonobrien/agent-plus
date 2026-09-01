@@ -19,9 +19,10 @@ from pathlib import Path, PurePosixPath
 from types import TracebackType
 from typing import Any, Literal, Self
 
-SCHEMA = "agent-plus-install/v1"
+LEGACY_MANIFEST_SCHEMA = "agent-plus-install/v1"
+SCHEMA = "agent-plus-install/v2"
 ADOPTION_SCHEMA = "agent-plus-legacy-adoption/v1"
-TRANSACTION_SCHEMA = "agent-plus-upgrade-transaction/v2"
+TRANSACTION_SCHEMA = "agent-plus-upgrade-transaction/v3"
 JOURNAL_NAME = "upgrade-transaction.json"
 JOURNAL_PENDING_NAME = "upgrade-transaction.pending"
 ADOPTION_NAME = "legacy-adoption.json"
@@ -29,8 +30,44 @@ ADOPTION_RELATIVE = f".agent-plus/{ADOPTION_NAME}"
 STARTUP_CHECK_RELATIVE = ".agent-plus/project-startup-check.sh"
 SOURCE_REPOSITORY = "https://github.com/traftonobrien/agent-plus"
 ALLOWED_PROFILES = frozenset({"research", "product", "scouting"})
-MANIFEST_KEYS = frozenset(
+MANIFEST_V1_KEYS = frozenset(
     {"schema_version", "agent_plus_version", "profile", "source_repository", "managed_files"}
+)
+MANIFEST_KEYS = MANIFEST_V1_KEYS | {"managed_set_id"}
+LEGACY_MANAGED_SET_ID = "agent-plus-releases-0.2.0-0.3.0"
+CURRENT_MANAGED_SET_ID = "agent-plus-active-chain-v1"
+LEGACY_MANIFEST_VERSIONS = frozenset({"0.2.0", "0.3.0"})
+LEGACY_MANAGED_FILES = frozenset(
+    {
+        "AGENTS.md",
+        "CLAUDE.md",
+        "AI_WORKFLOW.md",
+        "AI_AGENT_OUTPUT_POLICY.md",
+        "ESSENTIAL_WORK_PROTOCOL.md",
+        ".cursor/rules/agent-plus-output.mdc",
+        ".agent-plus/PROFILE.md",
+        ".planning/templates/ESSENTIAL-TASK.md",
+        "scripts/ai-context.sh",
+        "scripts/anti_loop_guard.py",
+        "scripts/interface_consumer_guard.py",
+        "scripts/agent-plus-doctor.sh",
+        "tests/test_interface_consumer_guard.py",
+    }
+)
+CURRENT_MANAGED_FILES = LEGACY_MANAGED_FILES | {
+    ".agent-plus/active-chain-example.json",
+    "scripts/active_chain_guard.py",
+}
+MANAGED_SET_REGISTRY = {
+    LEGACY_MANAGED_SET_ID: LEGACY_MANAGED_FILES,
+    CURRENT_MANAGED_SET_ID: CURRENT_MANAGED_FILES,
+}
+REQUIRED_EXECUTABLES = frozenset(
+    {
+        "scripts/ai-context.sh",
+        "scripts/agent-plus-doctor.sh",
+        "scripts/active_chain_guard.py",
+    }
 )
 ADOPTION_KEYS = frozenset(
     {"schema_version", "mode", "profile", "startup_check_path"}
@@ -45,6 +82,10 @@ JOURNAL_KEYS = frozenset(
         "recovery_files",
         "recovery_digests",
         "candidate_managed_files",
+        "prior_manifest_schema",
+        "prior_managed_set_id",
+        "candidate_managed_set_id",
+        "candidate_only_files",
         "candidate_version",
         "prior_manifest_sha256",
         "candidate_manifest_sha256",
@@ -53,6 +94,7 @@ JOURNAL_KEYS = frozenset(
         "commit_files",
         "committed_files",
         "restored_files",
+        "removed_files",
         "last_error",
     }
 )
@@ -83,10 +125,14 @@ def _managed_sources(source: Path, profile: str) -> dict[str, Path]:
         ".agent-plus/PROFILE.md": source / "bootstrap" / "profiles" / profile / "PROFILE.md",
         ".planning/templates/ESSENTIAL-TASK.md": base / ".planning" / "templates" / "ESSENTIAL-TASK.md",
         "scripts/ai-context.sh": base / "scripts" / "ai-context.sh",
+        "scripts/active_chain_guard.py": base / "scripts" / "active_chain_guard.py",
         "scripts/anti_loop_guard.py": base / "scripts" / "anti_loop_guard.py",
         "scripts/interface_consumer_guard.py": base / "scripts" / "interface_consumer_guard.py",
         "scripts/agent-plus-doctor.sh": source / "scripts" / "agent-plus-doctor.sh",
         "tests/test_interface_consumer_guard.py": base / "tests" / "test_interface_consumer_guard.py",
+        ".agent-plus/active-chain-example.json": base
+        / ".agent-plus"
+        / "active-chain-example.json",
     }
 
 
@@ -262,6 +308,10 @@ def _copy_fd_to_atomic_destination(
     try:
         output_fd = _open_regular(destination_parent_fd, temporary, writable=True, create=True)
         try:
+            os.fchmod(output_fd, stat.S_IMODE(source_details.st_mode) & 0o777)
+        except OSError as exc:
+            raise _os_failure(f"Cannot preserve {phase} source mode", exc) from exc
+        try:
             os.lseek(source_fd, 0, os.SEEK_SET)
         except OSError as exc:
             raise _os_failure(f"Cannot seek {phase} source", exc) from exc
@@ -289,6 +339,70 @@ def _copy_fd_to_atomic_destination(
             )
         except OSError as exc:
             raise _os_failure(f"Cannot atomically {phase} {destination_name}", exc) from exc
+        _fsync(destination_parent_fd, f"{phase} destination directory")
+        return actual
+    finally:
+        if output_fd is not None:
+            os.close(output_fd)
+        try:
+            os.unlink(temporary, dir_fd=destination_parent_fd)
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            raise _os_failure(f"Cannot remove {phase} temporary", exc) from exc
+
+
+def _copy_fd_to_new_destination(
+    source_fd: int,
+    destination_parent_fd: int,
+    destination_name: str,
+    expected: str,
+    phase: str,
+) -> str:
+    """Publish a new file without replacing an unmanaged destination."""
+    source_details = os.fstat(source_fd)
+    if not stat.S_ISREG(source_details.st_mode):
+        raise ManagerError(f"{phase} source is not a regular file")
+    temporary = f".agent-plus-{uuid.uuid4().hex}.tmp"
+    output_fd: int | None = None
+    try:
+        output_fd = _open_regular(destination_parent_fd, temporary, writable=True, create=True)
+        try:
+            os.fchmod(output_fd, stat.S_IMODE(source_details.st_mode) & 0o777)
+        except OSError as exc:
+            raise _os_failure(f"Cannot preserve {phase} source mode", exc) from exc
+        try:
+            os.lseek(source_fd, 0, os.SEEK_SET)
+        except OSError as exc:
+            raise _os_failure(f"Cannot seek {phase} source", exc) from exc
+        digest = hashlib.sha256()
+        while True:
+            try:
+                chunk = os.read(source_fd, 1024 * 1024)
+            except OSError as exc:
+                raise _os_failure(f"Cannot read {phase} source", exc) from exc
+            if not chunk:
+                break
+            digest.update(chunk)
+            _write_all(output_fd, chunk, f"{phase} temporary")
+        actual = digest.hexdigest()
+        if actual != expected:
+            raise ManagerError(f"{phase} source integrity mismatch: {destination_name}")
+        _fsync(output_fd, f"{phase} temporary")
+        try:
+            os.link(
+                temporary,
+                destination_name,
+                src_dir_fd=destination_parent_fd,
+                dst_dir_fd=destination_parent_fd,
+                follow_symlinks=False,
+            )
+        except FileExistsError as exc:
+            raise ManagerError(
+                f"Refusing to overwrite unmanaged destination: {destination_name}"
+            ) from exc
+        except OSError as exc:
+            raise _os_failure(f"Cannot atomically create {destination_name}", exc) from exc
         _fsync(destination_parent_fd, f"{phase} destination directory")
         return actual
     finally:
@@ -355,6 +469,70 @@ class TransactionFilesystem:
         try:
             return _open_regular(parent, leaf)
         finally:
+            os.close(parent)
+
+    def target_entry_exists(self, relative: str) -> bool:
+        parts = _safe_parts(relative)
+        leaf = parts.pop()
+        current = os.dup(self.target_fd)
+        try:
+            for part in parts:
+                flags = (
+                    os.O_RDONLY
+                    | os.O_DIRECTORY
+                    | os.O_NOFOLLOW
+                    | getattr(os, "O_CLOEXEC", 0)
+                )
+                try:
+                    next_fd = os.open(part, flags, dir_fd=current)
+                except FileNotFoundError:
+                    return False
+                except OSError as exc:
+                    raise _os_failure(f"Cannot inspect destination parent {part}", exc) from exc
+                os.close(current)
+                current = next_fd
+            try:
+                os.stat(leaf, dir_fd=current, follow_symlinks=False)
+            except FileNotFoundError:
+                return False
+            except OSError as exc:
+                raise _os_failure(f"Cannot inspect destination {relative}", exc) from exc
+            return True
+        finally:
+            os.close(current)
+
+    def remove_target_regular(self, relative: str, expected: str) -> None:
+        parent, leaf = self.target_parent(relative)
+        target_fd: int | None = None
+        try:
+            try:
+                initial = os.stat(leaf, dir_fd=parent, follow_symlinks=False)
+            except FileNotFoundError:
+                return
+            except OSError as exc:
+                raise _os_failure(f"Cannot inspect recovery removal {relative}", exc) from exc
+            if stat.S_ISLNK(initial.st_mode) or not stat.S_ISREG(initial.st_mode):
+                raise ManagerError(f"Unsafe recovery removal destination: {relative}")
+            target_fd = _open_regular(parent, leaf)
+            opened = os.fstat(target_fd)
+            if _hash_fd(target_fd, f"candidate-only recovery removal {relative}") != expected:
+                raise ManagerError(f"Candidate-only recovery file changed: {relative}")
+            try:
+                current = os.stat(leaf, dir_fd=parent, follow_symlinks=False)
+                if (
+                    stat.S_ISLNK(current.st_mode)
+                    or not stat.S_ISREG(current.st_mode)
+                    or current.st_dev != opened.st_dev
+                    or current.st_ino != opened.st_ino
+                ):
+                    raise ManagerError(f"Candidate-only recovery file changed: {relative}")
+                os.unlink(leaf, dir_fd=parent)
+            except OSError as exc:
+                raise _os_failure(f"Cannot remove candidate-only file {relative}", exc) from exc
+            _fsync(parent, f"candidate-only recovery removal {relative}")
+        finally:
+            if target_fd is not None:
+                os.close(target_fd)
             os.close(parent)
 
     def source_relative(self, source: Path) -> str:
@@ -616,20 +794,47 @@ def _read_json(data: bytes, label: str) -> dict[str, Any]:
 
 def _manifest(fs: TransactionFilesystem) -> dict[str, Any]:
     data = _read_json(_read_target(fs, ".agent-plus/install-manifest.json"), "install manifest")
-    if set(data) != MANIFEST_KEYS or data.get("schema_version") != SCHEMA:
+    schema = data.get("schema_version")
+    if schema == LEGACY_MANIFEST_SCHEMA:
+        if set(data) != MANIFEST_V1_KEYS:
+            raise ManagerError("Unsupported Agent+ install manifest")
+        version = data.get("agent_plus_version")
+        if type(version) is not str or version not in LEGACY_MANIFEST_VERSIONS:
+            raise ManagerError("Unsupported Agent+ legacy manifest version")
+        managed_set_id = LEGACY_MANAGED_SET_ID
+    elif schema == SCHEMA:
+        if set(data) != MANIFEST_KEYS:
+            raise ManagerError("Unsupported Agent+ install manifest")
+        raw_managed_set_id = data.get("managed_set_id")
+        if type(raw_managed_set_id) is not str or raw_managed_set_id not in MANAGED_SET_REGISTRY:
+            raise ManagerError("Unknown Agent+ managed-set identity")
+        managed_set_id = raw_managed_set_id
+    else:
         raise ManagerError("Unsupported Agent+ install manifest")
+    version = data.get("agent_plus_version")
+    if type(version) is not str or not version or any(character.isspace() for character in version):
+        raise ManagerError("Invalid Agent+ install version")
     profile = data.get("profile")
     if type(profile) is not str or profile not in ALLOWED_PROFILES:
         raise ManagerError("Invalid Agent+ install profile")
     if data.get("source_repository") != SOURCE_REPOSITORY:
         raise ManagerError("Invalid Agent+ source identity")
     managed = data.get("managed_files")
-    if type(managed) is not dict or set(managed) != set(_managed_sources(fs.source_path, profile)):
-        raise ManagerError("Managed-file set does not match the Agent+ release")
+    if type(managed) is not dict or set(managed) != MANAGED_SET_REGISTRY[managed_set_id]:
+        raise ManagerError("Managed-file set does not match its Agent+ identity")
     for relative, digest in managed.items():
         if not _safe_manifest_entry(relative, digest):
             raise ManagerError("Invalid managed-file entry")
     return data
+
+
+def _manifest_set_id(manifest: dict[str, Any]) -> str:
+    if manifest["schema_version"] == LEGACY_MANIFEST_SCHEMA:
+        return LEGACY_MANAGED_SET_ID
+    managed_set_id = manifest["managed_set_id"]
+    if type(managed_set_id) is not str:
+        raise ManagerError("Invalid Agent+ managed-set identity")
+    return managed_set_id
 
 
 def _adoption(fs: TransactionFilesystem) -> dict[str, Any] | None:
@@ -774,6 +979,8 @@ def _target_digest(fs: TransactionFilesystem, relative: str) -> str:
 
 def _manifest_data(fs: TransactionFilesystem, profile: str) -> dict[str, Any]:
     sources = _managed_sources(fs.source_path, profile)
+    if set(sources) != CURRENT_MANAGED_FILES:
+        raise ManagerError("Canonical managed sources do not match the current managed-set identity")
     hashes: dict[str, str] = {}
     for relative, source in sorted(sources.items()):
         source_fd = fs.source_file(source)
@@ -784,6 +991,7 @@ def _manifest_data(fs: TransactionFilesystem, profile: str) -> dict[str, Any]:
     return {
         "schema_version": SCHEMA,
         "agent_plus_version": _version_from_fs(fs),
+        "managed_set_id": CURRENT_MANAGED_SET_ID,
         "profile": profile,
         "source_repository": SOURCE_REPOSITORY,
         "managed_files": hashes,
@@ -794,9 +1002,18 @@ def _assert_canonical_targets(fs: TransactionFilesystem, profile: str) -> dict[s
     """Return canonical manifest data only when every managed target byte matches it."""
     candidate = _manifest_data(fs, profile)
     for relative, expected in candidate["managed_files"].items():
-        actual = _target_digest(fs, relative)
+        target_fd = fs.target_file(relative)
+        try:
+            details = os.fstat(target_fd)
+            actual = _hash_fd(target_fd, relative)
+        finally:
+            os.close(target_fd)
         if actual != expected:
             raise ManagerError(f"Refusing adoption because managed bytes differ: {relative}")
+        if relative in REQUIRED_EXECUTABLES and not details.st_mode & (
+            stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+        ):
+            raise ManagerError(f"Refusing adoption because managed mode differs: {relative}")
     return candidate
 
 
@@ -828,12 +1045,21 @@ def _drift(fs: TransactionFilesystem, manifest: dict[str, Any]) -> list[str]:
     managed = manifest["managed_files"]
     for relative, expected in sorted(managed.items()):
         try:
-            actual = _target_digest(fs, relative)
+            target_fd = fs.target_file(relative)
         except ManagerError:
             drift.append(f"missing:{relative}")
         else:
+            try:
+                details = os.fstat(target_fd)
+                actual = _hash_fd(target_fd, relative)
+            finally:
+                os.close(target_fd)
             if actual != expected:
                 drift.append(f"modified:{relative}")
+            elif relative in REQUIRED_EXECUTABLES and not details.st_mode & (
+                stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+            ):
+                drift.append(f"mode:{relative}")
     return drift
 
 
@@ -858,6 +1084,22 @@ def _replace_for_upgrade(
     return _copy_fd_to_atomic_destination(source_fd, destination_parent_fd, destination_name, expected, phase)
 
 
+def _create_for_upgrade(
+    source_fd: int,
+    destination_parent_fd: int,
+    destination_name: str,
+    phase: str,
+    expected: str,
+) -> str:
+    return _copy_fd_to_new_destination(
+        source_fd,
+        destination_parent_fd,
+        destination_name,
+        expected,
+        phase,
+    )
+
+
 def _copy_to_atomic_restore(
     source_fd: int,
     destination_parent_fd: int,
@@ -867,8 +1109,21 @@ def _copy_to_atomic_restore(
     return _copy_fd_to_atomic_destination(source_fd, destination_parent_fd, destination_name, expected, "recovery")
 
 
-def _journal_base(transaction_id: str, profile: str, managed: dict[str, str]) -> dict[str, Any]:
-    commit_files = [*sorted(managed), ".agent-plus/install-manifest.json"]
+def _journal_base(
+    transaction_id: str,
+    profile: str,
+    manifest: dict[str, Any],
+    candidate: dict[str, Any],
+) -> dict[str, Any]:
+    managed = manifest["managed_files"]
+    candidate_managed = candidate["managed_files"]
+    removed = sorted(set(managed) - set(candidate_managed))
+    if removed:
+        raise ManagerError(
+            "Managed-file removal is not supported: " + removed[0]
+        )
+    candidate_only = sorted(set(candidate_managed) - set(managed))
+    commit_files = [*sorted(candidate_managed), ".agent-plus/install-manifest.json"]
     return {
         "schema_version": TRANSACTION_SCHEMA,
         "transaction_id": transaction_id,
@@ -877,8 +1132,12 @@ def _journal_base(transaction_id: str, profile: str, managed: dict[str, str]) ->
         "managed_files": sorted(managed),
         "recovery_files": sorted([*managed, ".agent-plus/install-manifest.json"]),
         "recovery_digests": {},
-        "candidate_managed_files": {},
-        "candidate_version": "",
+        "candidate_managed_files": candidate_managed,
+        "prior_manifest_schema": manifest["schema_version"],
+        "prior_managed_set_id": _manifest_set_id(manifest),
+        "candidate_managed_set_id": candidate["managed_set_id"],
+        "candidate_only_files": candidate_only,
+        "candidate_version": candidate["agent_plus_version"],
         "prior_manifest_sha256": "",
         "candidate_manifest_sha256": "",
         "snapshot_complete": False,
@@ -886,8 +1145,14 @@ def _journal_base(transaction_id: str, profile: str, managed: dict[str, str]) ->
         "commit_files": commit_files,
         "committed_files": [],
         "restored_files": [],
+        "removed_files": [],
         "last_error": "",
     }
+
+
+def _created_candidate_files(journal: dict[str, Any]) -> list[str]:
+    committed = set(journal["committed_files"])
+    return [relative for relative in journal["candidate_only_files"] if relative in committed]
 
 
 def _validate_journal(value: dict[str, Any]) -> dict[str, Any]:
@@ -906,6 +1171,8 @@ def _validate_journal(value: dict[str, Any]) -> dict[str, Any]:
         "commit_files",
         "committed_files",
         "restored_files",
+        "candidate_only_files",
+        "removed_files",
     ):
         if type(value.get(key)) is not list or not all(type(item) is str for item in value[key]):
             raise ManagerError("Invalid transaction path list")
@@ -922,20 +1189,50 @@ def _validate_journal(value: dict[str, Any]) -> dict[str, Any]:
     for key in ("snapshot_complete", "stage_complete"):
         if type(value.get(key)) is not bool:
             raise ManagerError("Invalid transaction completion flag")
-    for key in ("candidate_version", "prior_manifest_sha256", "candidate_manifest_sha256", "last_error"):
+    for key in (
+        "prior_manifest_schema",
+        "prior_managed_set_id",
+        "candidate_managed_set_id",
+        "candidate_version",
+        "prior_manifest_sha256",
+        "candidate_manifest_sha256",
+        "last_error",
+    ):
         if type(value.get(key)) is not str:
             raise ManagerError("Invalid transaction metadata")
     managed_files = value["managed_files"]
+    prior_set_id = value["prior_managed_set_id"]
+    candidate_set_id = value["candidate_managed_set_id"]
+    if prior_set_id not in MANAGED_SET_REGISTRY or candidate_set_id not in MANAGED_SET_REGISTRY:
+        raise ManagerError("Transaction managed-set identity is unknown")
+    if set(managed_files) != MANAGED_SET_REGISTRY[prior_set_id]:
+        raise ManagerError("Transaction prior managed-file set is not exact")
+    if value["prior_manifest_schema"] == LEGACY_MANIFEST_SCHEMA:
+        if prior_set_id != LEGACY_MANAGED_SET_ID:
+            raise ManagerError("Transaction legacy managed-set identity is invalid")
+    elif value["prior_manifest_schema"] != SCHEMA:
+        raise ManagerError("Transaction prior manifest schema is invalid")
     expected_recovery = sorted([*managed_files, ".agent-plus/install-manifest.json"])
     if managed_files != sorted(managed_files) or value["recovery_files"] != expected_recovery:
         raise ManagerError("Transaction recovery set is not exact")
-    expected_commit = [*managed_files, ".agent-plus/install-manifest.json"]
+    candidate_keys = set(value["candidate_managed_files"])
+    if candidate_keys != MANAGED_SET_REGISTRY[candidate_set_id]:
+        raise ManagerError("Transaction candidate managed-file set is not exact")
+    if not set(managed_files) <= candidate_keys:
+        raise ManagerError("Transaction attempts unsupported managed-file removal")
+    expected_candidate_only = sorted(candidate_keys - set(managed_files))
+    if value["candidate_only_files"] != expected_candidate_only:
+        raise ManagerError("Transaction candidate-only set is not exact")
+    expected_commit = [*sorted(candidate_keys), ".agent-plus/install-manifest.json"]
     if value["commit_files"] != expected_commit:
         raise ManagerError("Transaction commit set is not exact")
     if value["committed_files"] != value["commit_files"][: len(value["committed_files"])]:
         raise ManagerError("Transaction commit progress is invalid")
     if value["restored_files"] != value["recovery_files"][: len(value["restored_files"])]:
         raise ManagerError("Transaction recovery progress is invalid")
+    created_candidate_files = _created_candidate_files(value)
+    if value["removed_files"] != created_candidate_files[: len(value["removed_files"])]:
+        raise ManagerError("Transaction removal progress is invalid")
     recovery_keys = set(value["recovery_digests"])
     if value["snapshot_complete"]:
         if recovery_keys != set(value["recovery_files"]):
@@ -946,34 +1243,31 @@ def _validate_journal(value: dict[str, Any]) -> dict[str, Any]:
             raise ManagerError("Transaction prior manifest digest is invalid")
     elif recovery_keys or value["prior_manifest_sha256"]:
         raise ManagerError("Incomplete snapshot contains recovery authority")
-    candidate_keys = set(value["candidate_managed_files"])
+    if not value["candidate_version"] or any(
+        character.isspace() for character in value["candidate_version"]
+    ):
+        raise ManagerError("Transaction candidate version is invalid")
     if value["stage_complete"]:
-        if candidate_keys != set(managed_files):
-            raise ManagerError("Transaction candidate set is not exact")
-        if not value["candidate_version"] or any(
-            character.isspace() for character in value["candidate_version"]
-        ):
-            raise ManagerError("Transaction candidate version is invalid")
         if not _safe_manifest_entry(
             ".agent-plus/install-manifest.json", value["candidate_manifest_sha256"]
         ):
             raise ManagerError("Transaction candidate manifest digest is invalid")
-    elif candidate_keys or value["candidate_version"] or value["candidate_manifest_sha256"]:
-        raise ManagerError("Incomplete stage contains candidate authority")
+    elif value["candidate_manifest_sha256"]:
+        raise ManagerError("Incomplete stage contains a candidate manifest digest")
     if value["state"] in SNAPSHOT_REQUIRED_STATES and not value["snapshot_complete"]:
         raise ManagerError("Transaction state requires a complete snapshot")
     if value["state"] == "COMMITTED" and value["committed_files"] != value["commit_files"]:
         raise ManagerError("Committed transaction has incomplete progress")
-    if value["state"] == "RECOVERED" and value["restored_files"] != value["recovery_files"]:
-        raise ManagerError("Recovered transaction has incomplete progress")
+    if value["state"] == "RECOVERED":
+        if value["restored_files"] != value["recovery_files"]:
+            raise ManagerError("Recovered transaction has incomplete restore progress")
+        if value["removed_files"] != created_candidate_files:
+            raise ManagerError("Recovered transaction has incomplete removal progress")
     return value
 
 
 def _load_journal(fs: TransactionFilesystem) -> dict[str, Any]:
     journal = _validate_journal(_read_json(fs.journal_bytes(), "transaction journal"))
-    expected = sorted(_managed_sources(fs.source_path, journal["profile"]))
-    if journal["managed_files"] != expected:
-        raise ManagerError("Transaction managed-file set does not match the Agent+ release")
     return journal
 
 
@@ -1090,6 +1384,12 @@ def _copy_snapshot(fs: TransactionFilesystem, workspace: TransactionWorkspace, j
 
 def _copy_stage(fs: TransactionFilesystem, workspace: TransactionWorkspace, journal: dict[str, Any], profile: str) -> dict[str, Any]:
     candidate = _manifest_data(fs, profile)
+    if (
+        candidate["managed_files"] != journal["candidate_managed_files"]
+        or candidate["managed_set_id"] != journal["candidate_managed_set_id"]
+        or candidate["agent_plus_version"] != journal["candidate_version"]
+    ):
+        raise ManagerError("Canonical candidate changed after durable transaction intent")
     sources = _managed_sources(fs.source_path, profile)
     for relative, source in sorted(sources.items()):
         source_fd = fs.source_file(source)
@@ -1111,20 +1411,22 @@ def _copy_stage(fs: TransactionFilesystem, workspace: TransactionWorkspace, jour
         journal["candidate_manifest_sha256"] = _hash_fd(candidate_manifest_fd, "candidate manifest")
     finally:
         os.close(candidate_manifest_fd)
-    journal["candidate_managed_files"] = candidate["managed_files"]
-    journal["candidate_version"] = candidate["agent_plus_version"]
     journal["stage_complete"] = True
     return candidate
 
 
 def _commit(fs: TransactionFilesystem, workspace: TransactionWorkspace, journal: dict[str, Any]) -> None:
+    candidate_only = set(journal["candidate_only_files"])
     for relative in journal["commit_files"]:
         source_fd = workspace.source_file("stage", relative)
         try:
             parent, leaf = fs.target_parent(relative)
             try:
                 expected = journal["candidate_managed_files"].get(relative, journal["candidate_manifest_sha256"])
-                _replace_for_upgrade(source_fd, parent, leaf, "commit", expected)
+                if relative in candidate_only:
+                    _create_for_upgrade(source_fd, parent, leaf, "commit", expected)
+                else:
+                    _replace_for_upgrade(source_fd, parent, leaf, "commit", expected)
             finally:
                 os.close(parent)
         finally:
@@ -1146,10 +1448,17 @@ def _verify_recovered(fs: TransactionFilesystem, journal: dict[str, Any]) -> Non
     manifest = _manifest(fs)
     if sorted(manifest["managed_files"]) != journal["managed_files"]:
         raise ManagerError("Recovered target managed-file set is not exact")
+    if manifest["schema_version"] != journal["prior_manifest_schema"]:
+        raise ManagerError("Recovered target manifest schema is not exact")
+    if _manifest_set_id(manifest) != journal["prior_managed_set_id"]:
+        raise ManagerError("Recovered target managed-set identity is not exact")
     for relative in journal["recovery_files"]:
         expected = journal["recovery_digests"][relative]
         if _target_digest(fs, relative) != expected:
             raise ManagerError(f"Recovered target verification failed: {relative}")
+    for relative in _created_candidate_files(journal):
+        if fs.target_entry_exists(relative):
+            raise ManagerError(f"Recovered target retains candidate-only file: {relative}")
 
 
 def _preflight_recovery_sources(
@@ -1164,6 +1473,16 @@ def _preflight_recovery_sources(
                 raise ManagerError(f"Recovery snapshot integrity mismatch: {relative}")
         finally:
             os.close(source_fd)
+
+
+def _preflight_candidate_only_destinations(
+    fs: TransactionFilesystem, candidate_only_files: list[str]
+) -> None:
+    for relative in candidate_only_files:
+        parent, _ = fs.target_parent(relative)
+        os.close(parent)
+        if fs.target_entry_exists(relative):
+            raise ManagerError(f"Refusing to overwrite unmanaged destination: {relative}")
 
 
 def record(target: Path, profile: str) -> None:
@@ -1225,11 +1544,23 @@ def status(target: Path) -> int:
                 for item in drift:
                     print(f"LOCAL_DRIFT {item}")
                 return 1
-            available = _version_from_fs(fs)
-            if manifest.get("agent_plus_version") != available:
-                print(f"UPDATE_AVAILABLE installed={manifest.get('agent_plus_version')} available={available}")
+            candidate = _manifest_data(fs, manifest["profile"])
+            if (
+                manifest.get("agent_plus_version") != candidate["agent_plus_version"]
+                or manifest.get("schema_version") != SCHEMA
+                or _manifest_set_id(manifest) != candidate["managed_set_id"]
+            ):
+                print(
+                    "UPDATE_AVAILABLE "
+                    f"installed={manifest.get('agent_plus_version')} "
+                    f"available={candidate['agent_plus_version']} "
+                    f"managed_set={candidate['managed_set_id']}"
+                )
                 return 3
-            print(f"AGENT_PLUS_CURRENT version={available} profile={manifest['profile']}")
+            print(
+                f"AGENT_PLUS_CURRENT version={candidate['agent_plus_version']} "
+                f"profile={manifest['profile']} managed_set={candidate['managed_set_id']}"
+            )
             return 0
 
 
@@ -1245,8 +1576,10 @@ def upgrade(target: Path) -> None:
             if drift:
                 raise ManagerError("Refusing upgrade because a managed file changed locally: " + drift[0])
             profile = manifest["profile"]
+            candidate = _manifest_data(fs, profile)
             transaction_id = uuid.uuid4().hex
-            journal = _journal_base(transaction_id, profile, manifest["managed_files"])
+            journal = _journal_base(transaction_id, profile, manifest, candidate)
+            _preflight_candidate_only_destinations(fs, journal["candidate_only_files"])
             fs.write_journal(journal)
             try:
                 with fs.workspace(transaction_id, create=True) as workspace:
@@ -1321,9 +1654,22 @@ def recover(target: Path) -> None:
                                 journal["restored_files"].append(relative)
                             journal["state"] = "RECOVERING"
                             fs.write_journal(journal)
+                        for relative in _created_candidate_files(journal):
+                            fs.remove_target_regular(
+                                relative, journal["candidate_managed_files"][relative]
+                            )
+                            if relative not in journal["removed_files"]:
+                                journal["removed_files"].append(relative)
+                            journal["state"] = "RECOVERING"
+                            fs.write_journal(journal)
                         for relative, expected in journal["recovery_digests"].items():
                             if _target_digest(fs, relative) != expected:
                                 raise ManagerError(f"Recovery verification failed: {relative}")
+                        for relative in _created_candidate_files(journal):
+                            if fs.target_entry_exists(relative):
+                                raise ManagerError(
+                                    f"Recovery retained candidate-only file: {relative}"
+                                )
                         journal["state"] = "RECOVERED"
                         journal["last_error"] = ""
                         fs.write_journal(journal)

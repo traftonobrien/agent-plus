@@ -1,6 +1,6 @@
 # Public Example State
 
-Updated: 2026-08-22
+Updated: 2026-08-30
 
 ## Agent+ 0.2.0 released (2026-08-22)
 
@@ -92,6 +92,19 @@ Status: `AGENT_PLUS_LEGACY_ADOPTION_REVIEW_003_ACCEPTED — NEW RELEASE DECISION
 
 Status: `AGENT_PLUS_0_3_0_RELEASE_READY — ONE AUTHORIZED PUBLICATION ATTEMPT`.
 
+## Agent+ 0.3.0 released (2026-08-22)
+
+- Release commit: `ea147c0e2b2dac481238f96c37b56a31fe65033b`.
+- Annotated tag: `v0.3.0`.
+- Public release:
+  `https://github.com/traftonobrien/agent-plus/releases/tag/v0.3.0`.
+- Remote `main` and the peeled tag resolve to the release commit.
+- The release is public, not draft, and not prerelease.
+- Local outputs, lock, and macOS/editor metadata remained outside the release.
+- No consumer synchronization, SECOND LOOK edit, scientific work, or modeling followed.
+
+Status: `AGENT_PLUS_0_3_0_RELEASED — CONSUMER SYNCHRONIZATION REQUIRES SEPARATE AUTHORIZATION`.
+
 ## Verified state
 
 - Contract: `EX-CONTRACT-001 v1`.
@@ -164,11 +177,279 @@ exist.
 
 Status: `AGENT_PLUS_0_2_0_RELEASE_READY — EXPLICIT RELEASE AUTHORIZATION REQUIRED`.
 
+## Lean R and small correction rule — implemented (2026-08-24)
+
+- The public workflow permits one immediate fix and rerun for an obvious evaluator-found syntax,
+  command-spelling, or test-harness false positive when behavior and every authority boundary stay
+  unchanged. Substantive, ambiguous, repeated, or reviewer findings still stop.
+- The research profile defaults R projects to ordinary R, the existing `renv`, one small chunk,
+  changed-file parsing, and named focused tests. New packages or subsystems require an observed need.
+- The existing public package validator passed all 128 tests. No new ledger class, task framework,
+  release, version change, commit, push, tag, or consumer synchronization was added.
+
+Status: `AGENT_PLUS_LEAN_R_RULE_IMPLEMENTED — UNRELEASED`.
+
+## Lean R migration lessons and failure retention — implemented (2026-08-26)
+
+- Added complete-behavior parity, representative-volume performance falsification, vectorized
+  large-table operations, and cost-separated cached targets to the canonical/bootstrap protocol
+  and research profile.
+- Clarified that the existing prospective outcome audit retains failed attempts after eventual
+  success so first-pass quality, retry burden, duration, and causal failure concentration remain
+  visible. No second metrics system was added.
+- Focused workflow-default tests pass `5/5`; the complete public suite passes `129/129`;
+  canonical/bootstrap protocol bytes, guard bindings, links, and public package validation pass.
+- No release, version change, Git operation, consumer synchronization, data access, or scientific
+  execution occurred.
+
+Status: `AGENT_PLUS_R_MIGRATION_LESSONS_IMPLEMENTED — UNRELEASED`.
+
+## Complexity diagnostic rule — implemented (2026-08-26)
+
+- High cyclomatic complexity and nested branching now prompt simplification of the real decision
+  flow; they are not proof of code quality or correctness.
+- Agent+ forbids a universal threshold, a score-only dependency, and cosmetic helper splitting.
+- Focused defaults tests pass `6/6`; the complete public suite passes `130/130`; canonical/bootstrap
+  protocol bytes, guard bindings, links, and public validation pass.
+- No release, version change, Git operation, synchronization, data access, or scientific execution
+  occurred.
+
+Status: `AGENT_PLUS_COMPLEXITY_DIAGNOSTIC_IMPLEMENTED — UNRELEASED`.
+
+## Active-chain and cost-isolation bundle — maker complete (2026-08-30)
+
+- Added one closed `agent-plus-active-chain/v1` routing capsule and deterministic guard to canonical
+  Agent+ and the bootstrap package. It validates ordered stages, live safe authority references,
+  durable evidence, terminal `PASS`/`NULL`/`BLOCK`, early closeout, and the two-failure reset rule.
+- Added generic defaults for exact target-graph isolation, reuse of current expensive ancestors,
+  deterministic `LOOP_DETECTED`, live-authority precedence, clean fresh-session boundaries, and
+  `OWNER_DECISION_REQUIRED` when simplification would change accepted semantics.
+- Focused active-chain attacks pass `15/15`; anti-loop tests pass `54/54`; workflow-default checks
+  pass `7/7`; the complete suite passes `147/147`. Canonical/bootstrap bindings, compilation,
+  privacy, links, and the public-package validator pass.
+- The new review class and 20-attack/16-coverage planned packet pass the anti-loop guard with receipt
+  `sha256:5db138c260311831b093175bbe38939c39a41bac31390a49d3c7fae7c793ba00`.
+- The completion audit closed the external-capsule path. Only the active project-local capsule and
+  sanitized example locations now validate. The audit record is
+  `.planning/essential-tasks/2026-08-30-agent-plus-active-chain-completion-audit.md`.
+- Fresh integrated review 001 completed all 20 attacks and 16 coverage areas, then returned
+  `BLOCK`. Array or object values in chain and stage enum fields can raise uncaught `TypeError`
+  instead of typed `ChainError`. Preserve
+  `.planning/essential-tasks/2026-08-30-agent-plus-active-chain-integrated-review-001.md`.
+- Review closeout passed with receipt
+  `sha256:aac523d9b1704566df547108c42802e0fcfe3189a400cac2a3c5811904496f7b7`.
+  The ledger records `block_count=1`; post-record closeout passes with receipt
+  `sha256:92ee4f60d8977d199f6207170d6f93407ec6bff550aef5e08cbe337721bf17fc`.
+- The owner authorized repair 002. Four string checks now close every affected enum membership
+  seam. Array and object probes pass `8/8`; the CLI traceback test passes; focused tests pass
+  `17/17`; the complete suite passes `149/149`; public validation passes.
+- Review 002 is planned with 21 attacks and 16 coverage areas. Dispatch passes with receipt
+  `sha256:442fe6a6499e807f854035b1c5867cc929bda3bcf1e7836cd28879b3470bfca2`.
+- One new fresh Luna xhigh reviewer returned `PASS`. All `21/21` attacks, `16/16` coverage areas,
+  and `27/27` independent probes passed. No Critical, Important, or Minor finding remains.
+- Review 002 closeout receipt:
+  `sha256:3ceb5acd7637c4568663a2c93216aa8b065d0ace32a723485fda1ea51be9ecfc`.
+  Preserve
+  `.planning/essential-tasks/2026-08-30-agent-plus-active-chain-integrated-review-002.md`.
+- No proving-project mutation, consumer synchronization, data access, scientific work, dependency
+  change, version change, commit, push, tag, or release occurred.
+
+Status: `AGENT_PLUS_ACTIVE_CHAIN_REVIEW_002_ACCEPTED — OWNER RELEASE DECISION REQUIRED`.
+
+## Active-chain lifecycle delivery — accepted (2026-08-30)
+
+- A clean initializer now delivers and manifest-manages the active-chain guard and sanitized example.
+- Manifest schema v2 binds installations to one exact managed-set identity. The exact historical v1
+  set remains accepted only for released `0.2.0` and `0.3.0` installations.
+- Transactions permit additive managed-set changes only. They reject unmanaged collisions and
+  managed-file removal.
+- Recovery removes only candidate additions that the transaction committed. It preserves an
+  uncommitted collision and blocks deletion when a committed addition changed.
+- Transaction copies preserve required executable modes. Status and both doctor routes reject mode
+  drift for managed commands.
+- Lifecycle tests pass `42/42`; legacy-adoption tests pass `12/12`; all `163` public tests and the
+  public-package validator pass.
+- The review packet covers `27` attacks and `18` named coverage items. Standard admission passed
+  with receipt
+  `sha256:52807ea70a2ba916c4defcf1a3053e429a2dbb72ccff39c07ac03ac757e0cca5`.
+- One fresh Luna xhigh reviewer returned `PASS`. All `27/27` attacks and `18/18` named coverage
+  items passed. No Critical, Important, or Minor finding remains.
+- Complete-review closeout passed with receipt
+  `sha256:c77ba7104f89e9ebbaa693c342a3dd940b9e8576b2457032252c7a1038136d10`.
+  Preserve
+  `.planning/essential-tasks/2026-08-30-agent-plus-active-chain-lifecycle-review-001.md`.
+- No release, version change, Git operation, proving-project mutation, consumer synchronization,
+  data access, or scientific work occurred.
+
+Status: `AGENT_PLUS_ACTIVE_CHAIN_LIFECYCLE_ACCEPTED — OWNER RELEASE DECISION REQUIRED`.
+
+## Unreleased policy refinement bundle — accepted (2026-08-30)
+
+- A read-only acceptance-gap audit found that Lean R, small-correction authority, uncovered R
+  migration semantics, complexity guidance, and patch-versus-minor versioning were deterministic-
+  tested but lacked one named fresh acceptance review.
+- The closed review boundary contains `22` attacks and `10` named coverage items. It does not reopen
+  the accepted active-chain/cost-isolation or lifecycle-delivery implementation reviews.
+- Task admission passes with receipt
+  `sha256:3a9458c5004852adfd21fe3978f0b02cb3676b7f449fbb061835ac6a3477c2c5`.
+- Workflow-default tests pass `7/7`; the complete suite and public validator pass `163/163` with
+  canonical/bootstrap protocol bindings, links, privacy, and diff checks.
+- One eligible mechanical evaluator correction was consumed for a closed reset-namespace spelling
+  mismatch. The identical admission gate passed after the correction. No policy semantics or
+  authority changed.
+- One fresh Luna xhigh reviewer returned `PASS`. All `22/22` attacks, `10/10` named coverage items,
+  and `35/35` independent semantic probes passed. No Critical, Important, or Minor finding remains.
+- Complete-review closeout passed with receipt
+  `sha256:c348f93bd675dd423933597508d4ffe5446758531fc45fff331e40231acc7ff8`.
+  Preserve
+  `.planning/essential-tasks/2026-08-30-agent-plus-unreleased-policy-bundle-review-001.md`.
+- No version change, Git operation, release, consumer synchronization, data access, or scientific
+  work occurred.
+
+Status: `AGENT_PLUS_UNRELEASED_POLICY_BUNDLE_ACCEPTED — OWNER RELEASE DECISION REQUIRED`.
+
+Against the current ledger, the acceptance matrix still reproduces all three previously accepted
+closeouts as `PASS`: active-chain/cost isolation
+`sha256:7a2471dfcf6c349b21180ff80108b5bcf200ddf5029d22d1e304fff35d6e2bea`, lifecycle delivery
+`sha256:ff348b51a8076e500bbbce5fa9f744f87bf7bee052b27a77eb50a8fcb413e460`, and policy refinements
+`sha256:072b74fd7d1a0561ee7086998e9e949da10934c0f547f134d90d76bf187dccc8`.
+The separate static-typing review returned `BLOCK`. It does not make the complete current bundle
+accepted or release-ready.
+Preserve
+`.planning/essential-tasks/2026-08-30-agent-plus-current-acceptance-matrix.md`.
+
+## Agent+ 0.4.0 release-scope readiness — BLOCK (2026-08-30)
+
+- `0.4.0` is the recommended next version because the active-chain guard, managed lifecycle
+  delivery, and closed routing capsule add a public capability and authority boundary.
+- The initial pre-static-gate scope contained `67` sorted, unique files. Its manifest SHA-256 was
+  `15f6e5b7efaedfeb93fa15244dbd2bdb0e2cbbb6eab46c74d43c7c1e182a49be`.
+- The scope rules include every current modified or public untracked path plus a simulated `VERSION`
+  update. It excludes the ledger lock, generated outputs, local registry, active routing state,
+  caches, and editor/macOS metadata.
+- Two adjacent disposable-index harness failures triggered `LOOP_DETECTED`. A bounded sweep replaced
+  the colon-sensitive alternate-object path with a temporary symlink and closed the harness.
+- The first candidate run exposed one test-fixture false positive under simulated `0.4.0`. The one
+  allowed correction pins the synthetic v1 manifest to released `0.3.0`; production code and
+  authority are unchanged.
+- The corrected disposable candidate passed `163/163`, public validation, privacy, links, bindings,
+  executable modes, exact staged scope, and diff checks. The real Git index hash was unchanged.
+- Local `HEAD` and remote `main` both remain
+  `ea147c0e2b2dac481238f96c37b56a31fe65033b`. Tag and GitHub release `v0.4.0` are absent.
+- No real version change, staging, repository-object write, commit, push, tag, release, consumer
+  synchronization, proving-project mutation, data access, or scientific work occurred.
+
+The additional static gate then returned `BLOCK`: Ruff passes, but strict mypy reports two manifest
+identity narrowing errors in `scripts/agent_plus_manager.py`. The release preflight had already
+consumed its single test-fixture correction, so no same-chain patch followed. One registered bounded
+repair is now active under `AGENT_PLUS_RELEASE_READINESS/manifest-strict-mypy-narrowing`.
+
+The bounded repair explicitly narrows the current managed-set value after exact runtime validation
+and adds typed rejection at `_manifest_set_id`. One direct malformed helper probe was added. Strict
+mypy, Ruff, compilation, `43/43` lifecycle tests, `12/12` legacy tests, all `164/164` public tests,
+and public validation pass. The planned fresh review covers `8` attacks and `7` coverage items.
+The repaired 72-path disposable candidate passes the same `164/164` suite, public validation,
+strict mypy, and Ruff under simulated `VERSION=0.4.0`. Its manifest SHA-256 is
+`1293401367fa7a26d62ec058184b3a4720d92b64bf2587be5bf89e4bc8836b07`; the real index remains
+unchanged. Planned review admission passes with receipt
+`sha256:c40a3a6055e1c48955360be3731605cb9cfda044341b9d656b799bf8b83b4ccd`.
+
+Status: `AGENT_PLUS_0_4_0_STATIC_TYPING_EVALUATOR_PASS — FRESH REVIEW REQUIRED`.
+
+Fresh review 001 assessed all `8/8` attacks and `7/7` named coverage items. Strict mypy, Ruff,
+`43/43` lifecycle tests, `12/12` legacy-adoption tests, direct helper probes, and the live `164/164`
+public validator passed. The required disposable simulated `VERSION=0.4.0` validator did not start
+because its temporary `tar` archive returned `Special header too large`. The reviewer returned
+`BLOCK` and did not repair the failure. Complete closeout receipt:
+`sha256:ab87a2b1d035f1337a2686bffc9b3bf297386d8e7407912198327e4463a287e7`.
+
+The controller recorded the `BLOCK` with result
+`sha256:d704c9223ebc44444dac3a39ce49dd0ab5cc33a349ad5a37846744d7a359e2fa`.
+The ledger now has `block_count=2` and `architecture_reset_required=true`. The active chain closes
+with terminal `BLOCK`. The exact current candidate contains `73` paths with manifest SHA-256
+`8e96619ecc5df7feaf6ab77769475b9b7d7e3e8199e58ced8eb68f43d18ea1a0`.
+
+Status: `AGENT_PLUS_0_4_0_REVIEW_001_BLOCK — ARCHITECTURE RESET REQUIRED`.
+
+The owner authorized one bounded release-preflight architecture reset. The maker added a
+zero-option verifier, fixed configuration, tests, documentation, and public-package integration.
+Its exact 79-path candidate passed `7/7` focused tests, strict mypy, Ruff, active-chain admission,
+and the complete `171/171` public validator before the terminal launch. The one permitted command
+then returned `RELEASE_CANDIDATE_BLOCK E_LIVE_OBJECT_MUTATION`: the live object-store identity
+changed during verification. No receipt was written. Live `VERSION`, `HEAD`, and the real index
+remain unchanged; read-only inspection found 75 loose object files with launch-boundary timestamps.
+Those objects comprise 65 blobs and 10 trees; 66 candidate paths map to those blob identities.
+This did not prove new objects or a concurrent writer. A later synthetic reproduction demonstrated
+alternate-object timestamp freshening with unchanged names and content. That corrects attribution,
+not the terminal BLOCK verdict.
+The reset contract forbids repair or retry after this result, so deterministic evaluation and
+fresh review were not promoted.
+
+Status: `AGENT_PLUS_0_4_0_RELEASE_PREFLIGHT_RESET_002_BLOCK — NEW ARCHITECTURE AUTHORITY REQUIRED`.
+
 ## Exact next action
 
-Publish the exact accepted `0.3.0` scope once. Stop on any error. After an exact release exists,
-SECOND LOOK consumer synchronization and its preserved architecture review remain separate
-authorization gates.
+Owner-authorized detached attempt 003 passed real preflight and independent Sol/high review:
+26/26 attacks, 17/17 coverage areas, 50/50 independent probes, and all 196 public tests (including
+32 focused verifier tests). Evaluator and reviewer matched the same 81-path candidate tree.
+Source Git and worktree identities were unchanged within both launches. Review closeout:
+`sha256:bdb2fdeff215ba00c450f6acf3a0f8b472c8392d4de8f88d31a26baf3990d8a4`.
+
+Finalize only reviewed administrative records and run the one authorized success-only refresh.
+Its exact current PASS receipt lives at `outputs/release-candidate/receipt.json`; do not embed a
+self-changing final tree hash in public state. Then read
+`outputs/optimization-review-2026-08-30/MASTER_PACKET.md` and obtain one exact publication decision.
+The local capsule records terminal closeout after that refresh. Release and consumer
+synchronization remain separate owner decisions. Any final refresh failure stops the chain.
+
+## Agent+ 0.4.0 release decision — authorized (2026-08-31)
+
+The owner authorized one exact public release attempt for the accepted 81-path candidate. The
+selected version and annotated tag are `0.4.0` and `v0.4.0`. The target is `main` at verified base
+`ea147c0e2b2dac481238f96c37b56a31fe65033b` in
+`https://github.com/traftonobrien/agent-plus`.
+
+The authorized sequence is one refreshed detached preflight, exact manifest staging with
+`VERSION=0.4.0`, one release commit, one annotated tag, one atomic branch-and-tag push, one public
+GitHub release, and one remote verification. The active article discovery brief remains local and
+is excluded through the repository-local exclude file. Generated outputs, locks, routing state,
+local registry state, metadata, consumers, private state, data, and science remain excluded.
+
+Stop on the first failed or uncertain release action. Do not retry, force-push, replace a tag,
+synchronize a consumer, or change a proving project.
+
+Status: `AGENT_PLUS_0_4_0_RELEASE_AUTHORIZED — ONE PREFLIGHT REFRESH AND PUBLICATION ATTEMPT`.
+
+### Publication attempt 001 — BLOCK
+
+The single authorized refreshed preflight returned
+`RELEASE_CANDIDATE_BLOCK E_SOURCE_MUTATION protected source state changed during verification`.
+The durable BLOCK receipt is
+`sha256:5cfbd1a2eb1d3c9a713b7d622a1afcd3bed0dc5616e5d4de4e5d47f6e769a1f3`.
+Its source baseline was captured, but the receipt does not identify the changed path or actor.
+
+The controller stopped before setting `VERSION`, staging, creating Git objects for a release
+commit, committing, tagging, pushing, or publishing a GitHub release. The real index remains
+`4e7bdda169a1d25cfc6f14c3a3f97b855ec54e772c9b1f2eaaacfa2a5512a1e9`.
+Local `HEAD`, remote `main`, and released `v0.3.0` remain
+`ea147c0e2b2dac481238f96c37b56a31fe65033b`. Tag and release `v0.4.0` remain absent.
+The local article discovery brief remains preserved and excluded.
+
+Status: `AGENT_PLUS_0_4_0_PUBLICATION_001_BLOCK — NEW AUTHORITY REQUIRED AFTER SOURCE QUIESCENCE`.
+
+### Publication attempt 002 — authorized isolated checkout
+
+The owner authorized continuation tonight through one new isolated publication attempt. The
+controller must freeze hashes and modes for the same 81 manifest paths, copy only those paths into
+a clean checkout at the verified remote base, and confirm the active source freeze before and after
+transfer. The isolated checkout receives one closed preflight launch.
+
+Only a preflight PASS permits exact manifest staging with `VERSION=0.4.0`, tree-identity equality,
+one release commit, annotated `v0.4.0` tag, atomic branch-and-tag push, public GitHub release, and
+remote verification. The active source checkout is not staged or committed. Attempt 001 is not
+retried. Stop at the first failed or uncertain action. Consumer synchronization remains forbidden.
+
+Status: `AGENT_PLUS_0_4_0_PUBLICATION_002_AUTHORIZED — ISOLATED ONE-ATTEMPT RELEASE`.
 
 ## System routing update — 2026-08-15
 

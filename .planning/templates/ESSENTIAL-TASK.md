@@ -26,6 +26,10 @@ fresh_verifier_contract: "<independent inputs, attack matrix, and stop rule>"
 promotion_dossier: "<one stable boundary dossier path updated in place>"
 anti_loop_packet: "<planned packet path and guard PASS receipt>"
 review_closeout: "<completed packet path and closeout guard PASS receipt>"
+active_chain_capsule: "<.agent-plus/active-chain.json or not-applicable>"
+active_chain_guard: "<continue and closeout commands or not-applicable>"
+authority_refs: "<live repository-relative policy, contract, and evidence paths>"
+cost_isolation: "<current/outdated target graph and smallest reachable target or not-applicable>"
 ---
 
 # Essential Task Card

@@ -34,12 +34,14 @@ bootstrap/base/.agent-plus/PROJECT.md
 bootstrap/base/.agent-plus/claim-evidence-register.md
 bootstrap/base/.agent-plus/engineering-boundaries.json
 bootstrap/base/.agent-plus/engineering-closure-example.json
+bootstrap/base/.agent-plus/active-chain-example.json
 bootstrap/base/.agent-plus/interface-consumer-closure-example.json
 bootstrap/base/.planning/PROJECT.md
 bootstrap/base/.planning/ROADMAP.md
 bootstrap/base/.planning/STATE.md
 bootstrap/base/.planning/templates/ESSENTIAL-TASK.md
 bootstrap/base/scripts/ai-context.sh
+bootstrap/base/scripts/active_chain_guard.py
 bootstrap/base/scripts/anti_loop_guard.py
 bootstrap/base/scripts/interface_consumer_guard.py
 bootstrap/base/tests/test_interface_consumer_guard.py
@@ -49,9 +51,11 @@ bootstrap/profiles/product/PROFILE.md
 bootstrap/profiles/scouting/PROFILE.md
 bootstrap/github/workflows/agent-plus-doctor.yml
 docs/bootstrap-a-baseball-project.md
+docs/active-chain-capsule.md
 docs/attribution/implementation-subtraction.md
 docs/attribution/DIETRICH-GEBERT-LICENSE.txt
 docs/project-integration-and-upstream.md
+docs/release-candidate-verification.md
 scripts/agent-plus
 scripts/agent-plus-init.sh
 scripts/agent-plus-doctor.sh
@@ -77,12 +81,18 @@ skills/editorial-pass/references/EHMO-LICENSE.txt
 skills/editorial-pass/references/MATT-SILVERLOCK-LICENSE.txt
 scripts/editorial_preservation_check.py
 scripts/anti_loop_guard.py
+scripts/active_chain_guard.py
 scripts/interface_consumer_guard.py
+scripts/verify_release_candidate.py
+tests/test_active_chain_guard.py
 tests/test_anti_loop_guard.py
 tests/test_interface_consumer_guard.py
+tests/test_release_candidate_verifier.py
 tests/test_editorial_pass.py
 tests/test_workflow_defaults.py
 .agent-plus/interface-consumer-closure-example.json
+.agent-plus/active-chain-example.json
+.agent-plus/release-candidate.json
 assets/agent-plus-system-map.png
 assets/routing-work-by-authority.png
 assets/verification-system.png
@@ -105,6 +115,14 @@ python3 scripts/anti_loop_guard.py \
 python3 bootstrap/base/scripts/anti_loop_guard.py \
   --ledger bootstrap/base/.agent-plus/engineering-boundaries.json \
   --packet bootstrap/base/.agent-plus/engineering-closure-example.json >/dev/null
+python3 scripts/active_chain_guard.py \
+  --root . \
+  --capsule .agent-plus/active-chain-example.json \
+  --mode closeout >/dev/null
+python3 bootstrap/base/scripts/active_chain_guard.py \
+  --root bootstrap/base \
+  --capsule bootstrap/base/.agent-plus/active-chain-example.json \
+  --mode closeout >/dev/null
 python3 scripts/interface_consumer_guard.py \
   --root . \
   --receipt .agent-plus/interface-consumer-closure-example.json >/dev/null
@@ -118,6 +136,7 @@ for relative in (
     "AI_AGENT_OUTPUT_POLICY.md",
     ".cursor/rules/agent-plus-output.mdc",
     "scripts/anti_loop_guard.py",
+    "scripts/active_chain_guard.py",
     "scripts/interface_consumer_guard.py",
     ".planning/templates/ESSENTIAL-TASK.md",
     "ESSENTIAL_WORK_PROTOCOL.md",
@@ -171,6 +190,28 @@ grep -qF 'scripts/agent-plus adopt' README.md || {
   printf '%s\n' 'README does not expose the legacy-adoption route.' >&2
   exit 1
 }
+grep -qF 'python3 scripts/verify_release_candidate.py' README.md || {
+  printf '%s\n' 'README does not expose the fixed release-candidate verifier.' >&2
+  exit 1
+}
+grep -qF 'python3 scripts/verify_release_candidate.py' docs/release-candidate-verification.md || {
+  printf '%s\n' 'Release-candidate documentation does not expose the fixed command.' >&2
+  exit 1
+}
+python3 - <<'PY'
+import importlib.util
+from pathlib import Path
+
+root = Path.cwd()
+spec = importlib.util.spec_from_file_location("release_candidate", root / "scripts/verify_release_candidate.py")
+assert spec and spec.loader
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+module.load_config(root)
+assert module.SOURCE_COMMANDS == {"ls-tree", "cat-file", "ls-files"}
+assert module.MYPY_VERSION == "2.3.1" and module.RUFF_VERSION == "0.16.5"
+print("Detached release-candidate configuration and toolchain: PASS")
+PY
 grep -qF 'scripts/agent-plus adopt' docs/bootstrap-a-baseball-project.md || {
   printf '%s\n' 'Bootstrap guide does not expose the legacy-adoption route.' >&2
   exit 1

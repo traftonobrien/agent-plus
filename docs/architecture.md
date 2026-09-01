@@ -50,12 +50,13 @@ operations:
 
 1. `init` creates a project-local control plane.
 2. `doctor` verifies required controls and public-safety invariants.
-3. `status` compares managed controls with the recorded installation manifest.
-4. `upgrade` stages unchanged managed controls, records an immutable recovery snapshot and durable
-   transaction journal, and commits only after staged validation.
+3. `status` compares managed controls and required executable modes with an exact managed-set
+   identity in the installation manifest.
+4. `upgrade` accepts exact historical manifest generations and permits additive managed-set changes
+   only. It rejects unmanaged destination collisions and managed-file removal.
 5. `recover --target` is the single idempotent recovery route. It verifies every snapshot hash,
-   restores through copy-to-temp plus atomic replace, and retains recovery assets across partial
-   restore failures.
+   restores through copy-to-temp plus atomic replace, removes only committed candidate additions,
+   and retains recovery assets across partial restore failures.
 
 Project instructions, memory, planning state, evidence, data, and mutable ledgers stay behind the
 consumer project seam. They are not Agent+ managed files. Project-specific rules live in

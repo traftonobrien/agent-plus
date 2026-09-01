@@ -1,0 +1,42 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_0_4_0_STATIC_TYPING_REPAIR_REVIEW_001",
+  "packet_type": "review",
+  "boundary_id": "AGENT_PLUS_RELEASE_READINESS",
+  "failure_class": "manifest-strict-mypy-narrowing",
+  "ledger_ref": "AGENT_PLUS_RELEASE_READINESS/manifest-strict-mypy-narrowing",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "manifest-strict-mypy-narrowing"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "complete",
+  "attack_matrix": {
+    "status": "complete",
+    "items": [
+      "strict-mypy-manager",
+      "legacy-manifest-type-narrowing",
+      "current-manifest-type-narrowing",
+      "manifest-set-id-return-type",
+      "malformed-managed-set-typed-error",
+      "lifecycle-regression",
+      "simulated-0-4-0-public-validator",
+      "public-validator"
+    ]
+  },
+  "named_coverage": {
+    "status": "complete",
+    "items": [
+      "manager-manifest-parser",
+      "manifest-set-helper",
+      "lifecycle-tests",
+      "legacy-adoption-tests",
+      "strict-mypy",
+      "release-scope-preflight",
+      "public-validator"
+    ]
+  }
+}

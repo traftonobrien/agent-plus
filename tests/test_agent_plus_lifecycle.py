@@ -39,6 +39,23 @@ class AgentPlusLifecycleTests(unittest.TestCase):
             "Example Project",
         )
 
+    def downgrade_to_v1(self, target: Path, version: str = "0.3.0") -> None:
+        manifest_path = target / ".agent-plus/install-manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        for relative in (
+            ".agent-plus/active-chain-example.json",
+            "scripts/active_chain_guard.py",
+        ):
+            (target / relative).unlink()
+            manifest["managed_files"].pop(relative)
+        manifest["schema_version"] = "agent-plus-install/v1"
+        manifest["agent_plus_version"] = version
+        manifest.pop("managed_set_id")
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
     def load_manager(self) -> Any:
         spec = importlib.util.spec_from_file_location(
             "agent_plus_manager_test", ROOT / "scripts" / "agent_plus_manager.py"
@@ -109,6 +126,338 @@ class AgentPlusLifecycleTests(unittest.TestCase):
             self.assertIn('project_name: "project \\\"quoted\\\" with spaces"', yaml_text)
             self.assertIn('brain_note: "Brain: \\\"private\\\"\\\\nnext"', yaml_text)
 
+    def test_init_delivers_and_manages_active_chain_controls(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            manifest = json.loads(
+                (target / ".agent-plus/install-manifest.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(manifest["schema_version"], "agent-plus-install/v2")
+            self.assertEqual(manifest["managed_set_id"], "agent-plus-active-chain-v1")
+            for relative in (
+                ".agent-plus/active-chain-example.json",
+                "scripts/active_chain_guard.py",
+            ):
+                self.assertIn(relative, manifest["managed_files"])
+                self.assertTrue((target / relative).is_file(), relative)
+            for relative in (
+                "scripts/ai-context.sh",
+                "scripts/agent-plus-doctor.sh",
+                "scripts/active_chain_guard.py",
+            ):
+                self.assertTrue((target / relative).stat().st_mode & 0o111, relative)
+            copied_doctor = subprocess.run(
+                [str(target / "scripts/agent-plus-doctor.sh"), "--target", str(target)],
+                cwd=target,
+                check=False,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(copied_doctor.returncode, 0, copied_doctor.stderr)
+
+    def test_historical_v1_manifests_are_exact_and_report_generation_update(self) -> None:
+        for version in ("0.2.0", "0.3.0"):
+            with self.subTest(version=version), tempfile.TemporaryDirectory() as temporary:
+                target = Path(temporary) / "project"
+                target.mkdir()
+                self.initialize(target)
+                self.downgrade_to_v1(target, version)
+                status = self.run_command("status", "--target", str(target), expected=3)
+                self.assertIn("UPDATE_AVAILABLE", status.stdout)
+                self.assertIn("managed_set=agent-plus-active-chain-v1", status.stdout)
+                self.run_command("doctor", "--target", str(target))
+                copied_doctor = subprocess.run(
+                    [str(target / "scripts/agent-plus-doctor.sh"), "--target", str(target)],
+                    cwd=target,
+                    check=False,
+                    text=True,
+                    capture_output=True,
+                )
+                self.assertEqual(copied_doctor.returncode, 0, copied_doctor.stderr)
+
+    def test_historical_v1_subset_manifests_fail_across_consumers(self) -> None:
+        for position in ("first", "middle", "last"):
+            with self.subTest(position=position), tempfile.TemporaryDirectory() as temporary:
+                target = Path(temporary) / "project"
+                target.mkdir()
+                self.initialize(target)
+                self.downgrade_to_v1(target)
+                manifest_path = target / ".agent-plus/install-manifest.json"
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                relatives = list(manifest["managed_files"])
+                index = {"first": 0, "middle": len(relatives) // 2, "last": -1}[position]
+                manifest["managed_files"].pop(relatives[index])
+                manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                self.run_command("status", "--target", str(target), expected=1)
+                self.run_command("doctor", "--target", str(target), expected=1)
+                copied = subprocess.run(
+                    [str(target / "scripts/agent-plus-doctor.sh"), "--target", str(target)],
+                    cwd=target,
+                    check=False,
+                    text=True,
+                    capture_output=True,
+                )
+                self.assertNotEqual(copied.returncode, 0, position)
+
+    def test_unknown_manifest_generation_and_nonexact_sets_fail_closed(self) -> None:
+        for case in ("legacy-version", "set-id", "subset", "superset"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
+                target = Path(temporary) / "project"
+                target.mkdir()
+                self.initialize(target)
+                manifest_path = target / ".agent-plus/install-manifest.json"
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                if case == "legacy-version":
+                    self.downgrade_to_v1(target, "9.9.9")
+                elif case == "set-id":
+                    manifest["managed_set_id"] = "unknown-managed-set"
+                    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                elif case == "subset":
+                    manifest["managed_files"].pop("scripts/active_chain_guard.py")
+                    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                else:
+                    manifest["managed_files"]["unmanaged.txt"] = "0" * 64
+                    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                self.run_command("status", "--target", str(target), expected=1)
+                self.run_command("doctor", "--target", str(target), expected=1)
+
+    def test_manifest_set_id_helper_rejects_non_string_identity(self) -> None:
+        manager = self.load_manager()
+        with self.assertRaisesRegex(manager.ManagerError, r"Invalid Agent\+ managed-set identity"):
+            manager._manifest_set_id(
+                {"schema_version": manager.SCHEMA, "managed_set_id": []}
+            )
+
+    def test_doctor_rejects_missing_or_drifted_active_chain_controls(self) -> None:
+        attacks = (
+            ("missing-guard", "scripts/active_chain_guard.py", "unlink"),
+            ("missing-example", ".agent-plus/active-chain-example.json", "unlink"),
+            ("drift-guard", "scripts/active_chain_guard.py", "write"),
+            ("drift-example", ".agent-plus/active-chain-example.json", "write"),
+        )
+        for label, relative, action in attacks:
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as temporary:
+                target = Path(temporary) / "project"
+                target.mkdir()
+                self.initialize(target)
+                path = target / relative
+                if action == "unlink":
+                    path.unlink()
+                else:
+                    path.write_text("drift\n", encoding="utf-8")
+                self.run_command("doctor", "--target", str(target), expected=1)
+                copied = subprocess.run(
+                    [str(target / "scripts/agent-plus-doctor.sh"), "--target", str(target)],
+                    cwd=target,
+                    check=False,
+                    text=True,
+                    capture_output=True,
+                )
+                self.assertNotEqual(copied.returncode, 0, label)
+
+    def test_status_and_doctor_reject_managed_command_mode_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            guard = target / "scripts/active_chain_guard.py"
+            guard.chmod(0o644)
+            status = self.run_command("status", "--target", str(target), expected=1)
+            self.assertIn("LOCAL_DRIFT mode:scripts/active_chain_guard.py", status.stdout)
+            self.run_command("doctor", "--target", str(target), expected=1)
+
+    def test_additive_upgrade_from_v1_preserves_owned_state(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            self.downgrade_to_v1(target)
+            owned = target / ".planning/STATE.md"
+            owned.write_text("project-owned-state\n", encoding="utf-8")
+            self.run_command("upgrade", "--target", str(target))
+            manifest = json.loads(
+                (target / ".agent-plus/install-manifest.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(manifest["schema_version"], "agent-plus-install/v2")
+            self.assertEqual(manifest["managed_set_id"], "agent-plus-active-chain-v1")
+            self.assertEqual(owned.read_text(encoding="utf-8"), "project-owned-state\n")
+            self.assertTrue((target / "scripts/active_chain_guard.py").is_file())
+            self.assertTrue((target / ".agent-plus/active-chain-example.json").is_file())
+            for relative in (
+                "scripts/ai-context.sh",
+                "scripts/agent-plus-doctor.sh",
+                "scripts/active_chain_guard.py",
+            ):
+                self.assertTrue((target / relative).stat().st_mode & 0o111, relative)
+            copied_doctor = subprocess.run(
+                [str(target / "scripts/agent-plus-doctor.sh"), "--target", str(target)],
+                cwd=target,
+                check=False,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(copied_doctor.returncode, 0, copied_doctor.stderr)
+            self.run_command("doctor", "--target", str(target))
+
+    def test_additive_upgrade_rejects_candidate_only_collision_before_journal(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            self.downgrade_to_v1(target)
+            collision = target / "scripts/active_chain_guard.py"
+            collision.write_text("project-owned\n", encoding="utf-8")
+            result = self.run_command("upgrade", "--target", str(target), expected=1)
+            self.assertIn("Refusing to overwrite unmanaged destination", result.stderr)
+            self.assertEqual(collision.read_text(encoding="utf-8"), "project-owned\n")
+            self.assertFalse((target / ".agent-plus/upgrade-transaction.json").exists())
+
+    def test_candidate_only_race_is_preserved_during_recovery(self) -> None:
+        manager = self.load_manager()
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            self.downgrade_to_v1(target)
+            collision = target / ".agent-plus/active-chain-example.json"
+            real_preflight = manager._preflight_candidate_only_destinations
+
+            def create_after_preflight(filesystem: Any, relatives: list[str]) -> None:
+                real_preflight(filesystem, relatives)
+                collision.write_text("concurrent-project-file\n", encoding="utf-8")
+
+            with (
+                mock.patch.object(
+                    manager,
+                    "_preflight_candidate_only_destinations",
+                    side_effect=create_after_preflight,
+                ),
+                self.assertRaises(manager.ManagerError),
+            ):
+                manager.upgrade(target)
+            journal = self.journal(target)
+            self.assertNotIn(str(collision.relative_to(target)), journal["committed_files"])
+            manager.recover(target)
+            self.assertEqual(collision.read_text(encoding="utf-8"), "concurrent-project-file\n")
+            self.assertFalse((target / ".agent-plus/upgrade-transaction.json").exists())
+
+    def test_recovery_blocks_if_a_committed_candidate_only_file_changed(self) -> None:
+        manager = self.load_manager()
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            self.downgrade_to_v1(target)
+            calls = 0
+            real_create = manager._create_for_upgrade
+
+            def fail_second_create(*args: Any, **kwargs: Any) -> str:
+                nonlocal calls
+                calls += 1
+                if calls == 2:
+                    raise manager.ManagerError("injected candidate-only commit failure")
+                return real_create(*args, **kwargs)
+
+            with (
+                mock.patch.object(manager, "_create_for_upgrade", side_effect=fail_second_create),
+                self.assertRaises(manager.ManagerError),
+            ):
+                manager.upgrade(target)
+            committed_addition = target / ".agent-plus/active-chain-example.json"
+            committed_addition.write_text("external-replacement\n", encoding="utf-8")
+            with self.assertRaisesRegex(
+                manager.ManagerError, "Candidate-only recovery file changed"
+            ):
+                manager.recover(target)
+            self.assertEqual(
+                committed_addition.read_text(encoding="utf-8"), "external-replacement\n"
+            )
+            self.assertTrue((target / ".agent-plus/upgrade-transaction.json").is_file())
+
+    def test_additive_journal_set_identity_forgery_is_rejected(self) -> None:
+        manager = self.load_manager()
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            self.downgrade_to_v1(target)
+            with manager.TransactionFilesystem(target) as filesystem:
+                manifest = manager._manifest(filesystem)
+                candidate = manager._manifest_data(filesystem, "research")
+            baseline = manager._journal_base("synthetic", "research", manifest, candidate)
+            attacks = {
+                "candidate-only-subset": lambda value: value.__setitem__(
+                    "candidate_only_files", value["candidate_only_files"][:-1]
+                ),
+                "unknown-prior-set": lambda value: value.__setitem__(
+                    "prior_managed_set_id", "unknown-managed-set"
+                ),
+                "unknown-candidate-set": lambda value: value.__setitem__(
+                    "candidate_managed_set_id", "unknown-managed-set"
+                ),
+            }
+            for label, mutate in attacks.items():
+                with self.subTest(label=label):
+                    forged = json.loads(json.dumps(baseline))
+                    mutate(forged)
+                    with self.assertRaises(manager.ManagerError):
+                        manager._validate_journal(forged)
+
+    def test_additive_upgrade_recovery_removes_candidate_only_files(self) -> None:
+        manager = self.load_manager()
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            target.mkdir()
+            self.initialize(target)
+            self.downgrade_to_v1(target)
+            before = self.installation_snapshot(target)
+            calls = 0
+            real_create = manager._create_for_upgrade
+
+            def fail_second_create(*args: Any, **kwargs: Any) -> str:
+                nonlocal calls
+                calls += 1
+                if calls == 2:
+                    raise manager.ManagerError("injected candidate-only commit failure")
+                return real_create(*args, **kwargs)
+
+            with (
+                mock.patch.object(manager, "_create_for_upgrade", side_effect=fail_second_create),
+                self.assertRaises(manager.ManagerError),
+            ):
+                manager.upgrade(target)
+            journal = self.journal(target)
+            self.assertEqual(journal["schema_version"], "agent-plus-upgrade-transaction/v3")
+            self.assertEqual(
+                journal["candidate_only_files"],
+                [".agent-plus/active-chain-example.json", "scripts/active_chain_guard.py"],
+            )
+            self.assertTrue((target / ".agent-plus/active-chain-example.json").is_file())
+            manager.recover(target)
+            self.assert_installation_snapshot(target, before)
+            self.assertFalse((target / ".agent-plus/active-chain-example.json").exists())
+            self.assertFalse((target / "scripts/active_chain_guard.py").exists())
+            for relative in ("scripts/ai-context.sh", "scripts/agent-plus-doctor.sh"):
+                self.assertTrue((target / relative).stat().st_mode & 0o111, relative)
+            self.assertFalse((target / ".agent-plus/upgrade-transaction.json").exists())
+
+    def test_managed_file_removal_is_not_a_supported_migration(self) -> None:
+        manager = self.load_manager()
+        prior = {
+            "schema_version": "agent-plus-install/v2",
+            "agent_plus_version": "0.3.0",
+            "managed_set_id": manager.CURRENT_MANAGED_SET_ID,
+            "profile": "research",
+            "source_repository": manager.SOURCE_REPOSITORY,
+            "managed_files": {relative: "0" * 64 for relative in manager.CURRENT_MANAGED_FILES},
+        }
+        candidate = json.loads(json.dumps(prior))
+        candidate["managed_files"].pop("AGENTS.md")
+        with self.assertRaisesRegex(manager.ManagerError, "Managed-file removal is not supported"):
+            manager._journal_base("synthetic", "research", prior, candidate)
+
     def test_upgrade_success_preserves_project_owned_state_and_cleans_transaction(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / "project"
@@ -121,6 +470,12 @@ class AgentPlusLifecycleTests(unittest.TestCase):
             self.run_command("upgrade", "--target", str(target))
             self.assertEqual(state.read_text(encoding="utf-8"), "project-owned-state\n")
             self.assertEqual(project_rules.read_text(encoding="utf-8"), "project-owned-rules\n")
+            for relative in (
+                "scripts/ai-context.sh",
+                "scripts/agent-plus-doctor.sh",
+                "scripts/active_chain_guard.py",
+            ):
+                self.assertTrue((target / relative).stat().st_mode & 0o111, relative)
             self.assertFalse((target / ".agent-plus/upgrade-transaction.json").exists())
             self.assertFalse(any((target / ".agent-plus/.transactions").iterdir()))
 
@@ -142,7 +497,7 @@ class AgentPlusLifecycleTests(unittest.TestCase):
                         self.run_command("recover", "--target", str(target))
                     self.induce_commit_failure(manager, target, fail_at)
                     current = self.journal(target)
-                    self.assertEqual(current["schema_version"], "agent-plus-upgrade-transaction/v2")
+                    self.assertEqual(current["schema_version"], "agent-plus-upgrade-transaction/v3")
                     self.assertEqual(current["state"], "RECOVERY_REQUIRED")
                     self.assertTrue(current["snapshot_complete"])
                     self.run_command("status", "--target", str(target), expected=1)

@@ -72,6 +72,10 @@ python3 skills/outcome-audit/outcome_audit.py report RECORDS.json --bands OWNER_
 Ambiguous history is an explicit abstention. It is not a failed attempt and does not enter a
 denominator.
 
+Failed attempts are first-class evidence. Keep them in the prospective record set after eventual
+success so first-pass quality, retry burden, duration, and causal failure concentration remain
+visible. Never replace the attempt history with only the terminal PASS.
+
 ### Sanitized private-evidence receipt
 
 Run the receipt command from the project root. It accepts no private source path or output path:

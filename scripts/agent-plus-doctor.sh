@@ -3,11 +3,9 @@ set -eu
 
 DOCTOR_ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
-# This function is also sourced by copied context scripts. Keep the legacy
-# verifier in one place so every copied consumer enforces the same contract.
-agent_plus_check_legacy_adoption() {
+agent_plus_check_manifest() {
   [ "$#" -eq 1 ] || {
-    printf '%s\n' 'Usage: agent_plus_check_legacy_adoption DIRECTORY' >&2
+    printf '%s\n' 'Usage: agent_plus_check_manifest DIRECTORY' >&2
     return 2
   }
   TARGET_DIR="$1" python3 - <<'PY'
@@ -15,13 +13,21 @@ import hashlib
 import json
 import os
 import stat
-import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 root = Path(os.environ["TARGET_DIR"])
-agent = root / ".agent-plus"
-declaration_path = agent / "legacy-adoption.json"
-managed_files = {
+legacy_schema = "agent-plus-install/v1"
+current_schema = "agent-plus-install/v2"
+legacy_set_id = "agent-plus-releases-0.2.0-0.3.0"
+current_set_id = "agent-plus-active-chain-v1"
+base_keys = {
+    "schema_version",
+    "agent_plus_version",
+    "profile",
+    "source_repository",
+    "managed_files",
+}
+legacy_files = {
     "AGENTS.md",
     "CLAUDE.md",
     "AI_WORKFLOW.md",
@@ -36,6 +42,111 @@ managed_files = {
     "scripts/agent-plus-doctor.sh",
     "tests/test_interface_consumer_guard.py",
 }
+managed_sets = {
+    legacy_set_id: legacy_files,
+    current_set_id: legacy_files
+    | {".agent-plus/active-chain-example.json", "scripts/active_chain_guard.py"},
+}
+required_executables = {
+    "scripts/ai-context.sh",
+    "scripts/agent-plus-doctor.sh",
+    "scripts/active_chain_guard.py",
+}
+
+def no_duplicates(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate JSON object key")
+        value[key] = item
+    return value
+
+agent = root / ".agent-plus"
+manifest_path = agent / "install-manifest.json"
+if agent.is_symlink() or not agent.is_dir():
+    raise SystemExit("Agent+ directory is missing or unsafe")
+if manifest_path.is_symlink() or not manifest_path.is_file():
+    raise SystemExit("Install manifest is missing or unsafe")
+try:
+    manifest = json.loads(
+        manifest_path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates
+    )
+except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+    raise SystemExit(f"Invalid install manifest: {exc}") from exc
+if not isinstance(manifest, dict):
+    raise SystemExit("Invalid install manifest")
+schema = manifest.get("schema_version")
+if schema == legacy_schema:
+    if set(manifest) != base_keys:
+        raise SystemExit("Unsupported install manifest")
+    if manifest.get("agent_plus_version") not in {"0.2.0", "0.3.0"}:
+        raise SystemExit("Unsupported legacy install manifest version")
+    managed_set_id = legacy_set_id
+elif schema == current_schema:
+    if set(manifest) != base_keys | {"managed_set_id"}:
+        raise SystemExit("Unsupported install manifest")
+    managed_set_id = manifest.get("managed_set_id")
+    if not isinstance(managed_set_id, str) or managed_set_id not in managed_sets:
+        raise SystemExit("Unknown Agent+ managed-set identity")
+else:
+    raise SystemExit("Unsupported install manifest")
+version = manifest.get("agent_plus_version")
+if not isinstance(version, str) or not version or any(character.isspace() for character in version):
+    raise SystemExit("Invalid Agent+ install version")
+if manifest.get("profile") not in {"research", "product", "scouting"}:
+    raise SystemExit("Invalid Agent+ install profile")
+if manifest.get("source_repository") != "https://github.com/traftonobrien/agent-plus":
+    raise SystemExit("Invalid Agent+ source identity")
+managed = manifest.get("managed_files")
+if not isinstance(managed, dict) or set(managed) != managed_sets[managed_set_id]:
+    raise SystemExit("Install manifest managed-file set is not exact")
+for relative, expected in managed.items():
+    if not isinstance(expected, str):
+        raise SystemExit(f"Invalid managed digest: {relative}")
+    if len(expected) != 64 or any(character not in "0123456789abcdef" for character in expected):
+        raise SystemExit(f"Invalid managed digest: {relative}")
+    path = root
+    parts = PurePosixPath(relative).parts
+    try:
+        for index, part in enumerate(parts):
+            path /= part
+            details = path.lstat()
+            if stat.S_ISLNK(details.st_mode):
+                raise SystemExit(f"Unsafe or missing managed file: {relative}")
+            if index < len(parts) - 1 and not stat.S_ISDIR(details.st_mode):
+                raise SystemExit(f"Unsafe or missing managed file: {relative}")
+        if not stat.S_ISREG(details.st_mode):
+            raise SystemExit(f"Unsafe or missing managed file: {relative}")
+        if relative in required_executables and not details.st_mode & (
+            stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+        ):
+            raise SystemExit(f"Managed command is not executable: {relative}")
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError as exc:
+        raise SystemExit(f"Unsafe or missing managed file: {relative}") from exc
+    if actual != expected:
+        raise SystemExit(f"Managed file drift: {relative}")
+PY
+}
+
+# This function is also sourced by copied context scripts. Keep the legacy
+# verifier in one place so every copied consumer enforces the same contract.
+agent_plus_check_legacy_adoption() {
+  [ "$#" -eq 1 ] || {
+    printf '%s\n' 'Usage: agent_plus_check_legacy_adoption DIRECTORY' >&2
+    return 2
+  }
+  agent_plus_check_manifest "$1"
+  TARGET_DIR="$1" python3 - <<'PY'
+import json
+import os
+import stat
+import subprocess
+from pathlib import Path
+
+root = Path(os.environ["TARGET_DIR"])
+agent = root / ".agent-plus"
+declaration_path = agent / "legacy-adoption.json"
 
 def no_duplicates(pairs):
     value = {}
@@ -79,37 +190,8 @@ except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
     raise SystemExit(f"Invalid install manifest: {exc}") from exc
 if not isinstance(manifest, dict):
     raise SystemExit("Invalid install manifest")
-if set(manifest) != {
-    "schema_version",
-    "agent_plus_version",
-    "profile",
-    "source_repository",
-    "managed_files",
-}:
-    raise SystemExit("Unsupported install manifest")
-if manifest.get("schema_version") != "agent-plus-install/v1":
-    raise SystemExit("Unsupported install manifest")
-if manifest.get("source_repository") != "https://github.com/traftonobrien/agent-plus":
-    raise SystemExit("Invalid Agent+ source identity")
 if manifest.get("profile") != declaration["profile"]:
     raise SystemExit("Legacy adoption profile does not match install manifest")
-managed = manifest.get("managed_files")
-if not isinstance(managed, dict) or set(managed) != managed_files:
-    raise SystemExit("Install manifest managed-file set is not exact")
-for relative, expected in managed.items():
-    if not isinstance(expected, str):
-        raise SystemExit(f"Invalid managed digest: {relative}")
-    if len(expected) != 64 or any(character not in "0123456789abcdef" for character in expected):
-        raise SystemExit(f"Invalid managed digest: {relative}")
-    path = root / relative
-    if path.is_symlink() or not path.is_file():
-        raise SystemExit(f"Unsafe or missing managed file: {relative}")
-    try:
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
-    except OSError as exc:
-        raise SystemExit(f"Cannot read managed file: {relative}") from exc
-    if actual != expected:
-        raise SystemExit(f"Managed file drift: {relative}")
 
 hook = root / ".agent-plus" / "project-startup-check.sh"
 try:
@@ -180,6 +262,8 @@ if [ -e "$TARGET_DIR/.agent-plus/legacy-adoption.json" ] || [ -L "$TARGET_DIR/.a
   printf 'Agent+ doctor: PASS (%s) [legacy-adopted]\n' "$TARGET_DIR"
   exit 0
 fi
+
+agent_plus_check_manifest "$TARGET_DIR"
 
 TARGET_DIR="$TARGET_DIR" python3 - <<'PY'
 import os

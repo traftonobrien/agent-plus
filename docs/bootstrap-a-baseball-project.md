@@ -65,6 +65,8 @@ content. Missing, denied, mismatched, or unstructured evidence is `BLOCK`.
 - Generic Agent+ controls remain version-managed. Put local rules in `.agent-plus/PROJECT.md`.
 - Every generated project receives the plain-language output policy and adapters for Codex, Claude,
   and Cursor. An external `i-have-adhd` skill or plugin is optional.
+- Every generated project receives the active-chain guard and one sanitized example capsule for
+  owner-authorized multi-stage work.
 
 ## Adopt an existing project
 
@@ -119,10 +121,11 @@ scripts/agent-plus upgrade --target "/absolute/path/to/baseball-project"
 scripts/agent-plus recover --target "/absolute/path/to/baseball-project"
 ```
 
-The installation manifest identifies files that Agent+ manages. An upgrade stops when one of those
-files changed locally. Resolve that change through an upstream contribution or a deliberate local
-fork. If a filesystem error interrupts an upgrade, Agent+ preserves one complete recovery snapshot
-and durable transaction journal; use the single `recover` route to restore the prior managed state.
+The installation manifest records one exact managed-set identity. An upgrade stops when a managed
+file or required executable mode changed locally. It also stops before overwriting an unmanaged
+destination. Managed-set upgrades can add files but cannot remove them. If an upgrade is interrupted,
+Agent+ restores the prior files and removes only candidate files that the transaction created.
+Use the single `recover` route to restore the prior managed state.
 Agent+ never replaces project-owned memory, planning state, research records, data, or the
 engineering boundary ledger.
 

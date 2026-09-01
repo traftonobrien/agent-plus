@@ -93,7 +93,11 @@ class AgentPlusLegacyAdoptionTests(unittest.TestCase):
             destination = target / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source / relative, destination)
-            if relative in {"scripts/ai-context.sh", "scripts/agent-plus-doctor.sh"}:
+            if relative in {
+                "scripts/ai-context.sh",
+                "scripts/agent-plus-doctor.sh",
+                "scripts/active_chain_guard.py",
+            }:
                 destination.chmod(0o755)
         hook = target / ".agent-plus/project-startup-check.sh"
         hook.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
@@ -101,6 +105,52 @@ class AgentPlusLegacyAdoptionTests(unittest.TestCase):
         (target / ".claude-memory.md").write_text("legacy-memory-sentinel\n", encoding="utf-8")
         (target / ".planning/STATE.md").write_text("legacy-state-sentinel\n", encoding="utf-8")
         (target / "project-owned.txt").write_text("preserve\n", encoding="utf-8")
+        return target
+
+    def make_v1_adopted_target(self, temporary: Path) -> Path:
+        target = temporary / "v1 adopted target"
+        target.mkdir()
+        self.run_command(
+            "init",
+            "--target",
+            str(target),
+            "--profile",
+            "research",
+            "--brain-note",
+            "Synthetic",
+        )
+        manifest_path = target / ".agent-plus/install-manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        for relative in (
+            ".agent-plus/active-chain-example.json",
+            "scripts/active_chain_guard.py",
+        ):
+            (target / relative).unlink()
+            manifest["managed_files"].pop(relative)
+        manifest["schema_version"] = "agent-plus-install/v1"
+        manifest["agent_plus_version"] = "0.3.0"
+        manifest.pop("managed_set_id")
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (target / ".agent-plus/legacy-adoption.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": "agent-plus-legacy-adoption/v1",
+                    "mode": "legacy-adopted",
+                    "profile": "research",
+                    "startup_check_path": ".agent-plus/project-startup-check.sh",
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        hook = target / ".agent-plus/project-startup-check.sh"
+        hook.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        hook.chmod(0o755)
         return target
 
     def load_manager(self) -> Any:
@@ -241,6 +291,40 @@ class AgentPlusLegacyAdoptionTests(unittest.TestCase):
                 (target / ".agent-plus/legacy-adoption.json").read_bytes(), declaration_before
             )
             self.assertEqual((target / ".agent-plus/project-startup-check.sh").read_bytes(), hook_before)
+            self.run_command("doctor", "--target", str(target))
+            self.run_command("status", "--target", str(target))
+
+    def test_v1_legacy_adoption_upgrades_to_current_managed_set(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = self.make_v1_adopted_target(Path(directory))
+            declaration_before = (target / ".agent-plus/legacy-adoption.json").read_bytes()
+            hook_before = (target / ".agent-plus/project-startup-check.sh").read_bytes()
+            status = self.run_command("status", "--target", str(target), expected=3)
+            self.assertIn("UPDATE_AVAILABLE", status.stdout)
+            self.run_command("doctor", "--target", str(target))
+            self.run_command("upgrade", "--target", str(target))
+            self.assertEqual(
+                (target / ".agent-plus/legacy-adoption.json").read_bytes(), declaration_before
+            )
+            self.assertEqual((target / ".agent-plus/project-startup-check.sh").read_bytes(), hook_before)
+            manifest = json.loads(
+                (target / ".agent-plus/install-manifest.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(manifest["schema_version"], "agent-plus-install/v2")
+            self.assertEqual(manifest["managed_set_id"], "agent-plus-active-chain-v1")
+            self.assertTrue((target / "scripts/active_chain_guard.py").is_file())
+            self.assertTrue((target / ".agent-plus/active-chain-example.json").is_file())
+            for relative in (
+                "scripts/ai-context.sh",
+                "scripts/agent-plus-doctor.sh",
+                "scripts/active_chain_guard.py",
+            ):
+                self.assertTrue((target / relative).stat().st_mode & 0o111, relative)
+            copied_doctor = self.run_target_command(
+                target,
+                [str(target / "scripts/agent-plus-doctor.sh"), "--target", str(target)],
+            )
+            self.assertIn("legacy-adopted", copied_doctor.stdout)
             self.run_command("doctor", "--target", str(target))
             self.run_command("status", "--target", str(target))
 

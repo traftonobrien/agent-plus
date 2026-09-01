@@ -4,7 +4,9 @@ Agent+ seeks the minimum sufficient evidence for a real decision.
 
 ## Necessity card
 
-Before new work, complete [the essential task template](.planning/templates/ESSENTIAL-TASK.md).
+Before substantive, scientific, irreversible, promotion, or release work, complete [the essential
+task template](.planning/templates/ESSENTIAL-TASK.md). Routine reversible work uses its changed file,
+command, focused check, and result as the local record.
 
 | Field | Required answer |
 | --- | --- |
@@ -41,6 +43,35 @@ This control adapts Dietrich Gebert's MIT-licensed
 upstream commit is
 [`2ed6c52c9d7e5e56942508591085fd45dea277d3f`](https://github.com/DietrichGebert/ponytail/tree/2ed6c52c9d7e5e56942508591085fd45dea277d3f).
 
+### Lean R migration rule
+
+Port complete accepted behavior, not only visible labels or final counts. Trace exclusions,
+missing and unknown values, exceptional cases, and downstream consumers before claiming parity.
+Test the dominant operation on representative volume before a long run; use vectorized operations
+and joins for large tables. Cache expensive stable stages separately from cheap, frequently changed
+targets so a downstream correction does not repeat upstream computation.
+
+Before an expensive target run, inspect the exact dependency graph and record which named targets
+are current or outdated. Run the smallest named target that can reach the decision endpoint. Reuse
+current expensive ancestors and reject a broad rebuild when only a cheap downstream target changed.
+Treat a downstream reset as a new failure class only when deterministic graph evidence proves it
+cannot reach the exhausted upstream interface.
+
+Preserve failed attempts alongside the eventual result. Record their causal failure code, measured
+duration when available, and the correction or simplification that changed the outcome. Use the
+existing outcome audit when prospective rates are needed; do not create a second metrics ledger.
+
+### Complexity is a diagnostic
+
+Use high cyclomatic complexity or deeply nested branching as a prompt to simplify the real decision
+flow. Prefer fewer states, combined equivalent predicates, table-driven rules, and direct data
+transformations when they make behavior clearer. A lower score is useful only when focused tests
+preserve behavior and the resulting code is easier to follow.
+
+Do not impose one universal numeric threshold, add a dependency only to produce the score, or split
+the same branching across meaningless helpers to satisfy a lint rule. Complexity is evidence for
+subtraction, not proof of correctness or quality.
+
 ## Falsifier and question rule
 
 Before dispatch, name the furthest authorized decision-relevant endpoint and one fact that would
@@ -53,6 +84,21 @@ sentence-level provenance tags, or phase-by-phase critique unless the task names
 that the existing evaluator and verifier cannot test.
 
 ## Engineering closure rule
+
+### Continuous repair default
+
+Routine reversible work proceeds through small, obvious mechanical defects. Fix the localized issue,
+run the smallest adequate check, and continue the same bounded task. Do not turn each minor fix into
+a new review or stop state.
+
+Escalate after an ambiguous defect, two adjacent failures at one boundary, or any reach into
+scientific meaning, real-data access, authority, promotion, release, or reviewer evidence. Use the
+boundary sweep and bundled-correction rules below when escalation is required.
+
+Two consecutive launches that expose adjacent deterministic failures at one boundary, before any
+scientific result exists, are `LOOP_DETECTED`. Record both symptoms in the existing ledger or
+receipt. Then complete one bounded read-only sweep and make one bundled correction. Do not add a
+new tracker or relabel a third broad run as a different interface.
 
 Classify the boundary before dispatch:
 
@@ -69,6 +115,11 @@ After the first engineering review `BLOCK`, expand the bounded attack matrix bef
 second `BLOCK` at the same interface or failure class, do not authorize a third local patch cycle.
 Escalate to simplification: constrain or replace the interface, remove unnecessary caller choices,
 and test the new boundary end to end. A contract change still requires the human owner.
+
+If simplification would weaken or reinterpret an accepted scientific, privacy, security,
+authority, or claim boundary, stop with `OWNER_DECISION_REQUIRED`. Name the smallest mutually
+exclusive choices and the evidence each choice needs. The owner decision starts a new chain; it is
+not another repair attempt.
 
 Prefer designs that make invalid states impossible. For temporary roots, paths, modes, schemas, or
 other infrastructure inputs, use a fixed approved namespace and a small validated identifier when
@@ -123,6 +174,12 @@ all later stages are sequential. Use one writer per repository, no overlapping w
 spawn, no silent fallback, and one bounded wait per stage. A maker, evaluator, or reviewer `BLOCK`
 stops the chain. Never auto-repair after a reviewer `BLOCK`.
 
+Route a multi-stage chain through one `.agent-plus/active-chain.json` capsule. Validate `continue`
+before each stage and `closeout` before ending the chain. The capsule references live authority by
+repository-relative path and carries no copied scientific values, schemas, thresholds, hashes, or
+artifact identities. `PASS`, `NULL`, and `BLOCK` are valid terminal states. Early closeout is not.
+The capsule is routing state only; the engineering ledger and anti-loop guard remain authoritative.
+
 Overnight work needs an explicit owner command and is limited to read-only or reversible engineering
 with a fixed queue of at most eight items. It cannot perform live, scientific, or promotion work.
 
@@ -146,6 +203,10 @@ above 20%.
 ## Evidence reuse
 
 Reuse evidence while its claim, implementation, inputs, environment, and acceptance contract remain unchanged. New session context does not invalidate evidence.
+
+Live policy, contracts, code, and deterministic evidence outrank memory, planning state, the Brain,
+and transcripts. These context layers route work but do not grant authority. Reference live
+authority files instead of copying their values into a task packet or chain capsule.
 
 ## Proportionate verification
 

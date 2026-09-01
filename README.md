@@ -22,9 +22,11 @@ scripts/agent-plus doctor --target "/absolute/path/to/baseball-project"
 scripts/agent-plus status --target "/absolute/path/to/baseball-project"
 ```
 
-The installer creates a version manifest. `status` detects local changes to managed controls.
-`upgrade` refuses to overwrite such changes and records one durable recovery transaction if a
-filesystem failure interrupts the commit; resume that transaction with `recover --target ...`.
+The installer creates a versioned, exact managed-set manifest. `status` detects byte or required
+executable-mode changes to managed controls. `upgrade` refuses local drift and unmanaged path
+collisions. It permits additive managed-set changes only. An interrupted additive update records
+which new files it created, so `recover --target ...` removes only those files and restores the
+prior installation.
 Project data, memory, plans, evidence, and ledgers are project-owned and are never replaced by an
 Agent+ upgrade.
 
@@ -96,7 +98,10 @@ flowchart LR
 | `ESSENTIAL_WORK_PROTOCOL.md` | Necessity card, evidence reuse, and stop rules. |
 | `.planning/` | Synthetic project, roadmap, state, plan, evaluation, review, and BLOCK records. |
 | `.agent-plus/engineering-boundaries.json` | Small mutable ledger for engineering BLOCK counts and reset state. |
+| `.agent-plus/active-chain-example.json` | Sanitized routing capsule for one bounded multi-stage chain. |
 | `scripts/anti_loop_guard.py` | Fail-closed validator for engineering-sweep and first-error packets. |
+| `scripts/active_chain_guard.py` | Fail-closed stage-routing and closeout validator. |
+| `scripts/verify_release_candidate.py` | Zero-option verifier for the fixed public release candidate. |
 | `docs/` | Architecture, safety boundaries, and operating rules. |
 | `skills/` | Custom Agent+ procedures. |
 | `templates/` | Reusable blank records. |
@@ -115,9 +120,19 @@ voice-preserving detect and edit workflow with deterministic evidence-token chec
 official release and uses the transactional lifecycle for an explicitly authorized update.
 [`outcome-audit`](skills/outcome-audit/SKILL.md) records closed prospective workflow outcomes,
 reports honest reliability measures, and verifies a sanitized private-evidence receipt through a
-fixed project-local interface.
+fixed project-local interface. It retains failed attempts after eventual success; terminal PASS
+must not erase first-pass failures, retry cost, duration, or causal failure concentration.
 The external engineering skills used alongside Agent+ are documented in
 [integrated tools](docs/integrated-tools.md).
+
+The [active-chain capsule](docs/active-chain-capsule.md) routes a multi-stage chain without turning
+mutable progress state into authority.
+
+The [release-candidate verifier](docs/release-candidate-verification.md) builds the exact fixed
+candidate in a detached repository. It uses no source-linked objects and simulates the proposed
+`VERSION`. It runs pinned static and public-package gates, then checks source and candidate integrity. Run it with
+`python3 scripts/verify_release_candidate.py`; the command accepts no arguments and does not grant
+release authority.
 
 The [implementation subtraction rule](ESSENTIAL_WORK_PROTOCOL.md#implementation-subtraction-ladder)
 adapts Dietrich Gebert's Ponytail decision ladder. Its [attribution record](docs/attribution/implementation-subtraction.md)
@@ -138,7 +153,8 @@ remain authoritative.
 7. Run `scripts/ai-context.sh` to load the same compact control packet used by the public example.
 8. Write a question with a decision and an explicit null or BLOCK path.
 9. Complete the [necessity card](.planning/templates/ESSENTIAL-TASK.md), then run the smallest deterministic check that can resolve the task.
-10. Request fresh verification before promoting any result to a claim.
+10. For a multi-stage chain, copy the active-chain example and validate every transition and closeout.
+11. Request fresh verification before promoting any result to a claim.
 
 The anti-loop guard uses a closed structured schema. Every decision field is a fixed enum or an
 exact identifier from the guard-owned outcome catalog. A ledger may select a subset of catalog
@@ -150,6 +166,11 @@ ledger-approved `outcome_kind` and `outcome_id`, one stop policy, and ledger-bou
 Engineering reviews must finish their attack matrix and named coverage. Two BLOCKs at one boundary
 require an architecture reset with the ledger-approved namespace and attempt identifier; scientific
 and live packets remain first-error gates.
+
+The active-chain guard keeps routing state separate from authority. Its capsule references live
+repository files, orders the bounded stages, records one terminal `PASS`, `NULL`, or `BLOCK`, and
+rejects early closeout. It does not store scientific values, schemas, thresholds, hashes, or
+artifact identities.
 
 A reviewed closed-interface recovery remains closed by default. For unattended work, Agent+ uses
 one authorized launch, process-written durable evidence, zero AI polling, and one result check after

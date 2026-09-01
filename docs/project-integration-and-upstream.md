@@ -23,6 +23,10 @@ the canonical source of that improvement.
 6. Upgrade the proving project from that version.
 7. Keep any project-only adapter local.
 
+Use the current `0.3.x` patch line for small compatible fixes, documentation, and control
+refinements. Use a new `0.x.0` minor release only for a genuinely new public capability or authority
+boundary.
+
 Do not copy private plans, data, receipts, paths, or transcripts into Agent+. Do not copy an
 unreviewed proving-project control directly into the canonical repository.
 

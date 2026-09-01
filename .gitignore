@@ -12,8 +12,10 @@ artifacts/
 logs/
 transcripts/
 .agent-plus/local-projects.json
+.agent-plus/active-chain.json
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+outputs/

@@ -1,0 +1,20 @@
+{
+  "schema_version": "agent-plus-active-chain/v1",
+  "chain_id": "public-example-chain",
+  "objective": "Verify one bounded public example without scientific execution.",
+  "status": "pass",
+  "current_stage": null,
+  "terminal_condition": "pass_null_or_block",
+  "change_kind": "routine",
+  "stages": [
+    {"id": "plan", "role": "controller", "status": "pass", "evidence": "AGENTS.md"},
+    {"id": "make", "role": "maker", "status": "pass", "evidence": "AGENTS.md"},
+    {"id": "evaluate", "role": "evaluator", "status": "pass", "evidence": "AI_WORKFLOW.md"},
+    {"id": "review", "role": "verifier", "status": "pass", "evidence": "AI_WORKFLOW.md"},
+    {"id": "closeout", "role": "closeout", "status": "pass", "evidence": "ESSENTIAL_WORK_PROTOCOL.md"}
+  ],
+  "same_interface_failure_limit": 2,
+  "same_interface_failures": 0,
+  "authority_refs": ["AGENTS.md", "AI_WORKFLOW.md", "ESSENTIAL_WORK_PROTOCOL.md"],
+  "hard_boundaries": ["no_data_access", "no_git_mutation", "no_release", "no_scientific_claim"]
+}

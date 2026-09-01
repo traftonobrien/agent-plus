@@ -315,6 +315,132 @@
         }
       }
     },
+    "AGENT_PLUS_ACTIVE_CHAIN_ROUTING": {
+      "failure_classes": {
+        "active-chain-lifecycle-delivery": {
+          "architecture_reset_required": false,
+          "authorized_attempt_id": "attempt-01",
+          "block_count": 0,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "unversioned-managed-set",
+            "same-set-only-upgrade",
+            "candidate-only-path-overwrite",
+            "managed-file-removal",
+            "doctor-without-manifest-hash-validation",
+            "initializer-partial-active-chain-delivery"
+          ],
+          "required_attack_matrix": [
+            "clean-init-guard-delivery",
+            "clean-init-example-delivery",
+            "current-manifest-set-identity",
+            "current-manifest-exact-set",
+            "v1-0-2-0-set-compatibility",
+            "v1-0-3-0-set-compatibility",
+            "unknown-v1-version-rejection",
+            "unknown-v2-set-identity-rejection",
+            "subset-current-set-rejection",
+            "superset-current-set-rejection",
+            "status-generation-update",
+            "additive-upgrade-state-preservation",
+            "candidate-only-path-collision-block",
+            "candidate-only-race-preservation",
+            "candidate-only-replacement-block",
+            "managed-removal-rejection",
+            "managed-executable-mode-preservation",
+            "partial-added-file-commit-recovery",
+            "recovery-removes-candidate-only-files",
+            "forged-journal-set-rejection",
+            "doctor-missing-guard",
+            "doctor-missing-example",
+            "doctor-managed-drift",
+            "legacy-adoption-upgrade",
+            "copied-doctor-manifest-parity",
+            "canonical-bootstrap-byte-binding",
+            "public-validator"
+          ],
+          "required_named_coverage": [
+            "manifest-schema",
+            "managed-set-registry",
+            "initializer",
+            "doctor",
+            "copied-doctor",
+            "status",
+            "transactional-upgrade",
+            "recovery-journal",
+            "collision-protection",
+            "managed-file-modes",
+            "legacy-adoption",
+            "active-chain-guard",
+            "active-chain-example",
+            "lifecycle-tests",
+            "legacy-tests",
+            "bootstrap",
+            "public-docs",
+            "public-validator"
+          ],
+          "reset_namespace": "agent-plus/active-chain-routing"
+        },
+        "active-chain-routing-and-cost-isolation": {
+          "architecture_reset_required": false,
+          "authorized_attempt_id": "attempt-01",
+          "block_count": 1,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "broad-current-ancestor-rerun",
+            "copied-authority-values",
+            "early-success-closeout",
+            "third-local-repair"
+          ],
+          "required_attack_matrix": [
+            "active-first-pending-routing",
+            "pass-closeout-complete",
+            "null-block-closeout",
+            "early-closeout-rejection",
+            "terminal-continue-rejection",
+            "stage-order-rejection",
+            "stage-evidence-binding",
+            "authority-path-containment",
+            "authority-symlink-rejection",
+            "long-authority-path",
+            "unknown-duplicate-json-rejection",
+            "nonfinite-and-boolean-count-rejection",
+            "malformed-enum-type-rejection",
+            "capsule-location-containment",
+            "capsule-size-boundary",
+            "two-failure-reset-enforcement",
+            "anti-loop-authority-separation",
+            "canonical-bootstrap-byte-binding",
+            "template-policy-routing",
+            "exact-target-graph-default",
+            "public-validator"
+          ],
+          "required_named_coverage": [
+            "guard-schema",
+            "guard-cli",
+            "terminal-semantics",
+            "path-safety",
+            "failure-limit",
+            "anti-loop-authority",
+            "canonical-script",
+            "bootstrap-script",
+            "example-capsules",
+            "synthetic-tests",
+            "workflow-policy",
+            "essential-protocol",
+            "task-template",
+            "research-profile",
+            "public-docs",
+            "public-validator"
+          ],
+          "reset_namespace": "agent-plus/active-chain-routing"
+        }
+      }
+    },
     "AGENT_PLUS_OUTCOME_AUDIT": {
       "failure_classes": {
         "closed-outcome-record-and-private-evidence-receipt": {
@@ -378,6 +504,132 @@
             "agent-plus-router",
             "public-docs",
             "public-validator"
+          ],
+          "reset_namespace": "agent-plus/0.2.0-release"
+        }
+      }
+    },
+    "AGENT_PLUS_POLICY_REFINEMENTS": {
+      "failure_classes": {
+        "unreviewed-unreleased-policy-bundle": {
+          "architecture_reset_required": false,
+          "authorized_attempt_id": "attempt-01",
+          "block_count": 0,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "broad-evaluator-auto-repair",
+            "visible-only-r-parity",
+            "broad-target-rebuild",
+            "complexity-score-gate",
+            "implicit-version-bump"
+          ],
+          "required_attack_matrix": [
+            "small-correction-syntax-only",
+            "small-correction-evaluator-only",
+            "reviewer-finding-auto-repair-rejected",
+            "second-correction-stop",
+            "behavior-change-stop",
+            "authority-change-stop",
+            "continuous-repair-routine-only",
+            "adjacent-failure-escalation",
+            "complete-r-behavior-parity",
+            "missing-unknown-exception-tracing",
+            "representative-volume-falsifier",
+            "vectorized-large-table-default",
+            "cost-separated-targets",
+            "exact-dependency-graph",
+            "failed-attempt-retention",
+            "no-duplicate-metrics-ledger",
+            "complexity-no-universal-threshold",
+            "complexity-no-score-only-dependency",
+            "complexity-no-helper-gaming",
+            "patch-versus-minor-versioning",
+            "canonical-bootstrap-binding",
+            "public-validator"
+          ],
+          "required_named_coverage": [
+            "workflow-policy",
+            "bootstrap-workflow-policy",
+            "essential-protocol",
+            "bootstrap-essential-protocol",
+            "research-profile",
+            "outcome-audit-integration",
+            "workflow-default-tests",
+            "versioning-policy",
+            "upstream-synchronization-policy",
+            "public-validator"
+          ],
+          "reset_namespace": "agent-plus/0.2.0-release"
+        }
+      }
+    },
+    "AGENT_PLUS_RELEASE_READINESS": {
+      "failure_classes": {
+        "manifest-strict-mypy-narrowing": {
+          "architecture_reset_required": true,
+          "authorized_attempt_id": "attempt-03",
+          "block_count": 2,
+          "permitted_outcomes": {
+            "agent-plus-control-plane-capability": "user_visible_capability"
+          },
+          "permitted_removed_choices": [
+            "implicit-any-managed-set-identity",
+            "skip-strict-mypy-release-gate",
+            "source-linked-write-store",
+            "inherited-git-environment",
+            "filter-mediated-source-copy",
+            "success-only-preservation-check",
+            "unbound-candidate-snapshot",
+            "stale-pass-receipt"
+          ],
+          "required_attack_matrix": [
+            "strict-mypy-manager",
+            "legacy-manifest-type-narrowing",
+            "current-manifest-type-narrowing",
+            "manifest-set-id-return-type",
+            "malformed-managed-set-typed-error",
+            "lifecycle-regression",
+            "simulated-0-4-0-public-validator",
+            "public-validator",
+            "detached-object-store-no-alternates",
+            "source-git-read-only",
+            "hostile-git-environment",
+            "source-index-baseline-before-git",
+            "source-head-refs-preservation",
+            "source-bytes-modes-preservation",
+            "source-mutation-on-failure",
+            "config-duplicate-types-paths",
+            "ancestor-symlink-and-nonregular-rejection",
+            "exact-base-plus-public-scope",
+            "literal-special-character-paths",
+            "raw-copy-no-git-filters",
+            "candidate-bytes-modes-binding",
+            "candidate-mutation-during-validation",
+            "receipt-failure-and-stale-pass",
+            "pinned-toolchain-and-child-environment",
+            "synthetic-end-to-end-success",
+            "synthetic-end-to-end-failure"
+          ],
+          "required_named_coverage": [
+            "manager-manifest-parser",
+            "manifest-set-helper",
+            "lifecycle-tests",
+            "legacy-adoption-tests",
+            "strict-mypy",
+            "release-scope-preflight",
+            "public-validator",
+            "verifier-cli",
+            "configuration-schema",
+            "source-snapshot",
+            "detached-export",
+            "subprocess-environment",
+            "raw-blob-staging",
+            "receipt-lifecycle",
+            "verifier-synthetic-tests",
+            "verifier-public-docs",
+            "interface-consumer-closure"
           ],
           "reset_namespace": "agent-plus/0.2.0-release"
         }

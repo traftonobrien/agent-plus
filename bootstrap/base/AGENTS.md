@@ -28,6 +28,9 @@ This is an Agent+-managed baseball project. Keep the research question, evidence
     authority, retries, context, reviewers, or promotion rights.
 13. Keep successful recovery interfaces closed. Unattended execution uses one authorized launch,
     process-written durable evidence, zero AI polling, and one result check on return.
+14. Route an owner-authorized multi-stage chain through one `.agent-plus/active-chain.json` capsule.
+    Validate it before each stage and before closeout. The capsule references live authority files;
+    it never copies scientific values, schemas, thresholds, or artifact identities.
 
 ## Context layers
 

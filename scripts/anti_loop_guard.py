@@ -68,7 +68,11 @@ OUTCOME_KINDS = frozenset(OUTCOME_CATALOG.values())
 # Architecture-reset namespaces are not arbitrary.  The ledger must name one of
 # these, and the packet must name exactly what the ledger names.
 APPROVED_RESET_NAMESPACES = frozenset(
-    {"agent-plus/0.2.0-release", "rehearsals/wave-b-f16-read-only"}
+    {
+        "agent-plus/0.2.0-release",
+        "agent-plus/active-chain-routing",
+        "rehearsals/wave-b-f16-read-only",
+    }
 )
 
 BOUNDARY_ID = re.compile(r"^[A-Z][A-Z0-9_-]{2,63}$")

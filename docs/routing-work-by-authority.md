@@ -33,6 +33,11 @@ fallback, and one bounded wait per stage. The reviewer receives the contract, ar
 attack matrix, not the maker transcript. A maker, evaluator, or reviewer `BLOCK` stops the chain;
 reviewer `BLOCK` does not trigger auto-repair.
 
+For a multi-stage chain, use one `.agent-plus/active-chain.json` capsule. Run the active-chain guard
+before each stage and before closeout. The capsule references live authority files by relative path;
+it does not copy scientific values or artifact identities. This makes stage order and terminal
+`PASS`, `NULL`, or `BLOCK` deterministic without turning routing state into authority.
+
 ## Unattended execution
 
 Use one authorized launch when a bounded process can complete without AI supervision. Name the
@@ -67,3 +72,8 @@ unchanged.
 
 A reviewed closed-interface recovery remains the default for its failure class. Removed caller
 choices stay removed until a new necessity card proves a named consumer and acceptance boundary.
+
+Before an expensive pipeline target runs, inspect the exact dependency graph. Reuse current costly
+ancestors and execute the smallest named target that reaches the decision endpoint. A downstream
+reset is a different interface only when graph evidence proves it cannot reach the exhausted
+upstream boundary.

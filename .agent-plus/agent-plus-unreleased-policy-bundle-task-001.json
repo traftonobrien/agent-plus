@@ -1,0 +1,59 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_UNRELEASED_POLICY_BUNDLE_TASK_001",
+  "packet_type": "task",
+  "boundary_id": "AGENT_PLUS_POLICY_REFINEMENTS",
+  "failure_class": "unreviewed-unreleased-policy-bundle",
+  "ledger_ref": "AGENT_PLUS_POLICY_REFINEMENTS/unreviewed-unreleased-policy-bundle",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "unreviewed-unreleased-policy-bundle"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "planned",
+  "attack_matrix": {
+    "status": "pending",
+    "items": [
+      "small-correction-syntax-only",
+      "small-correction-evaluator-only",
+      "reviewer-finding-auto-repair-rejected",
+      "second-correction-stop",
+      "behavior-change-stop",
+      "authority-change-stop",
+      "continuous-repair-routine-only",
+      "adjacent-failure-escalation",
+      "complete-r-behavior-parity",
+      "missing-unknown-exception-tracing",
+      "representative-volume-falsifier",
+      "vectorized-large-table-default",
+      "cost-separated-targets",
+      "exact-dependency-graph",
+      "failed-attempt-retention",
+      "no-duplicate-metrics-ledger",
+      "complexity-no-universal-threshold",
+      "complexity-no-score-only-dependency",
+      "complexity-no-helper-gaming",
+      "patch-versus-minor-versioning",
+      "canonical-bootstrap-binding",
+      "public-validator"
+    ]
+  },
+  "named_coverage": {
+    "status": "pending",
+    "items": [
+      "workflow-policy",
+      "bootstrap-workflow-policy",
+      "essential-protocol",
+      "bootstrap-essential-protocol",
+      "research-profile",
+      "outcome-audit-integration",
+      "workflow-default-tests",
+      "versioning-policy",
+      "upstream-synchronization-policy",
+      "public-validator"
+    ]
+  }
+}

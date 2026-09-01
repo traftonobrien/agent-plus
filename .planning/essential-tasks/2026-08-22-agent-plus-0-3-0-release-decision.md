@@ -102,12 +102,28 @@ review_closeout: "outcome receipt ef242f6a; legacy receipt 09058cb3"
 
 Status: `AGENT_PLUS_0_3_0_RELEASE_READY — ONE AUTHORIZED PUBLICATION ATTEMPT`.
 
+## Publication and remote verification — PASS
+
+- Release commit:
+  `ea147c0e2b2dac481238f96c37b56a31fe65033b`.
+- Annotated tag: `v0.3.0`.
+- Atomic push of `main` and `v0.3.0`: `PASS`.
+- Remote `main` and the peeled annotated tag both resolve to the release commit.
+- Public GitHub release:
+  `https://github.com/traftonobrien/agent-plus/releases/tag/v0.3.0`.
+- GitHub state: public, not draft, and not prerelease.
+- The only remaining untracked paths are the preserved local ledger lock, macOS/editor metadata,
+  and generated `outputs/`; none entered the release.
+- No consumer synchronization, SECOND LOOK edit, scientific work, or modeling followed.
+
+Status: `AGENT_PLUS_0_3_0_RELEASED — CONSUMER SYNCHRONIZATION REQUIRES SEPARATE AUTHORIZATION`.
+
 ## Closeout
 
 ```yaml
 decision_changed: yes
 blocker_closed: exact official post-0.2.0 release absent
 work_unlocked: separate SECOND LOOK adoption audit
-user_visible_outcome: pending exact Agent+ 0.3.0 public release
-repeat_trigger: release gate result
+user_visible_outcome: Agent+ 0.3.0 is an exact public release
+repeat_trigger: explicit consumer synchronization authorization or changed release state
 ```

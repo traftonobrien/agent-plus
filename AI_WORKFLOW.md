@@ -53,8 +53,46 @@ retry count, reviewer count, or the human owner's decision rights. Select one mo
 An owner command may authorize one engineering-only chain: plan → independent explorers → frozen
 evidence handoff → exclusive maker → deterministic evaluator → fresh reviewer → Sol synthesis. After
 exploration, stages are sequential. The reviewer receives the contract, artifact, deterministic
-receipts, and attack matrix, not the maker transcript. Stop on a maker, evaluator, or reviewer
-`BLOCK`; do not auto-repair after a reviewer `BLOCK`.
+receipts, and attack matrix, not the maker transcript. Stop on a maker or reviewer `BLOCK`; do not
+auto-repair after a reviewer `BLOCK`. Handle an eligible mechanical evaluator finding through the
+single small-correction rule below; otherwise stop on evaluator `BLOCK` too.
+
+For a multi-stage chain, keep one `.agent-plus/active-chain.json` routing capsule. It contains the
+objective, ordered stages, roles, terminal status, failure count, authority references, and closed
+hard-boundary categories. It does not contain scientific values, schemas, thresholds, hashes, or
+artifact identities. Every stage reads the live repository authority named by relative path.
+
+Run `scripts/active_chain_guard.py --capsule .agent-plus/active-chain.json --mode continue` before
+each next stage. Run it with `--mode closeout` before ending the chain. The guard accepts honest
+`PASS`, `NULL`, and `BLOCK` closeouts and rejects early success, stale or unsafe authority paths,
+out-of-order stages, missing durable evidence, and a third local repair after two failures.
+
+The capsule is routing state only. `same_interface_failures` is the ledger count observed when the
+chain starts. The anti-loop ledger and guard remain authoritative for repair, reset, execution, and
+review admission. The active-chain guard does not record a `BLOCK` or grant another attempt.
+
+### Small correction rule
+
+When a deterministic evaluator finds one obvious syntax, command-spelling, or test-harness false
+positive, fix it once and rerun the same bounded check without another owner prompt. Use this only
+when production behavior, data access, dependencies, authority, scientific meaning, and the
+acceptance boundary remain unchanged. Stop if the rerun fails, another correction is needed, the
+finding is substantive or ambiguous, or it came from a reviewer.
+
+### Continuous repair default
+
+For routine reversible work, keep momentum through small, obvious mechanical defects. Fix the
+localized issue, run the smallest check that proves the path still works, and continue the same
+bounded task. Do not create a formal stop, review, or new artifact for each minor correction.
+
+Escalate only when the defect is ambiguous, two adjacent failures appear at the same boundary, or
+the task reaches scientific meaning, real-data access, authority, promotion, release, or reviewer
+evidence. At those boundaries, use the applicable sweep, review, or first-error stop rule.
+
+Two consecutive launches that expose adjacent deterministic failures at one boundary, before any
+scientific result exists, are `LOOP_DETECTED`. Stop patch-and-run behavior. Record both symptoms in
+the existing ledger or receipt, complete one bounded read-only boundary sweep, and make one bundled
+correction. Do not create a new tracker for this signal.
 
 The controller plus workers uses two workers by default and never more than three. Use one writer
 per repository, no overlapping writes, no recursive spawn, no silent fallback, and one bounded wait
@@ -66,6 +104,10 @@ Context ceilings remain 25K tokens for ordinary sessions and 40K for premium ses
 4–8K for routine work, 8–15K for implementation, and 12–25K for premium review or architecture.
 Start a fresh session at 60–80K accumulated tokens. Capacity is not permission to exceed these
 limits or to burn allowance without a decision-relevant deliverable.
+
+Prefer a fresh session at a clean persisted-result or fresh-review boundary when the current
+session is heavily compacted. Resume from the capsule, live authority, and durable evidence, not a
+reconstructed transcript.
 
 | Boundary | Budget |
 | --- | --- |
@@ -127,6 +169,11 @@ The first engineering `BLOCK` triggers a consolidated attack matrix and one bund
 A second `BLOCK` at the same interface triggers architecture simplification, not another local
 patch. Remove unnecessary input freedom and prefer a constrained interface that makes invalid
 states impossible. Then use one deterministic receipt and one fresh integrated review.
+
+If the required simplification would weaken or reinterpret an accepted scientific, privacy,
+security, authority, or claim boundary, return `OWNER_DECISION_REQUIRED`. Give the smallest
+mutually exclusive choices and the evidence each choice needs. The owner decision starts a new
+chain; it is not a repair retry.
 
 The controller must reject packets that create a review for each local defect, stop at an
 intermediate artifact without an authority boundary, or measure progress only through tests,
@@ -194,7 +241,12 @@ python3 scripts/anti_loop_guard.py --ledger .agent-plus/engineering-boundaries.j
 
 ## Context and memory
 
-Start with `scripts/ai-context.sh`. Read the exact planning artifact named by `.claude-memory.md`. Do not load private transcripts or broad history by default. Use `.claude-memory.md` for current verified state and the Obsidian Brain for durable curated knowledge.
+Start with `scripts/ai-context.sh`. Read the exact planning artifact named by `.claude-memory.md`.
+Do not load private transcripts or broad history by default. Live policy, contracts, code, and
+deterministic evidence outrank hot memory, planning state, the Brain, and transcripts. Memory and
+planning state route work; they do not grant authority. Reference live authority files instead of
+copying their values into task packets or chain capsules. Use `.claude-memory.md` for current
+verified state and the Obsidian Brain for durable curated knowledge.
 
 ## Stop rules
 

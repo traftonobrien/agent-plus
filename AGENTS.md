@@ -27,6 +27,9 @@ Use this repository to document a controlled AI-assisted baseball research workf
     retries, context, reviewers, or promotion rights.
 13. Keep successful recovery interfaces closed. Unattended execution uses one authorized launch,
     process-written durable evidence, zero AI polling, and one result check on return.
+14. Route an owner-authorized multi-stage chain through one `.agent-plus/active-chain.json` capsule.
+    Validate it before each stage and before closeout. The capsule references live authority files;
+    it never copies scientific values, schemas, thresholds, or artifact identities.
 
 ## Public safety
 
@@ -55,6 +58,9 @@ progress, blocker, and current-work updates. Keep exact technical records in a f
   Never copy project data, private state, receipts, paths, or transcripts upstream.
 - Publish an accepted Agent+ version before a consumer project declares the reusable control
   synchronized.
+- Use a patch release on the current `0.3.x` line for small compatible fixes, documentation, and
+  control refinements. Reserve a new `0.x.0` minor release for a genuinely new public capability or
+  authority boundary.
 - Use `.agent-plus/local-projects.json` only as an ignored local registry. It can expose a bounded
   project context to an Agent Plus Brain task without merging project memory or authority.
 

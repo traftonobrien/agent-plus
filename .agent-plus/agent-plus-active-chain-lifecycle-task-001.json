@@ -1,0 +1,72 @@
+{
+  "schema_version": "anti-loop-guard/v2",
+  "packet_id": "AGENT_PLUS_ACTIVE_CHAIN_LIFECYCLE_TASK_001",
+  "packet_type": "task",
+  "boundary_id": "AGENT_PLUS_ACTIVE_CHAIN_ROUTING",
+  "failure_class": "active-chain-lifecycle-delivery",
+  "ledger_ref": "AGENT_PLUS_ACTIVE_CHAIN_ROUTING/active-chain-lifecycle-delivery",
+  "review_mode": "engineering_sweep",
+  "change_kind": "local_repair",
+  "outcome_kind": "user_visible_capability",
+  "outcome_id": "agent-plus-control-plane-capability",
+  "failure_class_coverage": [
+    "active-chain-lifecycle-delivery"
+  ],
+  "stop_policy": "collect_named_matrix",
+  "review_status": "planned",
+  "attack_matrix": {
+    "status": "pending",
+    "items": [
+      "clean-init-guard-delivery",
+      "clean-init-example-delivery",
+      "current-manifest-set-identity",
+      "current-manifest-exact-set",
+      "v1-0-2-0-set-compatibility",
+      "v1-0-3-0-set-compatibility",
+      "unknown-v1-version-rejection",
+      "unknown-v2-set-identity-rejection",
+      "subset-current-set-rejection",
+      "superset-current-set-rejection",
+      "status-generation-update",
+      "additive-upgrade-state-preservation",
+      "candidate-only-path-collision-block",
+      "candidate-only-race-preservation",
+      "candidate-only-replacement-block",
+      "managed-removal-rejection",
+      "managed-executable-mode-preservation",
+      "partial-added-file-commit-recovery",
+      "recovery-removes-candidate-only-files",
+      "forged-journal-set-rejection",
+      "doctor-missing-guard",
+      "doctor-missing-example",
+      "doctor-managed-drift",
+      "legacy-adoption-upgrade",
+      "copied-doctor-manifest-parity",
+      "canonical-bootstrap-byte-binding",
+      "public-validator"
+    ]
+  },
+  "named_coverage": {
+    "status": "pending",
+    "items": [
+      "manifest-schema",
+      "managed-set-registry",
+      "initializer",
+      "doctor",
+      "copied-doctor",
+      "status",
+      "transactional-upgrade",
+      "recovery-journal",
+      "collision-protection",
+      "managed-file-modes",
+      "legacy-adoption",
+      "active-chain-guard",
+      "active-chain-example",
+      "lifecycle-tests",
+      "legacy-tests",
+      "bootstrap",
+      "public-docs",
+      "public-validator"
+    ]
+  }
+}

@@ -12,8 +12,8 @@ ownership_map: "<controller, workers, writer, evaluator, verifier, owner>"
 chain_stages: "<ordered stages and sequential boundary>"
 concurrency: "<worker count, parallel stages, writer rule>"
 tool_budget: "<per-role calls and wall time>"
-context_budget: "<ordinary/premium ceilings and target>"
-reserve_use: "<25% premium reserve decision or not used>"
+context_budget: "<retrieved task context ceiling; distinguish host and cumulative tokens>"
+reserve_use: "<25% of measurable premium allowance or not-applicable>"
 checkpoint_interval: "<wait/checkpoint rule>"
 overnight: "no | explicit owner mode with limits"
 unattended_execution: "no | one authorized launch"
@@ -33,6 +33,9 @@ cost_isolation: "<current/outdated target graph and smallest reachable target or
 ---
 
 # Essential Task Card
+
+Use for formal engineering, shared controls or interfaces, scientific/live work, and promotion.
+Routine reversible maintenance uses the changed file, command, focused check, and result instead.
 
 ## Necessity
 

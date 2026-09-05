@@ -48,3 +48,24 @@ npx skills@latest add traftonobrien/agent-plus --skill=agent-plus-discovery-gril
 
 The Agent+ adaptation preserves explicit upstream attribution in its skill folder. Review the
 current upstream instructions and license before updating either installation.
+
+## Native Agent+ skill discovery
+
+The canonical `skills/` directories are the source. Regular-file mirrors under `.agents/skills/`
+expose them to Codex. Public validation requires identical file sets, bytes, and modes, including
+references, assets, and license notices. All skills carry name and description metadata.
+The seven generic procedure names use an `agent-plus-` skill-name prefix to distinguish local policy
+from installed global tools. Directory paths remain stable for existing references.
+
+Use `$agent-plus-model-review` for prospective workflow comparison and `$agent-plus-session-context-handoff`
+for local closeout. The installed global `model-review` is a separate session-usage collector. It must
+not run merely because an Agent+ policy mentions model review. Explicit invocation still selects it.
+
+Consumer bootstrap installs the managed control plane. Native mirrors apply to this repository only.
+Install optional consumer skills separately from an accepted release as described above. Existing
+third-party plugin bytes are unchanged. When maintaining a skill, update its canonical directory and
+its complete native mirror together; the parity test rejects drift.
+
+The official [skill documentation](https://learn.chatgpt.com/docs/build-skills) explains metadata,
+progressive disclosure, symlink discovery, and duplicate names. Trigger tests must cover both
+intended matches and nearby requests that must not activate the workflow.

@@ -13,58 +13,30 @@ Route work by the authority it needs, not by which model is available. Use the l
 
 Each work order names its files, inputs, owner, model or tool, time budget, attempt limit, stop condition, and acceptance check. Silent model fallback is not allowed.
 
-## Session modes
+## Session modes and model selection
 
-Choose a mode before dispatch. Higher capacity increases bounded throughput, not authority, context,
-retries, or reviewer count.
+Use the task classification in [AGENTS.md](../AGENTS.md). Routine reversible maintenance uses a
+focused check and local result. Formal engineering and scientific work follow the binding
+[workflow](../AI_WORKFLOW.md) and [essential protocol](../ESSENTIAL_WORK_PROTOCOL.md).
 
-| Mode | Bounded route | Limit |
-| --- | --- | --- |
-| `quick` | Sol/high control; ≤1 Luna High explorer; Luna High maker; deterministic evaluator; fresh Luna xhigh only at promotion. | 45 minutes |
-| `standard` (default) | Sol/high control; 2 independent Luna High explorers; Luna xhigh maker; deterministic evaluator; 1 fresh Luna xhigh reviewer. | 90 minutes |
-| `deep` | Sol/high control; ≤3 independent Luna xhigh explorers; 1 accountable maker (Luna xhigh or explicitly selected Claude Sonnet high; Opus high only for named hard architecture/frozen contract); deterministic evaluator; 1 fresh independent reviewer. | 120 minutes |
-| `scientific/live` | ≤2 read-only Luna xhigh readiness explorers; zero parallel workers during live execution; deterministic metrics; fresh premium scientific reviewer only for a named decision; human authorization before data access, live work, or promotion. | Owner-set task budget |
+The workflow owns the mode table, budgets, controller selection, worker routes, and correction
+limits. This page does not duplicate those values. Select the owner-requested runtime model.
+For an Astra-selected session, use GPT-6 Astra and retain effective reasoning effort as the baseline.
+Do not relabel historical Sol or Luna evidence. Compare changes before claiming improved performance.
 
-An owner command may authorize this engineering chain: plan → independent explorers → frozen
-evidence handoff → exclusive maker → deterministic evaluator → fresh reviewer → Sol synthesis.
-Exploration is the only parallel stage. Use a controller plus two workers by default, hard maximum
-three workers, one writer per repository, no overlapping writes, no recursive spawn, no silent
-fallback, and one bounded wait per stage. The reviewer receives the contract, artifact, receipts, and
-attack matrix, not the maker transcript. A maker, evaluator, or reviewer `BLOCK` stops the chain;
-reviewer `BLOCK` does not trigger auto-repair.
+Delegation requires owner authorization or an explicitly required independent project role.
+Use only needed workers. Independent exploration may run in parallel; writes and dependent stages
+remain sequential. A fresh reviewer receives the contract, artifact, and evidence, not maker history.
+The formal evaluator has one narrowly eligible mechanical correction. Reviewer BLOCK stops the chain.
 
-For a multi-stage chain, use one `.agent-plus/active-chain.json` capsule. Run the active-chain guard
-before each stage and before closeout. The capsule references live authority files by relative path;
-it does not copy scientific values or artifact identities. This makes stage order and terminal
-`PASS`, `NULL`, or `BLOCK` deterministic without turning routing state into authority.
+Use one active-chain capsule with live authority references for a multi-stage chain. Preserve
+completed capsules as historical evidence before starting a different authorized chain.
+Unattended execution retains one authorized launch, process-written evidence, zero AI polling,
+and one result check after return. Native async tools do not expand that authorization.
 
-## Unattended execution
-
-Use one authorized launch when a bounded process can complete without AI supervision. Name the
-command, durable progress and terminal evidence, expected return point, and one result check before
-launch. The process writes the evidence. The AI controller performs zero polls while it runs and
-one check after return.
-
-An error or missing terminal record consumes the authorization and returns `BLOCK`. Do not retry or
-use a fallback without bounded repair, required review, and new explicit authorization.
-
-## Budgets and maintenance
-
-Ordinary context remains capped at 25K tokens and premium context at 40K. Target 4–8K for routine
-work, 8–15K for implementation, and 12–25K for premium work; start a fresh session at 60–80K
-accumulated tokens. Routine makers use at most 32 tool calls/60 minutes, complex makers 40/90
-minutes, engineering reviewers 20/45 minutes, and scientific/live reviewers 12/25 minutes. Failed
-attempts remain capped at two.
-
-Reserve 25% of premium allowance for scientific, leakage, hard-architecture, or irreversible
-decisions. Do not burn capacity without a decision-relevant deliverable. Overnight mode requires an
-explicit owner command, allows only read-only or reversible engineering, uses at most three workers
-and a fixed queue of eight, checkpoints every 30 minutes or 100K fresh tokens, forbids
-live/scientific/promotion work and queue refill, and stops on `BLOCK`.
-
-Repeat model review after 10 completed bounded chains or 14 days, and immediately after a model,
-rate, or plan change; two routing `BLOCK`s; average context above 40K; or reviewer correction above
-20%. These are routing controls, not evidence of performance.
+Measure retrieved task context separately from injected instructions, cached input, and cumulative
+usage. Prefer complete small current records and referenced procedures to arbitrary truncation.
+Use a durable handoff at a clean task or review boundary. A new session does not invalidate evidence.
 
 The Guard v2 closed schema, maker/evaluator/verifier separation, two-BLOCK architecture reset,
 first-error scientific/live behavior, deterministic outcome metrics, and human owner decision remain

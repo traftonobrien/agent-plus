@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
+# ai-context.sh emits complete current records and references binding procedures.
+
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
 # The copied doctor owns legacy declaration, manifest, and hook validation.
@@ -51,22 +53,33 @@ for relative in ("AGENTS.md", "AI_WORKFLOW.md", ".claude-memory.md", ".planning/
 PY
 fi
 
-if [ -e "$ROOT_DIR/.agent-plus/legacy-adoption.json" ] || [ -L "$ROOT_DIR/.agent-plus/legacy-adoption.json" ]; then
-  CONTEXT_FILES='AGENTS.md AI_WORKFLOW.md'
-  for optional_file in .claude-memory.md .planning/STATE.md; do
-    if [ -e "$ROOT_DIR/$optional_file" ] || [ -L "$ROOT_DIR/$optional_file" ]; then
-      [ -f "$ROOT_DIR/$optional_file" ] && [ ! -L "$ROOT_DIR/$optional_file" ] || {
-        printf 'Managed context file is missing or unsafe: %s\n' "$optional_file" >&2
-        exit 1
-      }
-      CONTEXT_FILES="$CONTEXT_FILES $optional_file"
-    fi
-  done
-else
-  CONTEXT_FILES='AGENTS.md AI_WORKFLOW.md .claude-memory.md .planning/STATE.md'
-fi
-for file in $CONTEXT_FILES; do
-  printf '%s\n' "## ${file}"
-  sed -n '1,220p' "${ROOT_DIR}/${file}"
-  printf '%s\n' ''
-done
+# Read complete current files; never silently truncate instructions or restart state.
+ROOT_DIR="$ROOT_DIR" python3 - <<'PY_CONTEXT'
+import os
+import stat
+from pathlib import Path
+
+root = Path(os.environ["ROOT_DIR"])
+legacy = (root / ".agent-plus/legacy-adoption.json").exists()
+files = ["AGENTS.md", "AI_AGENT_OUTPUT_POLICY.md", ".claude-memory.md", ".planning/STATE.md"]
+packet = []
+for relative in files:
+    path = root / relative
+    if legacy and relative in {".claude-memory.md", ".planning/STATE.md"} and not path.exists() and not path.is_symlink():
+        continue
+    if any(parent.is_symlink() for parent in path.parents if parent != root and root in parent.parents):
+        raise SystemExit(f"Managed context parent is unsafe: {relative}")
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+        with os.fdopen(fd, "r", encoding="utf-8") as source:
+            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                raise SystemExit(f"Managed context file is unsafe: {relative}")
+            content = source.read()
+    except (OSError, UnicodeError) as exc:
+        raise SystemExit(f"Cannot read managed context: {relative}") from exc
+    packet.append(f"## {relative}\n{content.rstrip()}\n")
+packet.append("## Procedure references\nRead ESSENTIAL_WORK_PROTOCOL.md for implementation and verification. "
+              "Read AI_WORKFLOW.md before model assignment, a formal chain, review, or unattended execution. "
+              "Both remain binding. Read the exact active artifact named above.\n")
+print("\n".join(packet))
+PY_CONTEXT

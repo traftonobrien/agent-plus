@@ -2,6 +2,13 @@
 
 Agent+ seeks the minimum sufficient evidence for a real decision.
 
+## Applicability
+
+Use the task classification in `AGENTS.md`. A read-only answer or routine reversible maintenance
+does not require a formal packet, independent worker, or research contract. A change to shared
+controls, shared interfaces, scientific meaning, authority, or promotion uses the formal route.
+Routine autonomy never changes a scientific or release boundary.
+
 ## Necessity card
 
 Before substantive, scientific, irreversible, promotion, or release work, complete [the essential
@@ -111,7 +118,9 @@ Do not use a first-defect stop rule to create serial engineering repair cycles. 
 enumerate additional falsified invariants without designing the repair. The next maker owns one
 bundled correction and one deterministic acceptance receipt for the complete reported class.
 
-After the first engineering review `BLOCK`, expand the bounded attack matrix before repair. After a
+After the first engineering review `BLOCK`, expand the bounded attack matrix before repair.
+This is a requirement to prepare the repair evidence, not permission to perform the repair.
+The reviewer BLOCK closes this chain; a repair maker needs a new explicitly owner-authorized chain. After a
 second `BLOCK` at the same interface or failure class, do not authorize a third local patch cycle.
 Escalate to simplification: constrain or replace the interface, remove unnecessary caller choices,
 and test the new boundary end to end. A contract change still requires the human owner.
@@ -169,10 +178,11 @@ bounded throughput only; it does not change authority, context ceilings, retry l
 count, or owner authorization. Use the mode budgets and model routes in `AI_WORKFLOW.md`.
 
 An engineering chain may run plan, independent exploration, frozen evidence handoff, one exclusive
-maker, deterministic evaluation, one fresh review, and Sol synthesis. Exploration may be parallel;
+maker, deterministic evaluation, one fresh review, and controller synthesis. Exploration may be parallel;
 all later stages are sequential. Use one writer per repository, no overlapping writes, no recursive
-spawn, no silent fallback, and one bounded wait per stage. A maker, evaluator, or reviewer `BLOCK`
-stops the chain. Never auto-repair after a reviewer `BLOCK`.
+spawn, no silent fallback, and one bounded wait per stage. A maker or reviewer `BLOCK` stops the chain. A deterministic evaluator finding may use only the
+single eligible small-correction rule in `AI_WORKFLOW.md`; all other evaluator BLOCKs stop.
+Never auto-repair after a reviewer `BLOCK`.
 
 Route a multi-stage chain through one `.agent-plus/active-chain.json` capsule. Validate `continue`
 before each stage and `closeout` before ending the chain. The capsule references live authority by
@@ -195,8 +205,8 @@ evidence, or failed check consumes the authorization and returns `BLOCK`.
 Do not use fallback or retry behavior. Resume only after bounded repair, any required fresh review,
 and new explicit authorization. Durable process evidence does not grant promotion authority.
 
-Reserve 25% of premium capacity for scientific, leakage, hard-architecture, or irreversible
-decisions. Re-run model review after 10 completed bounded chains or 14 days, and immediately after
+Reserve 25% of a measurable premium allowance for scientific, leakage, hard-architecture, or
+irreversible decisions. Record not applicable when no such allowance is exposed. Re-run model review after 10 completed bounded chains or 14 days, and immediately after
 model/rate/plan changes, two routing `BLOCK`s, average context above 40K, or reviewer correction
 above 20%.
 
@@ -216,6 +226,9 @@ authority files instead of copying their values into a task packet or chain caps
 | One implementation module | Narrow tests and static checks. |
 | New immutable artifact | Exact ID, schema, hash, lineage, and counters. |
 | Publication release | Release validation and fresh independent review. |
+
+After adequate checks pass, broaden or repeat only for changed evidence or an unresolved concern.
+Do not add tests that merely mirror a reversible low-impact edit. Required boundary checks still apply.
 
 ## BLOCK rule
 

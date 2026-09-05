@@ -18,6 +18,11 @@ The response shape is adapted from the MIT-licensed
 Suppress unrelated topics, filler openers, repeated recaps, closing pleasantries, and unsupported time
 estimates. Do not offload safe in-scope work to the user.
 
+Default to concise connected prose. Use headings, lists, or tables only when they improve the
+requested deliverable. The user may request a full outline or technical detail. Do not suppress
+needed evidence to satisfy a length target. Avoid stock phrases, repeated conclusions, decorative
+formatting, and unexplained internal labels. Give brief meaningful progress updates during long work.
+
 ## Project updates
 
 When the user asks for state, progress, blockers, or current work, write first for a non-specialist.

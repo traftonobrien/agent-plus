@@ -1,58 +1,62 @@
-# AI Workflow
+# Agent+ AI Workflow
 
-## Routing
+This is the binding public workflow for Agent+. It mirrors the control structure of a production research program without exposing private project state.
 
-| Tier | Work | Required control |
-| --- | --- | --- |
-| 0 | Search, count, hash, parse, test, and score. | Record exact output. |
-| 1 | Reversible extraction, classification, and drafts. | Check before use. |
-| 2 | Bounded implementation. | Named acceptance check. |
-| 3 | Leakage, architecture, and fresh review. | Independent context. |
+## Operating rule
 
-The maker creates. The evaluator computes. The verifier reviews. The human owner decides what can be claimed.
+Use deterministic tools first. Give AI systems narrow, reviewable assignments. Human scientific judgment owns research claims and promotion decisions.
 
-Every substantive or delegated task records allowed inputs, budget, acceptance check, and stop
-condition. Routine reversible work uses its changed file, command, focused check, and result as the
-local record. No silent model fallback is allowed.
+## Routing matrix
+
+| Tier | Use | Required control | Cannot certify |
+| --- | --- | --- | --- |
+| 0 | Search, parse, count, hash, validate, test, score. | Record exact command or artifact. | Narrative conclusion. |
+| 1 | Reversible extraction, classification, summary, and drafting. | Human or deterministic check. | Data coverage, scientific safety, or promotion. |
+| 2 | Bounded implementation and integration. | Named acceptance check. | Its own work. |
+| 3 | Leakage, hard architecture, adversarial, or fresh review. | Independent context and changed evidence. | Deterministic evidence or human decision. |
+
+## Model and task routing
+
+Classify work through the Task applicability rules in `AGENTS.md`. A routine task does not become
+a formal engineering chain merely because the controller edits a file or runs a deterministic check.
+Use the owner-selected runtime model. For Astra, record `gpt-6-astra` and preserve effective reasoning
+effort. High is the initial tuning baseline, not a claim that it is optimal for every task.
+Compare lower effort on representative tasks before changing that baseline. Never use unsupported
+`none` or `minimal` effort for Astra. Do not silently change models or fallback routes.
 
 ## Direct model delegation
 
-When the owner explicitly requests delegation, sub-agents, parallel work, or Luna, Sol manages the
-task and creates model-selected Luna sub-agents directly. The owner should not need to open separate
-chats or copy results between them.
+Delegate only when the owner requests it or applicable project instructions explicitly require an
+independent role. The controller owns task splitting, boundaries, progress, synthesis, and the result.
+Use Luna High for bounded routine workers and Luna xhigh for complex workers or fresh engineering
+review. Retain these cost-sensitive routes until a bounded comparison supports a change.
+Each task names its exact model, deliverable, ownership, permitted inputs, stop condition, and budget.
+Pass only needed context. A fresh verifier receives the contract, changed artifact, deterministic
+evidence, and attack matrix, not the maker transcript. The maker cannot certify its own work.
 
-- Luna High: routine diagnostics, corrections, documentation, tests, and scoped implementation.
-- Luna xhigh: complex multi-file engineering, architecture tracing, long read-only work, and fresh
-  engineering review.
-- Sol: task splitting, boundaries, progress, synthesis, and the owner-facing result.
-- Premium reasoning: scientific ambiguity, leakage, frozen contracts, hard architecture, and
-  irreversible promotion decisions.
+Parallelize independent read-only exploration only when it can improve the named outcome. Use at
+most three workers, one writer per repository, no overlapping writes, and no recursive spawn.
+The default is zero workers without delegation authority. Once authorized, use only the workers
+needed, commonly one or two; worker limits are ceilings, not mandatory staffing.
+If exact required model selection is unavailable, report the missing capability and BLOCK that
+delegated stage. Continue independent authorized work where possible; do not silently substitute.
 
-Give every worker one concrete deliverable, exact ownership, allowed inputs, a stop condition, and a
-budget. Select its model explicitly and pass bounded context. Parallel tasks must be independent;
-workers must not overlap edits, recursively spawn, silently fall back, or self-certify. Use one
-bounded wait instead of polling. If direct model selection is unavailable, record `BLOCK` rather
-than create repeated manual cross-chat handoffs.
+## Bounded session modes
 
-## Higher-capacity session profile
-
-Extra capacity increases bounded throughput only. It does not increase authority, context ceilings,
-retry count, reviewer count, or owner decision rights. Select one mode in the task packet:
+Extra capacity increases bounded throughput only. It does not increase authority, retry count,
+reviewer count, or the human owner's decision rights. Select one mode in a formal task packet.
 
 | Mode | Route | Total wall-time budget |
 | --- | --- | ---: |
-| `quick` | Sol/high control; at most one Luna High explorer; Luna High maker; deterministic evaluator; fresh Luna xhigh only at promotion. | 45 minutes |
-| `standard` (default) | Sol/high control; two independent Luna High explorers; Luna xhigh maker; deterministic evaluator; one fresh Luna xhigh reviewer. | 90 minutes |
-| `deep` | Sol/high control; up to three independent Luna xhigh explorers; one accountable maker (Luna xhigh or explicitly selected Claude Sonnet high; Opus high only for named hard architecture/frozen contract); deterministic evaluator; one fresh independent reviewer. | 120 minutes |
-| `scientific/live` | Up to two read-only Luna xhigh readiness explorers; zero parallel workers during live execution; deterministic metrics; fresh premium scientific reviewer only for the named decision; human owner authorization before data access, live execution, or promotion. | Owner-set task budget |
+| `quick` | Selected controller; focused deterministic check; optional authorized worker; fresh review at promotion. | 45 minutes |
+| `standard` (default) | Selected controller; authorized independent exploration if useful; exclusive maker; deterministic evaluator; one fresh reviewer at the required boundary. | 90 minutes |
+| `deep` | Selected controller; up to three authorized read-only explorers; one maker; deterministic evaluator; one fresh independent reviewer. | 120 minutes |
+| `scientific/live` | At most two authorized readiness explorers; zero parallel workers during live execution; deterministic metrics; independent scientific review; human authorization for data, execution, or promotion. | Task-specific owner budget |
 
-An owner command may authorize plan → independent explorers → frozen evidence handoff → exclusive
-maker → deterministic evaluator → fresh reviewer → Sol synthesis for engineering only. Exploration
-may be parallel; all later stages are sequential. Use a controller plus two workers by default and
-never more than three workers, one writer per repository, no overlapping writes, no recursive spawn,
-no silent fallback, and one bounded wait per stage. The reviewer receives the contract, artifact,
-receipts, and attack matrix, not the maker transcript. For a formal engineering chain, stop on a
-maker or reviewer `BLOCK`; do not
+An owner command may authorize one engineering-only chain: plan → independent explorers → frozen
+evidence handoff → exclusive maker → deterministic evaluator → fresh reviewer → controller synthesis. After
+exploration, stages are sequential. The reviewer receives the contract, artifact, deterministic
+receipts, and attack matrix, not the maker transcript. Stop on a maker or reviewer `BLOCK`; do not
 auto-repair after a reviewer `BLOCK`. Handle an eligible mechanical evaluator finding through the
 single small-correction rule below; otherwise stop on evaluator `BLOCK` too.
 
@@ -93,21 +97,36 @@ scientific result exists, are `LOOP_DETECTED`. Stop patch-and-run behavior. Reco
 the existing ledger or receipt, complete one bounded read-only boundary sweep, and make one bundled
 correction. Do not create a new tracker for this signal.
 
-Context remains capped at 25K ordinary and 40K premium. Targets are 4–8K routine, 8–15K
-implementation, and 12–25K premium; start fresh at 60–80K accumulated tokens. Routine makers use
-32 tool calls/60 minutes, complex makers 40/90 minutes, engineering reviewers 20/45 minutes, and
-scientific/live reviewers 12/25 minutes. Failed attempts remain capped at two. Reserve 25% of
-premium allowance for scientific, leakage, hard-architecture, or irreversible decisions. Do not burn
-capacity without a decision-relevant deliverable.
+## Capacity and context limits
 
-Prefer a fresh session at a clean persisted-result or fresh-review boundary when the current
-session is heavily compacted. Resume from the capsule, live authority, and durable evidence, not a
-reconstructed transcript.
+Context budgets measure task material deliberately retrieved, separately from host-injected rules,
+cached input, and cumulative tokens. The existing planning targets remain 4–8K for routine work,
+8–15K for implementation, and 12–25K for premium review. Ordinary retrieved context has a 25K ceiling
+and premium retrieved context a 40K ceiling unless the owner supplies a different bounded budget.
+Do not claim exact token usage when the runtime only exposes bytes or estimates.
 
-Overnight mode requires an explicit owner command and permits only read-only or reversible
-engineering, at most three workers, a fixed queue of at most eight, and a default four-hour window.
-Checkpoint every 30 minutes or 100K fresh tokens. No live, scientific, promotion, or queue-refill
-work is permitted; stop on `BLOCK`.
+Use native compaction and a durable handoff at a clean task or independent-review boundary.
+Cumulative usage alone does not force a restart. Resume from live authority and evidence, not an
+expanded transcript. Never override model context size to bypass these task budgets.
+
+| Boundary | Budget |
+| --- | --- |
+| Routine maker | 32 tool calls / 60 minutes |
+| Complex maker | 40 tool calls / 90 minutes |
+| Engineering reviewer | 20 tool calls / 45 minutes |
+| Scientific/live reviewer | 12 tool calls / 25 minutes |
+| Failed attempts | Maximum 2, unchanged |
+
+These are per-role ceilings inside the total session budget, not targets to consume. Batch independent
+reads and deterministic checks. Repeat a check only after changed inputs, implementation, environment,
+or a specific unresolved concern. Complete every required acceptance check before claiming success.
+
+A 25% premium reserve applies only when a task has a measurable premium allowance. Otherwise mark
+it not applicable; do not invent remaining account capacity. Review limits through measured outcomes.
+Overnight mode still requires an explicit owner command, a fixed queue of at most eight tasks,
+at most three workers, and a default four-hour window. Checkpoint at completed task boundaries and
+within 30 minutes for attended orchestration. It forbids live, scientific, and promotion work, queue
+refill, and continuation after BLOCK. Unattended processes follow the stricter zero-poll rule below.
 
 ## Unattended execution
 
@@ -124,62 +143,107 @@ authorization and returns `BLOCK`. Do not fall back, relaunch, or retry. Resume 
 repair, any required fresh review, and new explicit authorization. Process-written evidence does
 not grant promotion authority or replace independent verification.
 
-Repeat model review after 10 completed bounded chains or 14 days, and immediately after model/rate/
-plan changes, two routing `BLOCK`s, average context above 40K, or reviewer correction above 20%.
-This cadence is a maintenance control, not a performance claim.
+Use the project-specific model-review procedure after 10 completed bounded chains or 14 days.
+This is prospective workflow comparison, not automatic collection of global session history. Repeat sooner after a model,
+rate, or plan change; two routing `BLOCK`s; average context above 40K; or reviewer correction above
+20%. This review cadence is a maintenance control, not a performance claim.
 
-## Engineering closure
+## Task packet
 
-Scientific, live, destructive, and irreversible execution stops at the first invalid condition.
-Engineering diagnostics block promotion at the first defect but continue bounded read-only attacks
-to collect the complete reachable defect class. One maker repairs that class and one fresh verifier
-reviews the integrated boundary.
+Each formal task identifies the decision, uncertainty, allowed inputs, permitted actions, time and context budget, attempt limit, stop condition, acceptance check, and handoff owner. Use [the essential task template](.planning/templates/ESSENTIAL-TASK.md).
 
-After a second BLOCK at the same interface, replace or constrain the interface instead of starting
-a third local patch. Prefer designs that make invalid states impossible. Measure success by the
-user-visible or scientific result unlocked, not by tests, files, tokens, or review count.
+## Role separation
+
+- The maker creates one bounded artifact.
+- The evaluator runs deterministic checks.
+- The fresh verifier assesses changed evidence independently.
+- The human owner accepts, narrows, defers, or blocks the resulting claim.
+
+No model self-certifies. No model silently changes its tier or falls back to another model.
+
+## Engineering closure and review
+
+Engineering diagnostics and scientific execution use different stop behavior. Scientific, live,
+destructive, and irreversible work stops at the first invalid condition. An engineering diagnostic
+blocks promotion at the first defect but continues read-only attacks across its named boundary so
+one repair packet contains the complete reachable defect class.
+
+The first engineering `BLOCK` requires a consolidated attack matrix and one bundled repair plan.
+This specifies the required evidence and repair scope, not authority to restart. A reviewer BLOCK
+ends the current chain. New explicit owner authorization is required before a repair maker starts.
+The single eligible deterministic-evaluator correction remains the exception described above.
+A second `BLOCK` at the same interface triggers architecture simplification, not another local
+patch. Remove unnecessary input freedom and prefer a constrained interface that makes invalid
+states impossible. Then use one deterministic receipt and one fresh integrated review.
 
 If the required simplification would weaken or reinterpret an accepted scientific, privacy,
 security, authority, or claim boundary, return `OWNER_DECISION_REQUIRED`. Give the smallest
 mutually exclusive choices and the evidence each choice needs. The owner decision starts a new
 chain; it is not a repair retry.
 
-Before dispatching an engineering maker or reviewer, require a PASS receipt from
-`scripts/anti_loop_guard.py` for a packet whose boundary and failure class already exist in the
-ledger. A reviewer may start with a planned packet, but its verdict cannot unlock another maker or
-owner decision until the ledger-bound review closes with complete attack-matrix and named-coverage
-status using `--require-complete-engineering-review`. A defect blocks promotion immediately but
-does not end safe read-only attacks in the declared matrix. Record a review BLOCK only after that
-closeout passes. Do not dispatch a maker from a partial reviewer narrative.
+The controller must reject packets that create a review for each local defect, stop at an
+intermediate artifact without an authority boundary, or measure progress only through tests,
+tokens, files, or review count. The required outcome is the named user-visible or scientific
+milestone that the engineering work unlocks.
+
+Before dispatching a formal engineering maker or reviewer, the controller must obtain a PASS receipt
+from the anti-loop guard for a packet whose boundary and failure class already exist in the
+ledger. An unregistered boundary is a `BLOCK`, not an informal task. A reviewer may start with a
+`planned` packet, but its verdict cannot unlock another maker or owner decision until the same
+ledger-bound review is closed with complete attack-matrix and named-coverage status:
+
+```text
+python3 scripts/anti_loop_guard.py \
+  --ledger .agent-plus/engineering-boundaries.json \
+  --packet REVIEW-CLOSEOUT.json \
+  --require-complete-engineering-review
+```
+
+An engineering defect blocks promotion immediately but does not end safe read-only attacks in the
+declared matrix. Record a review `BLOCK` in the ledger only after the closeout command passes. Do
+not dispatch the next maker from a partial reviewer narrative.
 
 Keep one active promotion-boundary dossier. Update its task contract, cumulative finding matrix,
-acceptance receipt, and integrated review in place instead of creating a new packet set for every
-local correction.
+current acceptance receipt, and integrated review in place. Preserve historical evidence, but do
+not create a new packet set for every local correction.
 
 ## Anti-loop guard packet
 
-Use `scripts/anti_loop_guard.py` with `.agent-plus/engineering-boundaries.json` to validate each
-task or review packet. Schema `anti-loop-guard/v2` is closed and strictly structured. Packets
-require stable boundary and failure-class IDs, ledger-declared coverage, one `change_kind`, one
-`outcome_kind` from a closed enum, one ledger-approved `outcome_id`, one stop policy, and both
-ledger-bound matrices. A completed engineering review must prove complete attack-matrix and named
-coverage. After two BLOCKs, only an architecture reset with the ledger-approved namespace, attempt
-identifier, and removed caller choices may pass; scientific and live packets remain first-error
-gates.
-
-The packet carries no free text, so wording cannot relabel a local repair as an architecture reset.
-The guard owns a closed exact outcome catalog; a ledger may select only a subset of its IDs and may
-not create, rename, case-change, path-traverse, or recategorize an ID. Process work such as tests,
-lint, files, documents, receipts, or reviews has no catalog entry and cannot be declared as a user
-or scientific outcome. The guard rejects duplicate JSON keys and non-string mapping keys at every
-depth, unknown fields, unsupported schema versions, wrong types, malformed JSON, and non-exact
-BLOCK counts as typed errors. Completed matrices must match the exact names in the ledger. PASS
-receipts bind the canonical packet and full ledger state. BLOCK updates use a lock plus durable
-atomic replacement; lock, corruption, and write failures are typed guard errors.
+The deterministic guard in `scripts/anti_loop_guard.py` checks the machine-readable
+`.agent-plus/engineering-boundaries.json` ledger against each task or review packet. Schema
+`anti-loop-guard/v2` is closed and strictly structured. Every packet names a stable boundary and
+failure class, one `change_kind` (`local_repair`, `architecture_reset`, or `execution`), one
+`outcome_kind` from a closed category enum, one ledger-approved `outcome_id`, ledger-declared
+failure-class coverage, one stop policy, and both ledger-bound matrices. Engineering reviews marked
+complete must show complete attack-matrix and named-coverage items that exactly match the ledger.
+After two BLOCKs, only an architecture-reset packet with the ledger-approved `reset_namespace`,
+`attempt_id`, and `removed_caller_choices` can pass. Scientific and live packets must use the
+first-error stop policy.
 
 After a closed-interface recovery passes its required review, keep the constrained interface as the
 default for that failure class. Do not restore removed caller choices or open inputs without a new
 necessity card, a named consumer, deterministic acceptance checks, and required review.
+
+The ledger, not packet wording, decides authorization. The guard owns a closed exact outcome
+catalog; the ledger may select only a subset of its IDs and must preserve each catalog ID's one
+fixed category. Unknown, renamed, case-changed, path-like, and recategorized IDs fail closed. There
+is no free-text field, so a description, note, or nested caller value cannot relabel a local repair
+as an architecture reset. Process work such as passing tests, passing lint, written files, updated
+documents, completed reviews, or receipts has no catalog entry and cannot be declared as a user or
+scientific result.
+
+The guard rejects duplicate JSON keys at every depth, non-string mapping keys at every depth,
+unknown fields, unsupported schema versions, wrong types, malformed JSON, NaN and infinity, and
+non-exact BLOCK counts, all as typed guard errors. PASS receipts bind the canonical packet and the
+complete ledger state and do not change when a caller mutates its inputs afterward. BLOCK updates
+use a lock plus durable atomic replacement; lock, corruption, and write failures are typed guard
+errors.
+
+Run it with:
+
+```text
+python3 scripts/anti_loop_guard.py --ledger .agent-plus/engineering-boundaries.json --packet PACKET.json
+```
 
 ## Context and memory
 
@@ -189,3 +253,11 @@ deterministic evidence outrank hot memory, planning state, the Brain, and transc
 planning state route work; they do not grant authority. Reference live authority files instead of
 copying their values into task packets or chain capsules. Use `.claude-memory.md` for current
 verified state and the Obsidian Brain for durable curated knowledge.
+
+## Stop rules
+
+- Apply the routine/formal/scientific classification before selecting a stop rule.
+- Stop after two failed attempts at the same interface and record `BLOCK`.
+- Do not repeat unchanged evidence merely because a new session starts.
+- Do not advance past a contract, coverage, temporal-order, or verification gate.
+- Treat `PASS`, `NULL`, and `BLOCK` as valid outcomes.

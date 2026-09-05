@@ -90,6 +90,10 @@ tests/test_interface_consumer_guard.py
 tests/test_release_candidate_verifier.py
 tests/test_editorial_pass.py
 tests/test_workflow_defaults.py
+tests/test_astra_workspace.py
+docs/astra-workspace-tuning.md
+docs/astra-host-setup.md
+docs/releases/0.4.1.md
 .agent-plus/interface-consumer-closure-example.json
 .agent-plus/active-chain-example.json
 .agent-plus/release-candidate.json

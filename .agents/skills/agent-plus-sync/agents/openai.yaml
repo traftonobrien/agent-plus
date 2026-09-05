@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent+ Sync"
+  short_description: "Audit and safely synchronize an Agent+ project"
+  default_prompt: "Use $agent-plus-sync to audit this repository and prepare a safe Agent+ update."

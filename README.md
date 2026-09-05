@@ -196,3 +196,8 @@ The synthetic [planning stack](.planning/STATE.md) mirrors the control flow of a
 ## License and contributions
 
 This package is released under the MIT License. Contributions must preserve the safety and claim boundaries in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Astra configuration
+
+See the [Astra tuning guide](docs/astra-workspace-tuning.md), [host setup](docs/astra-host-setup.md),
+and [proposed 0.4.1 release note](docs/releases/0.4.1.md).

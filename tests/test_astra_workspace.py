@@ -18,7 +18,7 @@ class StartupContextTests(unittest.TestCase):
         (project / '.planning').mkdir()
         (project / '.agent-plus').mkdir()
         shutil.copy2(ROOT / 'scripts/ai-context.sh', project / 'scripts/ai-context.sh')
-        for name in ['AGENTS.md', 'AI_WORKFLOW.md', 'AI_AGENT_OUTPUT_POLICY.md', '.claude-memory.md', '.planning/STATE.md']:
+        for name in ['AGENTS.md', 'AI_WORKFLOW.md', 'ESSENTIAL_WORK_PROTOCOL.md', 'AI_AGENT_OUTPUT_POLICY.md', '.claude-memory.md', '.planning/STATE.md']:
             (project / name).write_text(f'{name} CONTENT\n', encoding='utf-8')
         return project
 

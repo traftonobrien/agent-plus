@@ -176,7 +176,7 @@ def load_config(root: Path) -> CandidateConfig:
             ),
             object_pairs_hook=_object_no_duplicates,
         )
-    except json.JSONDecodeError as exc:
+    except (ValueError, RecursionError, OverflowError) as exc:
         raise CandidateError(
             "E_CONFIG_JSON", "release configuration is invalid JSON"
         ) from exc

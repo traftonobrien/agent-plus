@@ -266,7 +266,7 @@ def _load_json(path: Path, *, kind: str) -> dict[str, Any]:
 def _validate_failure_state(raw_state: Any, label: str) -> dict[str, Any]:
     if not isinstance(raw_state, Mapping):
         raise _error("E_MALFORMED_LEDGER", f"state {label} must be an object")
-    _require_keys(raw_state, FAILURE_STATE_KEYS, FAILURE_STATE_KEYS, f"state {label}")
+    _require_keys(raw_state, FAILURE_STATE_KEYS, FAILURE_STATE_KEYS | {"recorded_blocks"}, f"state {label}")
 
     block_count = _require_exact_nonnegative_int(
         raw_state["block_count"], f"state {label} block_count", code="E_MALFORMED_LEDGER"
@@ -336,7 +336,15 @@ def _validate_failure_state(raw_state: Any, label: str) -> dict[str, Any]:
             )
         permitted_outcomes[outcome_id] = catalog_kind
 
+    recorded = raw_state.get("recorded_blocks", {})
+    if not isinstance(recorded, dict) or len(recorded) > block_count:
+        raise _error("E_MALFORMED_LEDGER", "invalid recorded block identities")
+    for key, digest in recorded.items():
+        _require_pattern(key, "recorded packet", PACKET_ID, code="E_MALFORMED_LEDGER")
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise _error("E_MALFORMED_LEDGER", "invalid recorded packet digest")
     return {
+        **({"recorded_blocks": dict(recorded)} if "recorded_blocks" in raw_state else {}),
         "block_count": block_count,
         "architecture_reset_required": reset_required,
         "reset_namespace": reset_namespace,
@@ -708,6 +716,17 @@ def _record_block_file(path: Path, packet_path: Path) -> dict[str, Any]:
     with _ledger_lock(path):
         current = load_ledger(path)
         packet = _load_json(packet_path, kind="packet")
+        packet_id = _require_pattern(packet.get("packet_id"), "packet_id", PACKET_ID)
+        boundary = _require_pattern(packet.get("boundary_id"), "boundary_id", BOUNDARY_ID)
+        failure = _require_pattern(packet.get("failure_class"), "failure_class", FAILURE_CLASS_ID)
+        state = _lookup_state(current, boundary, failure)
+        prior = state.get("recorded_blocks", {}).get(packet_id)
+        if prior is not None:
+            if prior != _digest(packet):
+                raise _error("E_REPLAY_CONFLICT", "recorded packet identity has changed content")
+            return {"status": "BLOCK_ALREADY_RECORDED", "packet_id": packet_id,
+                    "boundary_id": boundary, "failure_class": failure,
+                    "block_count": state["block_count"], "ledger_sha256": _digest(current)}
         closeout_receipt = validate_packet(
             packet,
             current,
@@ -716,6 +735,7 @@ def _record_block_file(path: Path, packet_path: Path) -> dict[str, Any]:
         boundary_id = str(closeout_receipt["boundary_id"])
         failure_class = str(closeout_receipt["failure_class"])
         updated = record_block(current, boundary_id, failure_class)
+        _lookup_state(updated, boundary_id, failure_class).setdefault("recorded_blocks", {})[packet_id] = _digest(packet)
         _write_json(path, updated)
         updated_state = _lookup_state(updated, boundary_id, failure_class)
         result_body = {

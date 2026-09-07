@@ -71,7 +71,7 @@ try:
     manifest = json.loads(
         manifest_path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates
     )
-except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+except (OSError, UnicodeDecodeError, ValueError, RecursionError, OverflowError) as exc:
     raise SystemExit(f"Invalid install manifest: {exc}") from exc
 if not isinstance(manifest, dict):
     raise SystemExit("Invalid install manifest")
@@ -164,7 +164,7 @@ try:
     declaration = json.loads(
         declaration_path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates
     )
-except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+except (OSError, UnicodeDecodeError, ValueError, RecursionError, OverflowError) as exc:
     raise SystemExit(f"Invalid legacy adoption declaration: {exc}") from exc
 if not isinstance(declaration, dict):
     raise SystemExit("Invalid legacy adoption declaration")
@@ -186,7 +186,7 @@ try:
     manifest = json.loads(
         manifest_path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates
     )
-except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+except (OSError, UnicodeDecodeError, ValueError, RecursionError, OverflowError) as exc:
     raise SystemExit(f"Invalid install manifest: {exc}") from exc
 if not isinstance(manifest, dict):
     raise SystemExit("Invalid install manifest")
@@ -243,9 +243,11 @@ usage() {
 }
 
 TARGET_DIR=''
+READINESS=false
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --target) TARGET_DIR=${2-}; shift 2 ;;
+    --readiness) READINESS=true; shift ;;
     *) usage ;;
   esac
 done
@@ -328,4 +330,9 @@ for path in root.rglob('*.md'):
 print('Internal Markdown links: PASS')
 PY
 
-printf 'Agent+ doctor: PASS (%s)\n' "$TARGET_DIR"
+if [ "$READINESS" = true ]; then
+  "$TARGET_DIR/scripts/ai-context.sh" >/dev/null
+  printf 'AGENT_PLUS_STARTUP_PASS (%s)\n' "$TARGET_DIR"
+else
+  printf 'AGENT_PLUS_STRUCTURE_PASS (%s); startup not executed. Use --readiness for startup checks.\n' "$TARGET_DIR"
+fi

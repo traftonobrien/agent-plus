@@ -5,6 +5,23 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
+# Validate binding procedures before any usable startup output.
+ROOT_DIR="$ROOT_DIR" python3 - <<'PY_REQUIRED'
+import os
+import stat
+from pathlib import Path
+root = Path(os.environ["ROOT_DIR"])
+for relative in ("AI_WORKFLOW.md", "ESSENTIAL_WORK_PROTOCOL.md"):
+    try:
+        fd = os.open(root / relative, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+        with os.fdopen(fd, "r", encoding="utf-8") as source:
+            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                raise OSError("not a regular file")
+            source.read()
+    except (OSError, UnicodeError):
+        raise SystemExit(f"Required procedure missing or unsafe: {relative}")
+PY_REQUIRED
+
 # The copied doctor owns legacy declaration, manifest, and hook validation.
 if [ -e "$ROOT_DIR/.agent-plus/legacy-adoption.json" ] || [ -L "$ROOT_DIR/.agent-plus/legacy-adoption.json" ]; then
   AGENT_PLUS_DOCTOR_SOURCE_ONLY=1 . "$ROOT_DIR/scripts/agent-plus-doctor.sh"
@@ -57,6 +74,7 @@ fi
 ROOT_DIR="$ROOT_DIR" python3 - <<'PY_CONTEXT'
 import os
 import stat
+import subprocess
 from pathlib import Path
 
 root = Path(os.environ["ROOT_DIR"])
@@ -81,5 +99,11 @@ for relative in files:
 packet.append("## Procedure references\nRead ESSENTIAL_WORK_PROTOCOL.md for implementation and verification. "
               "Read AI_WORKFLOW.md before model assignment, a formal chain, review, or unattended execution. "
               "Both remain binding. Read the exact active artifact named above.\n")
+# Report source identity without treating a version label as release authority.
+if (root / ".git").exists():
+    head = subprocess.run(["git", "-C", str(root), "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
+    dirty = subprocess.run(["git", "-C", str(root), "status", "--porcelain"], capture_output=True, text=True)
+    version = (root / "VERSION").read_text().strip() if (root / "VERSION").is_file() else "unavailable"
+    packet.insert(0, f"## Workspace identity\nVERSION={version}; HEAD={head.stdout.strip()}; dirty={bool(dirty.stdout)}. Version labels do not certify current bytes.\n")
 print("\n".join(packet))
 PY_CONTEXT

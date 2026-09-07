@@ -93,7 +93,9 @@ def _load_capsule(path: Path, root: Path) -> dict[str, Any]:
                 _error("BLOCK_CHAIN_NONFINITE_NUMBER", token)
             ),
         )
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+    except ChainError:
+        raise
+    except (OSError, UnicodeError, ValueError, RecursionError, OverflowError) as exc:
         raise _error("BLOCK_CHAIN_JSON", str(exc)) from exc
     if not isinstance(value, dict):
         raise _error("BLOCK_CHAIN_SCHEMA", "top level must be an object")
@@ -200,7 +202,7 @@ def validate(path: Path, root: Path, mode: str) -> str:
         raise _error("BLOCK_CHAIN_FAILURE_COUNT", str(failure_count))
     if not 0 <= failure_count <= failure_limit:
         raise _error("BLOCK_CHAIN_FAILURE_COUNT", str(failure_count))
-    if failure_count == failure_limit and change_kind != "architecture_reset":
+    if failure_count == failure_limit and change_kind != "architecture_reset" and status not in {"block", "null"}:
         raise _error("BLOCK_CHAIN_ARCHITECTURE_RESET_REQUIRED", chain_id)
 
     authority_refs = _validate_string_list(

@@ -76,6 +76,9 @@ managed bytes match the current canonical source and never overwrites project-ow
 5. Record the installed version, release tag or commit, commands, results, preserved hashes, limits,
    and one next action in project-local state.
 
+Doctor distinguishes structural checks from explicit `--readiness` execution. Select readiness
+only when the target startup hook is authorized. CURRENT also requires matching managed source hashes.
+
 ## Required outputs
 
 - Mode and target root.

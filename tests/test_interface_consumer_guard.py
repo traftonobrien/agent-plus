@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import tempfile
+import json
+import hashlib
 import unittest
 from pathlib import Path
 from typing import Any
@@ -20,7 +22,7 @@ def _write_fixture(root: Path) -> dict[str, Any]:
     (root / "src/interface.py").write_text("def changed_shape():\n    return 1\n")
     (root / "src/runtime.py").write_text("from interface import changed_shape\n")
     (root / "tests/test_shape.py").write_text("# changed_shape real-shape smoke\n")
-    return {
+    packet = {
         "schema_version": guard.INTERFACE_CONSUMER_SCHEMA_VERSION,
         "interfaces": [
             {
@@ -48,9 +50,17 @@ def _write_fixture(root: Path) -> dict[str, Any]:
             "required": True,
             "status": "PASS",
             "command": "pytest tests/test_shape.py",
-            "evidence": "one real changed-shape call",
+            "evidence": guard.SMOKE_PATH,
         },
     }
+
+    (root / ".agent-plus").mkdir()
+    (root / guard.SMOKE_LOG).write_bytes(b"synthetic output")
+    (root / guard.SMOKE_PATH).write_text(json.dumps({
+        "schema_version": "agent-plus-interface-smoke/v1", "command": packet["real_shape_smoke"]["command"],
+        "exit_code": 0, "inputs": guard._snapshot_inputs(packet, root),
+        "output_sha256": hashlib.sha256(b"synthetic output").hexdigest()}))
+    return packet
 
 
 class InterfaceConsumerGuardTests(unittest.TestCase):

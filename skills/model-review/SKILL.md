@@ -36,6 +36,9 @@ Collect deduplicated usage and workflow events, compare them with the prior chec
 repeated or wasteful behavior, and recommend one bounded experiment or policy change. Measure
 before interpreting. Keep deterministic collection separate from model interpretation.
 
+Ordinary tasks that do not fit the outcome-audit schema use one bounded comparison artifact
+from `templates/astra-behavior-baseline.json`. Missing measurements remain null.
+
 ## Required outputs
 
 Return four sections: `Keep`, `Stop`, `Change`, and `Next experiment`. Include the evidence window,

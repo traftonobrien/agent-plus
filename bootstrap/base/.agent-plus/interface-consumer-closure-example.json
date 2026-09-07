@@ -15,18 +15,18 @@
         {
           "path": "tests/test_interface_consumer_guard.py",
           "kind": "test",
-          "disposition": "updated",
+          "disposition": "tested_unchanged",
           "acceptance_checks": [
-            "python3 -m unittest discover -s tests -p 'test_interface_consumer_guard.py'"
+            "python3 -m unittest discover -s tests"
           ]
         }
       ]
     }
   ],
   "real_shape_smoke": {
-    "required": true,
-    "status": "PASS",
-    "command": "python3 -m unittest discover -s tests -p 'test_interface_consumer_guard.py'",
-    "evidence": "synthetic changed-interface consumer closure matrix"
+    "required": false,
+    "status": "NOT_REQUIRED",
+    "command": "not-required",
+    "evidence": "not-required"
   }
 }

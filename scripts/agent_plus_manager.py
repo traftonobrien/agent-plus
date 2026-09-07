@@ -785,7 +785,7 @@ def _publish_journal_at(parent_fd: int, data: bytes) -> None:
 def _read_json(data: bytes, label: str) -> dict[str, Any]:
     try:
         value = json.loads(data.decode("utf-8"), object_pairs_hook=_reject_duplicate_pairs)
-    except (UnicodeDecodeError, json.JSONDecodeError, ManagerError) as exc:
+    except (UnicodeDecodeError, ValueError, RecursionError, OverflowError, ManagerError) as exc:
         raise ManagerError(f"Invalid {label}") from exc
     if type(value) is not dict:
         raise ManagerError(f"Invalid {label}")
@@ -1549,6 +1549,7 @@ def status(target: Path) -> int:
                 manifest.get("agent_plus_version") != candidate["agent_plus_version"]
                 or manifest.get("schema_version") != SCHEMA
                 or _manifest_set_id(manifest) != candidate["managed_set_id"]
+                or manifest["managed_files"] != candidate["managed_files"]
             ):
                 print(
                     "UPDATE_AVAILABLE "
@@ -1690,7 +1691,7 @@ def _registry() -> tuple[Path, dict[str, Any]]:
     path = _source_root() / ".agent-plus" / "local-projects.json"
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeError, ValueError, RecursionError, OverflowError) as exc:
         raise ManagerError("Local project registry is absent or invalid. Copy .agent-plus/local-projects.example.json first.") from exc
     if type(value) is not dict or type(value.get("projects")) is not dict:
         raise ManagerError("Invalid local project registry")
@@ -1717,7 +1718,7 @@ def context(name: str) -> int:
     return subprocess.run([str(command)], cwd=root, check=False).returncode
 
 
-def doctor(target: Path) -> int:
+def doctor(target: Path, *, readiness: bool = False) -> int:
     """Validate an installed project, including the legacy-adoption seam."""
     with TransactionFilesystem(target) as fs:
         adoption = _adoption(fs)
@@ -1737,7 +1738,7 @@ def doctor(target: Path) -> int:
     environment = os.environ.copy()
     environment["AGENT_PLUS_DOCTOR_FALLBACK"] = "1"
     return subprocess.run(
-        [str(fallback), "--target", str(target)],
+        [str(fallback), "--target", str(target), *(["--readiness"] if readiness else [])],
         cwd=_source_root(),
         env=environment,
         check=False,
@@ -1754,6 +1755,8 @@ def _parser() -> argparse.ArgumentParser:
     for command in ("status", "upgrade", "recover", "doctor"):
         child = subparsers.add_parser(command)
         child.add_argument("--target", required=True, type=Path)
+        if command == "doctor":
+            child.add_argument("--readiness", action="store_true")
     record_parser = subparsers.add_parser("record")
     record_parser.add_argument("--target", required=True, type=Path)
     record_parser.add_argument("--profile", required=True)
@@ -1780,7 +1783,7 @@ def main() -> int:
         elif args.command == "recover":
             recover(args.target)
         elif args.command == "doctor":
-            return doctor(args.target)
+            return doctor(args.target, readiness=args.readiness)
         elif args.command == "projects":
             projects()
         elif args.command == "context":

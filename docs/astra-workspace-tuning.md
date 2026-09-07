@@ -90,3 +90,13 @@ Run focused startup tests, workflow checks, and existing lifecycle/legacy smoke 
 validator checks the integrated package, skill discovery, bootstrap bindings, privacy, and links.
 Preserve independent review and exact release scope before publication. Consumer upgrades use the
 transactional lifecycle from an accepted release. Tuning does not synchronize consumers automatically.
+
+## Prospective behavior baseline
+
+Use `templates/astra-behavior-baseline.json` for an ordinary-task comparison that does not fit the
+outcome-audit event schema. Keep it as one bounded experiment artifact, not a second failure ledger.
+The cases cover an edit, a read-only review, a formal repair, a restart, and an intentional BLOCK.
+Record only observed results. Unavailable fields remain null. Capture failed cases as well as successes.
+Compare the same cases under the same acceptance rules before changing one setting. Do not infer
+performance from model names, prose compliance, or test counts. General gains remain unestablished
+until actual model runs supply comparable evidence.

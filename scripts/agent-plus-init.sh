@@ -120,10 +120,30 @@ if [ "$WITH_GITHUB_ACTIONS" = true ]; then
   cp "$ROOT_DIR/bootstrap/github/workflows/agent-plus-doctor.yml" "$STAGE_DIR/.github/workflows/agent-plus-doctor.yml"
 fi
 
+# Derive both collision checks and leaf installation from the staged inventory.
+STAGED_LEAVES=$(cd "$STAGE_DIR" && python3 - <<'PY_LEAVES'
+from pathlib import Path
+for directory in ("scripts", "tests"):
+    for path in sorted(Path(directory).iterdir()):
+        if path.name == "__pycache__" and path.is_dir() and not path.is_symlink():
+            continue
+        if not path.is_file() or path.is_symlink() or any(c.isspace() for c in str(path)):
+            raise SystemExit("Unsafe staged installation leaf")
+        print(path.as_posix())
+PY_LEAVES
+)
+for control in $STAGED_LEAVES; do
+  if [ -e "$TARGET_DIR/$control" ] || [ -L "$TARGET_DIR/$control" ]; then
+    printf 'Refusing to overwrite existing control: %s\n' "$control" >&2
+    exit 1
+  fi
+done
+
 # Commit by exact path. Existing project-owned directories remain in place.
 for control in AGENTS.md CLAUDE.md AI_WORKFLOW.md AI_AGENT_OUTPUT_POLICY.md ESSENTIAL_WORK_PROTOCOL.md .claude-memory.md; do
-  mv "$STAGE_DIR/$control" "$TARGET_DIR/$control"
+  ln "$STAGE_DIR/$control" "$TARGET_DIR/$control"
   COMMITTED="$COMMITTED $control"
+  rm "$STAGE_DIR/$control"
 done
 mv "$STAGE_DIR/.cursor" "$TARGET_DIR/.cursor"
 COMMITTED="$COMMITTED .cursor"
@@ -131,15 +151,12 @@ mv "$STAGE_DIR/.agent-plus" "$TARGET_DIR/.agent-plus"
 COMMITTED="$COMMITTED .agent-plus"
 mv "$STAGE_DIR/.planning" "$TARGET_DIR/.planning"
 COMMITTED="$COMMITTED .planning"
-mkdir -p "$TARGET_DIR/scripts"
-for control in ai-context.sh active_chain_guard.py anti_loop_guard.py interface_consumer_guard.py agent-plus-doctor.sh; do
-  mv "$STAGE_DIR/scripts/$control" "$TARGET_DIR/scripts/$control"
-  COMMITTED="$COMMITTED scripts/$control"
+mkdir -p "$TARGET_DIR/scripts" "$TARGET_DIR/tests"
+for control in $STAGED_LEAVES; do
+  ln "$STAGE_DIR/$control" "$TARGET_DIR/$control"
+  COMMITTED="$COMMITTED $control"
+  rm "$STAGE_DIR/$control"
 done
-mkdir -p "$TARGET_DIR/tests"
-mv "$STAGE_DIR/tests/test_interface_consumer_guard.py" \
-  "$TARGET_DIR/tests/test_interface_consumer_guard.py"
-COMMITTED="$COMMITTED tests/test_interface_consumer_guard.py"
 if [ "$WITH_GITHUB_ACTIONS" = true ]; then
   mkdir -p "$TARGET_DIR/.github/workflows"
   mv "$STAGE_DIR/.github/workflows/agent-plus-doctor.yml" \

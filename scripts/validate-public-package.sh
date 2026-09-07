@@ -257,11 +257,7 @@ grep -qF 'Copyright (c) 2026 Matt Pocock' \
   exit 1
 }
 
-if grep -R -n -E '/[U]sers/|/[L]ibrary/Application Support/|sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{20,}' \
-  --include='*.md' --include='*.sh' .; then
-  printf '%s\n' 'Public-safety scan failed.' >&2
-  exit 1
-fi
+python3 scripts/public_safety_scan.py
 
 if grep -R -n -E '[[:blank:]]+$' --include='*.md' --include='*.sh' .; then
   printf '%s\n' 'Whitespace scan failed.' >&2

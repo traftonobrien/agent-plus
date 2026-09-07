@@ -763,7 +763,7 @@ class CommandLineTests(GuardTestCase):
             "E_MISSING_LEDGER", lambda: load_ledger(ROOT / ".agent-plus" / "does-not-exist.json")
         )
 
-    def test_concurrent_block_records_do_not_lose_updates(self) -> None:
+    def test_concurrent_duplicate_block_records_count_once(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             ledger_path = root / "ledger.json"
@@ -794,8 +794,8 @@ class CommandLineTests(GuardTestCase):
             state = load_ledger(ledger_path)["boundaries"]["TEST_INTERFACE"]["failure_classes"][
                 "root-binding"
             ]
-            self.assertEqual(state["block_count"], 2)
-            self.assertTrue(state["architecture_reset_required"])
+            self.assertEqual(state["block_count"], 1)
+            self.assertFalse(state["architecture_reset_required"])
 
     def test_direct_record_block_without_closeout_packet_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

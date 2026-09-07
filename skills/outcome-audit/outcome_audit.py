@@ -24,7 +24,7 @@ import sys
 from collections.abc import Mapping, Sequence
 from itertools import pairwise
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import Any, cast
 
 RECORD_SCHEMA = "agent-plus/outcome-record/v1"
 RECORDS_SCHEMA = "agent-plus/outcome-record-set/v1"
@@ -84,7 +84,7 @@ def strict_json_loads(raw: str | bytes) -> Any:
         )
     except OutcomeAuditError:
         raise
-    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+    except (TypeError, ValueError, RecursionError, OverflowError) as exc:
         raise OutcomeAuditError("MALFORMED_JSON") from exc
 
 
@@ -130,25 +130,22 @@ def _string(value: Any, code: str = "SCHEMA_TYPE") -> str:
 
 
 def _enum(value: Any, choices: Sequence[str], code: str = "SCHEMA_ENUM") -> str:
-    value = _string(value, code)
-    if value not in choices:
+    text = _string(value, code)
+    if text not in choices:
         raise OutcomeAuditError(code)
-    return value
-
+    return text
 
 def _ref(value: Any) -> str:
-    value = _string(value, "OPAQUE_REF")
-    if not REF_PATTERN.fullmatch(value):
+    text = _string(value, "OPAQUE_REF")
+    if not REF_PATTERN.fullmatch(text):
         raise OutcomeAuditError("OPAQUE_REF")
-    return value
-
+    return text
 
 def _digest(value: Any) -> str:
-    value = _string(value, "DIGEST")
-    if not DIGEST_PATTERN.fullmatch(value):
+    text = _string(value, "DIGEST")
+    if not DIGEST_PATTERN.fullmatch(text):
         raise OutcomeAuditError("DIGEST")
-    return value
-
+    return text
 
 def _list(value: Any, code: str = "SCHEMA_TYPE") -> list[Any]:
     if not isinstance(value, list):
@@ -167,17 +164,16 @@ def _finite_number(value: Any, *, allow_null: bool = False) -> float | None:
 
 
 def _timestamp(value: Any) -> str:
-    value = _string(value, "TIMESTAMP")
-    if not value.endswith("Z"):
+    text = _string(value, "TIMESTAMP")
+    if not text.endswith("Z"):
         raise OutcomeAuditError("TIMESTAMP")
     try:
-        parsed = _datetime.datetime.fromisoformat(value[:-1] + "+00:00")
+        parsed = _datetime.datetime.fromisoformat(text[:-1] + "+00:00")
     except ValueError as exc:
         raise OutcomeAuditError("TIMESTAMP") from exc
     if parsed.tzinfo is None:
         raise OutcomeAuditError("TIMESTAMP")
-    return value
-
+    return text
 
 def _validate_event(event: Any) -> dict[str, Any]:
     event = _exact_mapping(
@@ -398,7 +394,7 @@ def _grade(rate: float | None, bands: Any, metric: str) -> str:
         return "UNRATED"
     for band in entries:
         if band["minimum"] <= rate <= band["maximum"]:
-            return band["grade"]
+            return cast(str, band["grade"])
     return "UNRATED"
 
 
@@ -534,14 +530,13 @@ def _manifest_path(root: Path) -> Path:
 
 
 def _safe_relative(value: Any) -> str:
-    value = _string(value, "SOURCE_PATH")
-    if not value or "\\" in value:
+    text = _string(value, "SOURCE_PATH")
+    if not text or "\\" in text:
         raise OutcomeAuditError("TRAVERSAL")
-    path = PurePosixPath(value)
+    path = PurePosixPath(text)
     if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
         raise OutcomeAuditError("TRAVERSAL")
-    return value
-
+    return text
 
 def _read_regular_relative(root: Path, relative: str) -> bytes:
     """Read one regular file without following path components or the leaf."""

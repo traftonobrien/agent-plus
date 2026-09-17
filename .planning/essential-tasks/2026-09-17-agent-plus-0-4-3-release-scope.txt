@@ -1,0 +1,13 @@
+.agent-plus/release-candidate.json
+.claude-memory.md
+.planning/STATE.md
+.planning/essential-tasks/2026-09-17-agent-plus-0-4-3-release-scope.txt
+.planning/templates/ESSENTIAL-TASK.md
+ESSENTIAL_WORK_PROTOCOL.md
+VERSION
+bootstrap/base/.planning/templates/ESSENTIAL-TASK.md
+bootstrap/base/ESSENTIAL_WORK_PROTOCOL.md
+docs/releases/0.4.3.md
+scripts/validate-public-package.sh
+tests/test_system_repairs.py
+tests/test_workflow_defaults.py

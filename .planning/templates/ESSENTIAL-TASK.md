@@ -69,6 +69,18 @@ Routine reversible maintenance uses the changed file, command, focused check, an
 - **Repeat trigger:** `<required state change>`
 - **Acceptance:** `<command or rubric>`
 
+## Request and meaning
+
+Use only the fields relevant to the requested work. Ordinary explanations and documents do not require predictive-model fields.
+Reference the accepted contract or adapter when it already supplies a field. Do not copy private definitions into public examples.
+
+- **Owner request:** `<actual question and requested population, not a supporting cue>`
+- **Output mode and excluded work:** `<explanation, analysis, edit, or other requested deliverable; explicit exclusions>`
+- **Unresolved consequential scope:** `<material choice requiring a bounded question if accessible evidence cannot resolve it; none otherwise>`
+- **Semantic contract:** `<reference or units, sign convention, row grain, metric type, endpoint transformation, and source availability>`
+- **Known-answer cases:** `<relevant scalar, vector, grouped, missing-value, and endpoint cases before expensive execution>`
+- **Current and reconstruction ownership:** `<normal entry point and current dependencies; separate historical reconstruction path or not-applicable>`
+
 ## Decision branches
 
 - **If PASS:** `<next action>`

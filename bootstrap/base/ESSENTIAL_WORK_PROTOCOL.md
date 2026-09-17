@@ -64,6 +64,14 @@ current expensive ancestors and reject a broad rebuild when only a cheap downstr
 Treat a downstream reset as a new failure class only when deterministic graph evidence proves it
 cannot reach the exhausted upstream interface.
 
+Before expensive execution, test shared helpers with tiny known-answer cases for scalar, vector, grouped, and missing-value behavior when applicable.
+Test signed endpoints and repeated transformations when applicable. Retain the regression that exposed a defect through refactoring or simplification.
+Use the existing focused test path. Do not create a second analytical pipeline for review.
+
+Keep historical reconstruction separate from the normal entry point when it is not a current dependency.
+Name the current run, accepted result, and reconstruction owner in the existing task card.
+This guidance does not authorize changing accepted membership or scientific definitions.
+
 Preserve failed attempts alongside the eventual result. Record their causal failure code, measured
 duration when available, and the correction or simplification that changed the outcome. Use the
 existing outcome audit when prospective rates are needed; do not create a second metrics ledger.
@@ -85,6 +93,14 @@ Before dispatch, name the furthest authorized decision-relevant endpoint and one
 invalidate the proposed path. Inspect accessible evidence instead of asking. Ask only when two
 plausible answers require materially different actions and a cheap lookup cannot resolve the fact.
 Otherwise choose the smallest reversible default and record it in the active task.
+
+Bind the actual question, requested population, output mode, and excluded work in the existing task card.
+Supporting cues and skill requirements do not create another assignment or expand authority.
+Reference an accepted contract instead of restating its answers. Apply only relevant fields to descriptive work and ordinary documents.
+
+Before analytical implementation, resolve units, sign convention, row grain, metric type, endpoint transformations, and source availability.
+Keep observed ranges separate from selection rules and geometric regions separate from recorded events.
+These definitions belong in the accepted contract or project adapter. Arithmetic checks alone cannot establish their meaning.
 
 Use one fresh verifier at the promotion boundary. Do not add recursive builder-critic rounds,
 sentence-level provenance tags, or phase-by-phase critique unless the task names a distinct risk

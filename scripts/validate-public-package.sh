@@ -259,22 +259,40 @@ grep -qF 'Copyright (c) 2026 Matt Pocock' \
 
 python3 scripts/public_safety_scan.py
 
-if grep -R -n -E '[[:blank:]]+$' --include='*.md' --include='*.sh' .; then
-  printf '%s\n' 'Whitespace scan failed.' >&2
-  exit 1
-fi
-
-python3 - <<'PY'
+# Publication text checks use the same inventory as public_safety_scan.py.
+python3 - <<'PY_TEXT'
 from pathlib import Path
 import re
+import subprocess
+
 root = Path.cwd()
-for path in root.rglob('*.md'):
-    for raw in re.findall(r'\]\(([^)]+)\)', path.read_text()):
+result = subprocess.run(
+    ["git", "-C", str(root), "ls-files", "-co", "--exclude-standard", "-z"],
+    capture_output=True,
+    check=True,
+)
+names = sorted(set(result.stdout.decode("utf-8").split("\0")) - {""})
+published = {root / name for name in names}
+for name in names:
+    path = root / name
+    if path.suffix not in {".md", ".sh"}:
+        continue
+    text = path.read_text(encoding="utf-8")
+    if re.search(r"[ \t]+$", text, re.MULTILINE):
+        raise SystemExit(f"Whitespace scan failed: {name}")
+    if path.suffix != ".md":
+        continue
+    for raw in re.findall(r'\]\(([^)]+)\)', text):
         target = raw.split('#', 1)[0].strip('<>')
         if target and '://' not in target and not target.startswith('mailto:'):
-            if not (path.parent / target).resolve().exists():
-                raise SystemExit(f'Broken local link: {path.relative_to(root)} -> {raw}')
+            resolved = (path.parent / target).resolve()
+            shipped = resolved in published or (
+                resolved.is_dir() and any(resolved in item.parents for item in published)
+            )
+            if not resolved.exists() or not shipped:
+                raise SystemExit(f'Broken public link: {name} -> {raw}')
+print('Public Markdown and shell whitespace: PASS')
 print('Internal Markdown links: PASS')
-PY
+PY_TEXT
 
 printf '%s\n' 'Public package validation: PASS'

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -47,6 +49,35 @@ class WorkflowDefaultTests(unittest.TestCase):
                 ".cursor/rules/agent-plus-output.mdc",
             ):
                 self.assertEqual(canonical, bootstrap, relative)
+
+    def test_request_meaning_contract_reaches_new_installations(self) -> None:
+        # Exercise the actual delivery path, not just the source copies.
+        for profile in ("research", "product"):
+            with self.subTest(profile=profile), tempfile.TemporaryDirectory() as directory:
+                target = Path(directory)
+                result = subprocess.run(
+                    [str(ROOT / "scripts/agent-plus"), "init", "--target", str(target),
+                     "--profile", profile, "--brain-note", "Synthetic Example"],
+                    cwd=ROOT, capture_output=True, text=True, check=False,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                for relative in (".planning/templates/ESSENTIAL-TASK.md", "ESSENTIAL_WORK_PROTOCOL.md"):
+                    self.assertEqual((target / relative).read_bytes(), (ROOT / relative).read_bytes())
+                template = (target / ".planning/templates/ESSENTIAL-TASK.md").read_text()
+                for field in (
+                    "Owner request", "Output mode and excluded work", "Unresolved consequential scope",
+                    "Semantic contract", "Known-answer cases", "Current and reconstruction ownership",
+                ):
+                    self.assertIn(field, template)
+                protocol = (target / "ESSENTIAL_WORK_PROTOCOL.md").read_text()
+                for requirement in (
+                    "do not create another assignment or expand authority",
+                    "units, sign convention, row grain, metric type",
+                    "scalar, vector, grouped, and missing-value behavior",
+                    "Retain the regression that exposed a defect",
+                    "historical reconstruction separate from the normal entry point",
+                ):
+                    self.assertIn(requirement, protocol)
 
     def test_plain_language_output_contract_is_portable(self) -> None:
         policy = (ROOT / "AI_AGENT_OUTPUT_POLICY.md").read_text(encoding="utf-8")

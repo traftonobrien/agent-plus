@@ -42,6 +42,12 @@ Use a reasonable reversible default when uncertainty does not change the outcome
 persists within its scope. Prepare a concrete result before asking for any remaining required approval.
 An explanation or outline request authorizes that deliverable, not implementation or publication.
 
+Direct owner requests cover the named action and necessary routine steps. An explicit request to edit,
+send or publish supplies action authorization when its target and content are clear from current context.
+Ask only for an actual unresolved decision or controlling restriction. Do not add another permission phrase.
+Use applicable standing source grants across related tasks. Inspect relevant rows when source and purpose
+are already authorized; do not invent a metadata-only restriction. Named bound runs retain their actual controls.
+
 - Routine reversible maintenance uses the changed file, command, focused check, and result as its record.
   It needs no formal chain, worker, research contract, or new permission prompt solely because AI assists.
 - Shared controls, shared interfaces, substantive engineering, and promotion readiness use the task

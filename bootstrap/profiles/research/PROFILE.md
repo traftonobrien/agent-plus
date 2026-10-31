@@ -22,9 +22,13 @@ Do not claim future prediction without chronological evaluation. Do not claim de
 
 ## Lean R default
 
-For R projects, use ordinary R and the existing project `renv`. Work one small chunk at a time,
+For R projects, use readable R and the existing project setup. Reuse `renv` when present; do not introduce a framework solely for a small task. Work one small chunk at a time,
 parse the changed files, and run only the named focused tests. Add no package or subsystem unless an
 observed requirement proves it is necessary.
+
+Keep one obvious current entrypoint per workflow. A small analysis can stay in one R file; R Markdown is optional. Split files for real reusable responsibilities. Descriptive work needs no fitted model; each additional model must answer a distinct unresolved question.
+
+Use file fingerprints when a frozen source, accepted receipt, recovery path or release requires exact identity. Ordinary exploration does not acquire a hash gate by default. A fingerprint checks bytes, not scientific meaning. Preserve existing required identity checks and trace their consumers before removing one.
 
 For migrations, trace complete source behavior before claiming parity. Test the dominant operation
 at representative volume, use vectorized table operations, and keep expensive cached stages

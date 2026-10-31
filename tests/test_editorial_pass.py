@@ -107,7 +107,7 @@ class EditorialPassTests(unittest.TestCase):
             "## Implementation subtraction ladder",
             "Does this need to exist?",
             "DietrichGebert/ponytail",
-            "2ed6c52c9d7e5e56942508591085fd45dea277d3f",
+            "2ed6c52c9d7e5e56942508591085fd45dea277d3",
         ):
             self.assertIn(phrase, canonical)
 

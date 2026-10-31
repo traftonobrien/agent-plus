@@ -1,5 +1,7 @@
 # Session Handoff — Template
 
+Update the current task’s existing handoff. Keep the latest verified state and next action first; retain older material as dated history. Project memory links here instead of copying changing task state.
+
 ## Verified state
 
 - Completed artifact: `[path or ID]`

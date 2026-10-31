@@ -30,6 +30,43 @@ command, focused check, and result as the local record.
 
 If `PASS` and `BLOCK` lead to the same next action, do not start the task. It has no decision value.
 
+## Prior evidence disposition
+
+Before creating a definition, method, or implementation, search the accessible accepted work that
+could answer the same question. Bind the search to the relevant source identity, semantic component,
+and implementation surface. Do not rely on project names or a new session boundary to decide that
+earlier evidence is unrelated.
+
+Record each relevant component with exactly one disposition:
+
+- `REUSE_IDENTICAL`: the claim, inputs, meaning, implementation, environment, and acceptance contract
+  match the current use.
+- `REUSE_WITH_TASK_DELTA`: an accepted component transfers, while the current task separately owns a
+  changed population, denominator, output, or other named decision.
+- `CONFLICT_REVIEW`: source identity, meaning, implementation, or accepted evidence differs and must be
+  reconciled before reuse or replacement.
+- `NOT_APPLICABLE`: no relevant accepted component exists, or the inspected component does not answer
+  the current question. Record the search basis instead of silently starting from scratch.
+
+Reuse of a component never transfers another task's permissions, acceptance receipts, task status, publication
+decision, or release authority. A rule against inheriting task authority does not
+justify recreating an accepted source-bound definition or implementation. When the search finds a
+match, state the reusable component and the task-owned delta before new work begins.
+
+This prevents automatic transfer of authority or acceptance. It does not prohibit reusing a saved table or
+accepted result as evidence or input. Confirm that source, population, definitions and recorded limits fit
+the new use. Cite the existing accepted evidence and identify the actual task-specific gap before rebuilding.
+Applicable standing authorization is not revoked by a new chat.
+
+### Learning from completed work
+
+Record accepted results, reusable artifact locations and relevant limits in the existing task handoff.
+Link newly accepted reusable artifacts from their existing owning index at closeout. Update the existing
+procedure when an owner correction or repeated failure demonstrates a reusable lesson, within current
+authority and with the applicable shared-control review. Task-specific observations stay in the handoff.
+At the next related task, retrieve those owners and compatible accepted work before planning new work.
+Do not create another lessons register or require every old transcript as startup context.
+
 ## Implementation subtraction ladder
 
 After tracing the affected flow and before adding code, stop at the first adequate option:
@@ -48,7 +85,7 @@ simplification. Prefer deletion, reuse, and boring code only after the real call
 This control adapts Dietrich Gebert's MIT-licensed
 [`DietrichGebert/ponytail`](https://github.com/DietrichGebert/ponytail) decision ladder. The inspected
 upstream commit is
-[`2ed6c52c9d7e5e56942508591085fd45dea277d3f`](https://github.com/DietrichGebert/ponytail/tree/2ed6c52c9d7e5e56942508591085fd45dea277d3f).
+[`2ed6c52c9d7e5e56942508591085fd45dea277d3`](https://github.com/DietrichGebert/ponytail/tree/2ed6c52c9d7e5e56942508591085fd45dea277d3).
 
 ### Lean R migration rule
 
@@ -108,65 +145,12 @@ that the existing evaluator and verifier cannot test.
 
 ## Engineering closure rule
 
+Use [AI Workflow](<AI_WORKFLOW.md#engineering-closure-and-review>) for formal diagnosis, bundled correction, reviewer BLOCK, simplification and registered-ledger admission.
+That owner also controls complete read-only defect collection, fixed input namespaces, cumulative history and the single promotion dossier. An engineering result must unlock its named user-visible or scientific endpoint.
+
 ### Continuous repair default
 
-Routine reversible work proceeds through small, obvious mechanical defects. Fix the localized issue,
-run the smallest adequate check, and continue the same bounded task. Do not turn each minor fix into
-a new review or stop state.
-
-Escalate after an ambiguous defect, two adjacent failures at one boundary, or any reach into
-scientific meaning, real-data access, authority, promotion, release, or reviewer evidence. Use the
-boundary sweep and bundled-correction rules below when escalation is required.
-
-Two consecutive launches that expose adjacent deterministic failures at one boundary, before any
-scientific result exists, are `LOOP_DETECTED`. Record both symptoms in the existing ledger or
-receipt. Then complete one bounded read-only sweep and make one bundled correction. Do not add a
-new tracker or relabel a third broad run as a different interface.
-
-Classify the boundary before dispatch:
-
-- **Engineering diagnostic or readiness closure:** promotion is blocked at the first defect, but
-  read-only defect collection continues across the named interface and adjacent failure class until
-  the matrix is complete, continuation becomes unsafe, or the task budget ends.
-- **Scientific, live, destructive, or irreversible execution:** stop at the first invalid condition.
-
-Do not use a first-defect stop rule to create serial engineering repair cycles. The verifier may
-enumerate additional falsified invariants without designing the repair. The next maker owns one
-bundled correction and one deterministic acceptance receipt for the complete reported class.
-
-After the first engineering review `BLOCK`, expand the bounded attack matrix before repair.
-This is a requirement to prepare the repair evidence, not permission to perform the repair.
-The reviewer BLOCK closes this chain; a repair maker needs a new explicitly owner-authorized chain. After a
-second `BLOCK` at the same interface or failure class, do not authorize a third local patch cycle.
-Escalate to simplification: constrain or replace the interface, remove unnecessary caller choices,
-and test the new boundary end to end. A contract change still requires the human owner.
-
-If simplification would weaken or reinterpret an accepted scientific, privacy, security,
-authority, or claim boundary, stop with `OWNER_DECISION_REQUIRED`. Name the smallest mutually
-exclusive choices and the evidence each choice needs. The owner decision starts a new chain; it is
-not another repair attempt.
-
-Prefer designs that make invalid states impossible. For temporary roots, paths, modes, schemas, or
-other infrastructure inputs, use a fixed approved namespace and a small validated identifier when
-arbitrary caller input has no named consumer. Do not build an expanding custom validator for
-capability the project does not need.
-
-When a closed-interface recovery passes its required review, preserve that interface as the default
-for the failure class. Reopening removed choices requires a new necessity card, named consumer,
-deterministic acceptance checks, and required review.
-
-An engineering closure is successful only when it unlocks the named user-visible or scientific
-milestone. Test counts, review records, and patches are evidence, not the outcome.
-
-Every engineering chain must use a registered ledger boundary. Validate its planned packet before
-maker or reviewer dispatch. Before a reviewer verdict can unlock another maker, validate a
-completed review packet with `--require-complete-engineering-review`; the attack matrix and named
-coverage must exactly match the ledger. A partial reviewer narrative may block promotion, but it
-cannot authorize the next repair or increment the persisted BLOCK count.
-
-Use one active promotion-boundary dossier for the task contract, cumulative findings, acceptance
-receipt, and integrated review. Update it at each bounded state change. Preserve older evidence as
-history without creating a fresh document family for every local defect.
+Use the [AI Workflow repair rule](<AI_WORKFLOW.md#continuous-repair-default>) for routine maintenance and the eligible formal-evaluator correction. This route does not grant scientific/live execution, source access, review acceptance or another consumed attempt.
 
 ## Interface-consumer closure
 
@@ -189,42 +173,13 @@ work.
 
 ## Higher-capacity routing boundary
 
-The task card selects `quick`, `standard`, `deep`, or `scientific/live`. Extra capacity changes
-bounded throughput only; it does not change authority, context ceilings, retry limits, reviewer
-count, or owner authorization. Use the mode budgets and model routes in `AI_WORKFLOW.md`.
-
-An engineering chain may run plan, independent exploration, frozen evidence handoff, one exclusive
-maker, deterministic evaluation, one fresh review, and controller synthesis. Exploration may be parallel;
-all later stages are sequential. Use one writer per repository, no overlapping writes, no recursive
-spawn, no silent fallback, and one bounded wait per stage. A maker or reviewer `BLOCK` stops the chain. A deterministic evaluator finding may use only the
-single eligible small-correction rule in `AI_WORKFLOW.md`; all other evaluator BLOCKs stop.
-Never auto-repair after a reviewer `BLOCK`.
-
-Route a multi-stage chain through one `.agent-plus/active-chain.json` capsule. Validate `continue`
-before each stage and `closeout` before ending the chain. The capsule references live authority by
-repository-relative path and carries no copied scientific values, schemas, thresholds, hashes, or
-artifact identities. `PASS`, `NULL`, and `BLOCK` are valid terminal states. Early closeout is not.
-The capsule is routing state only; the engineering ledger and anti-loop guard remain authoritative.
-
-Overnight work needs an explicit owner command and is limited to read-only or reversible engineering
-with a fixed queue of at most eight items. It cannot perform live, scientific, or promotion work.
+Use [AI Workflow session modes](<AI_WORKFLOW.md#bounded-session-modes>) and [capacity limits](<AI_WORKFLOW.md#capacity-and-context-limits>) for model selection, budgets, bounded waits, exclusive writes and the active-chain capsule.
+Extra capacity changes throughput only. It grants no extra authority, retries, reviewers, context or promotion rights. The same owner governs overnight scope and queue limits.
 
 ## Unattended execution rule
 
-Use one authorized launch for a bounded unattended process. Before launch, record the exact command,
-durable progress and terminal evidence paths, expected return point, and one result check.
-
-The process must write its own durable evidence. The AI controller performs zero polls while the
-process runs and one result check after return. A launch error, process error, missing terminal
-evidence, or failed check consumes the authorization and returns `BLOCK`.
-
-Do not use fallback or retry behavior. Resume only after bounded repair, any required fresh review,
-and new explicit authorization. Durable process evidence does not grant promotion authority.
-
-Reserve 25% of a measurable premium allowance for scientific, leakage, hard-architecture, or
-irreversible decisions. Record not applicable when no such allowance is exposed. Re-run model review after 10 completed bounded chains or 14 days, and immediately after
-model/rate/plan changes, two routing `BLOCK`s, average context above 40K, or reviewer correction
-above 20%.
+Use [AI Workflow](<AI_WORKFLOW.md#attempt-boundary-and-pre-attempt-correction>) for scientific/live attempt-start and correction limits, and its [unattended execution](<AI_WORKFLOW.md#unattended-execution>) section for one launch, process-written evidence, zero AI polls and one return check.
+A failed or missing result does not grant another launch. The workflow's [capacity rules](<AI_WORKFLOW.md#capacity-and-context-limits>) own the premium reserve and model-review cadence. Scientific, source, human and release authority stay separate.
 
 ## Evidence reuse
 
@@ -249,3 +204,22 @@ Do not add tests that merely mirror a reversible low-impact edit. Required bound
 ## BLOCK rule
 
 A missing source, incomplete coverage, failed test, unauthorized action, or absent review is a typed `BLOCK`. Do not estimate around it or reinterpret it as a passing result.
+
+## Upstream MIT notice for the subtraction ladder
+
+Copyright (c) 2026 DietrichGebert
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

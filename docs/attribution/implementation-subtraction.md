@@ -3,8 +3,8 @@
 Agent+ adapts the subtraction-first decision ladder from Dietrich Gebert's Ponytail project.
 
 - Upstream: [`DietrichGebert/ponytail`](https://github.com/DietrichGebert/ponytail)
-- Inspected commit: [`2ed6c52c9d7e5e56942508591085fd45dea277d3f`](https://github.com/DietrichGebert/ponytail/tree/2ed6c52c9d7e5e56942508591085fd45dea277d3f)
-- Upstream rules: [`AGENTS.md`](https://github.com/DietrichGebert/ponytail/blob/2ed6c52c9d7e5e56942508591085fd45dea277d3f/AGENTS.md)
+- Inspected commit: [`2ed6c52c9d7e5e56942508591085fd45dea277d3`](https://github.com/DietrichGebert/ponytail/tree/2ed6c52c9d7e5e56942508591085fd45dea277d3)
+- Upstream rules: [`AGENTS.md`](https://github.com/DietrichGebert/ponytail/blob/2ed6c52c9d7e5e56942508591085fd45dea277d3/AGENTS.md)
 - Upstream license: [MIT](DIETRICH-GEBERT-LICENSE.txt)
 - Copyright: Copyright (c) 2026 DietrichGebert
 

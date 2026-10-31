@@ -21,7 +21,8 @@ Create a source log that distinguishes discovered material from admitted evidenc
 
 ## Allowed actions
 
-- Record candidate sources.
+- Reuse the existing source log and source-specific admission before creating another record.
+- Record new candidate sources or the changed scope of an existing source.
 - Check author, date, scope, and claim relevance.
 - Mark a source admitted, pending, or rejected.
 
@@ -34,6 +35,7 @@ Create a source log that distinguishes discovered material from admitted evidenc
 ## Acceptance checks
 
 - Each admitted source supports a named claim or method.
+- Reused admission fits the selected source, purpose and current authority. Keep its actual conditions and unresolved holds. A new read alone does not require new intake or another permission question.
 - A source type is recorded.
 - Discovery is not mislabeled as validation.
 

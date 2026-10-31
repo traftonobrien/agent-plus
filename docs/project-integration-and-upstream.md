@@ -23,7 +23,7 @@ the canonical source of that improvement.
 6. Upgrade the proving project from that version.
 7. Keep any project-only adapter local.
 
-Use the current `0.3.x` patch line for small compatible fixes, documentation, and control
+Use the current released minor line’s patch versions for small compatible fixes, documentation, and control
 refinements. Use a new `0.x.0` minor release only for a genuinely new public capability or authority
 boundary.
 

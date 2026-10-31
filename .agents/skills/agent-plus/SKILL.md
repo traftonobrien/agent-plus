@@ -21,9 +21,10 @@ Confirm the project control plane, load bounded context, and route the task to t
 
 ## Allowed actions
 
-1. Run the project doctor and context commands.
-2. Read planning state and check whether a discovery brief or accepted research contract exists.
-3. If the decision, user, scope, null or BLOCK path, evidence need, or claim ceiling is unclear,
+1. Use the project startup route once per session. Reuse unchanged context; rerun affected checks when controls change.
+2. Resolve the existing task and its current handoff before creating work. Classify the request through
+   project `AGENTS.md`. A routine lookup, correction or restart does not become new research or discovery.
+3. For a new research or product definition, if the decision, user, scope, null or BLOCK path, evidence need, or claim ceiling is unclear,
    route to `$agent-plus-discovery-grill`. Do not draft a contract yet.
 4. Route to the research-contract template only when the one discovery file has
    `status: READY_FOR_CONTRACT` and durable `owner_confirmation: CONFIRMED`, or when the owner
@@ -36,8 +37,8 @@ Confirm the project control plane, load bounded context, and route the task to t
 7. Route prospective workflow outcome measurement and sanitized private-evidence checks to
    `$outcome-audit`. Keep its record, report, and receipt boundaries separate from the workflow
    ledger.
-8. Select one bounded procedure from the installed Agent+ skill set and create the required
-   necessity card before substantive work.
+8. Select one matching procedure for the requested action. Reuse the task’s accepted evidence and
+   output owner. Create a necessity card only when the project’s task classification requires it.
 
 ## Required outputs
 
@@ -48,7 +49,7 @@ Confirm the project control plane, load bounded context, and route the task to t
 
 ## Acceptance checks
 
-- The project doctor passes.
+- Required project checks pass. Existing work resumes in its requested lane; settled discovery is not reopened without a changed question.
 - Unclear ideas route to one discovery brief instead of premature contract drafting.
 - `READY_FOR_CONTRACT` still requires user confirmation before contract drafting.
 - `READY_FOR_CONTRACT` with `owner_confirmation: AWAITING` routes back to discovery after resume.

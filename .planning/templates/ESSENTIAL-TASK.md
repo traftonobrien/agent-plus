@@ -42,6 +42,9 @@ Routine reversible maintenance uses the changed file, command, focused check, an
 - **Decision:** `<decision that can change>`
 - **Uncertainty:** `<unknown fact>`
 - **Existing evidence:** `<why insufficient>`
+- **Prior evidence search:** `<accepted work searched by source identity, semantic component, and implementation surface>`
+- **Prior evidence disposition:** `<REUSE_IDENTICAL | REUSE_WITH_TASK_DELTA | CONFLICT_REVIEW | NOT_APPLICABLE, with one row per relevant component>`
+- **Authority separation:** `<permissions, population, denominators, results, receipts, status, publication, and release decisions retained by this task>`
 - **Minimum action:** `<cheapest adequate action>`
 - **Unlock:** `<concrete next work>`
 
@@ -51,6 +54,8 @@ Routine reversible maintenance uses the changed file, command, focused check, an
 - **Allowed actions:** `<actions explicitly permitted>`
 - **Forbidden actions:** `<actions explicitly forbidden>`
 - **Review mode:** `<engineering sweep | scientific/live first-error gate>`
+- **Attempt-start evidence:** `<exact first authorized irreversible/live/scientific action, source or secret access, external side effect, attempt-journal event, or task-declared event>`
+- **Pre-attempt correction allowance:** `<one mechanical correction under AI_WORKFLOW.md | none>`
 - **Failure-class coverage:** `<interface and adjacent invariants the run must exhaust>`
 - **Simplification trigger:** `<state that forbids another local patch>`
 - **User-visible outcome:** `<result enabled, not tests or process files>`

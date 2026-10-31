@@ -22,19 +22,20 @@ Convert temporary session work into an exact, reviewable restart record.
 
 ## Allowed actions
 
-- Create or update a task-specific handoff.
-- Rewrite changing verified project memory.
-- Link durable decisions to curated knowledge.
+- Update the existing task handoff; create one only when no suitable restart record exists.
+- Keep changing execution state in that handoff. Project memory points to it and records only project-wide changes.
+- Link reusable accepted artifacts from their existing owner; do not create another lessons register.
 
 ## Required outputs
 
-- Handoff using the template.
+- Updated restart record using the repository’s `templates/session-handoff-template.md`.
 - Updated verified state when state changed.
 - Exact restart command.
 
 ## Acceptance checks
 
-- A new operator can locate the exact evidence.
+- A new operator can locate the current action and exact evidence without reading the whole history.
+- Prior states remain clearly historical; a routine edit does not create a new handoff file solely because AI assisted.
 - The next action is singular and bounded.
 - BLOCKs name a resume condition.
 

@@ -60,7 +60,7 @@ receipts, and attack matrix, not the maker transcript. Stop on a maker or review
 auto-repair after a reviewer `BLOCK`. Handle an eligible mechanical evaluator finding through the
 single small-correction rule below; otherwise stop on evaluator `BLOCK` too.
 
-For a multi-stage chain, keep one `.agent-plus/active-chain.json` routing capsule. It contains the
+Use one bounded wait per stage. For a multi-stage chain, keep one `.agent-plus/active-chain.json` routing capsule. It contains the
 objective, ordered stages, roles, terminal status, failure count, authority references, and closed
 hard-boundary categories. It does not contain scientific values, schemas, thresholds, hashes, or
 artifact identities. Every stage reads the live repository authority named by relative path.
@@ -70,17 +70,35 @@ each next stage. Run it with `--mode closeout` before ending the chain. The guar
 `PASS`, `NULL`, and `BLOCK` closeouts and rejects early success, stale or unsafe authority paths,
 out-of-order stages, missing durable evidence, and a third local repair after two failures.
 
+The capsule contains no copied scientific values, schemas, thresholds, hashes or artifact identities. Authority references stay repository-relative.
+
 The capsule is routing state only. `same_interface_failures` is the ledger count observed when the
 chain starts. The anti-loop ledger and guard remain authoritative for repair, reset, execution, and
 review admission. The active-chain guard does not record a `BLOCK` or grant another attempt.
 
-### Small correction rule
+### Attempt boundary and pre-attempt correction
 
-When a deterministic evaluator finds one obvious syntax, command-spelling, or test-harness false
-positive, fix it once and rerun the same bounded check without another owner prompt. Use this only
-when production behavior, data access, dependencies, authority, scientific meaning, and the
-acceptance boundary remain unchanged. Stop if the rerun fails, another correction is needed, the
-finding is substantive or ambiguous, or it came from a reviewer.
+This section governs scientific/live attempts. Ordinary inspection of control files and local engineering validation metadata do not start such an attempt unless the task card explicitly names them as attempt-start evidence. Classify maintenance through AGENTS.md before applying these scientific/live limits.
+
+A governed attempt starts at the first authorized irreversible, live, or scientific action.
+It also starts at the first source or secret access, external side effect,
+attempt-journal creation or consumption, or other task-declared attempt-start event. The task card
+must name the exact attempt-start evidence. Missing or ambiguous evidence fails closed before live
+execution.
+
+Before that boundary, one obvious syntax, quoting, path-handling, command-spelling, or test-harness
+error is routine reversible work. Fix it once, run the smallest deterministic check, record the
+correction in the existing receipt or handoff, and continue without another owner prompt. The
+correction does not increment the governed attempt count and is not a retry.
+
+Use this allowance only when source, data, and secret reads remain at zero; no live or production
+launch, attempt journal, output write, external call, authority change, scientific-meaning change,
+dependency change, or acceptance-boundary change occurs. Stop immediately if the boundary might
+have been crossed, evidence is ambiguous, meaning or authority changes, a reviewer issued `BLOCK`,
+the corrected check fails, or a second correction is needed.
+
+After attempt start, the scientific or live first-error rule remains fully binding. The pre-attempt
+allowance cannot reclassify, erase, or repair a governed attempt failure.
 
 ### Continuous repair default
 
@@ -96,6 +114,10 @@ Two consecutive launches that expose adjacent deterministic failures at one boun
 scientific result exists, are `LOOP_DETECTED`. Stop patch-and-run behavior. Record both symptoms in
 the existing ledger or receipt, complete one bounded read-only boundary sweep, and make one bundled
 correction. Do not create a new tracker for this signal.
+
+An explicit owner instruction to stop at a failed check remains binding. General file access does not waive it, a source restriction or required human approval.
+
+For a formal engineering evaluator, one obvious validation-setup correction can continue only inside current authority, before production application or governed execution, with the primary frozen production artifact, required checks, meaning and source permissions unchanged. Bind any already-authorized supporting metadata before correcting it. Do not alter guard code, reviewer evidence or acceptance requirements under this exception. Preserve the failed check and correction. A corrected-check failure, another correction or formal reviewer BLOCK stops the chain. This is not a scientific/live retry and does not erase failure history or cumulative counts.
 
 ## Capacity and context limits
 
@@ -168,7 +190,7 @@ destructive, and irreversible work stops at the first invalid condition. An engi
 blocks promotion at the first defect but continues read-only attacks across its named boundary so
 one repair packet contains the complete reachable defect class.
 
-The first engineering `BLOCK` requires a consolidated attack matrix and one bundled repair plan.
+The first engineering `BLOCK` requires an expanded consolidated attack matrix and one bundled repair plan.
 This specifies the required evidence and repair scope, not authority to restart. A reviewer BLOCK
 ends the current chain. New explicit owner authorization is required before a repair maker starts.
 The single eligible deterministic-evaluator correction remains the exception described above.
@@ -203,6 +225,13 @@ An engineering defect blocks promotion immediately but does not end safe read-on
 declared matrix. Record a review `BLOCK` in the ledger only after the closeout command passes. Do
 not dispatch the next maker from a partial reviewer narrative.
 
+Complete the declared safe read-only matrix until coverage is complete, continuation becomes unsafe or the task budget ends. The verifier enumerates defects without designing the repair. The next maker owns one bundled correction and one deterministic acceptance receipt for the complete reported class.
+
+Prefer designs that make invalid states impossible. For temporary roots, paths, modes, schemas, or
+other infrastructure inputs, use a fixed approved namespace and a small validated identifier when
+arbitrary caller input has no named consumer. Do not build an expanding custom validator for
+capability the project does not need.
+
 Keep one active promotion-boundary dossier. Update its task contract, cumulative finding matrix,
 current acceptance receipt, and integrated review in place. Preserve historical evidence, but do
 not create a new packet set for every local correction.
@@ -220,9 +249,9 @@ After two BLOCKs, only an architecture-reset packet with the ledger-approved `re
 `attempt_id`, and `removed_caller_choices` can pass. Scientific and live packets must use the
 first-error stop policy.
 
-After a closed-interface recovery passes its required review, keep the constrained interface as the
-default for that failure class. Do not restore removed caller choices or open inputs without a new
-necessity card, a named consumer, deterministic acceptance checks, and required review.
+When a closed-interface recovery passes its required review, preserve that interface as the default
+for the failure class. Reopening removed choices requires a new necessity card, named consumer,
+deterministic acceptance checks, and required review.
 
 The ledger, not packet wording, decides authorization. The guard owns a closed exact outcome
 catalog; the ledger may select only a subset of its IDs and must preserve each catalog ID's one

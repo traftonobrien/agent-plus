@@ -241,7 +241,7 @@ for commit in \
     exit 1
   }
 done
-grep -qF '2ed6c52c9d7e5e56942508591085fd45dea277d3f' \
+grep -qF '2ed6c52c9d7e5e56942508591085fd45dea277d3' \
   docs/attribution/implementation-subtraction.md || {
   printf '%s\n' 'Implementation subtraction attribution is missing its inspected commit.' >&2
   exit 1

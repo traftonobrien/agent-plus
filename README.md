@@ -85,7 +85,7 @@ flowchart LR
 3. Read [knowledge and memory](docs/knowledge-and-memory.md). It separates durable curated knowledge, current verified state, task handoffs, and instructions.
 4. Inspect [routing work by authority](docs/routing-work-by-authority.md). Tools and models receive only the authority needed for a bounded task.
 5. Follow [the sample evidence record](examples/sample-evidence-record.md) to [the sample BLOCK](examples/sample-block-outcome.md). The package shows why an incomplete evidence path must stop.
-6. Finish with [the sample handoff](examples/sample-handoff.md). A new session can resume from verified facts without relying on a private chat transcript.
+6. Finish with [the sample handoff](examples/sample-handoff.md). See the [worked handoff edit](skills/editorial-pass/references/editorial-method.md#worked-handoff-example) for how to state when work can resume.
 
 ## Repository map
 

@@ -1,0 +1,7 @@
+.agent-plus/release-candidate.json
+.agents/skills/editorial-pass/references/editorial-method.md
+.planning/essential-tasks/2026-11-08-agent-plus-0-4-5-release-scope.txt
+README.md
+VERSION
+docs/releases/0.4.5.md
+skills/editorial-pass/references/editorial-method.md

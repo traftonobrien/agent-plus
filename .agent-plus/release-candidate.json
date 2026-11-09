@@ -1,7 +1,7 @@
 {
   "schema_version": "agent-plus-release-candidate/v2",
-  "current_version": "0.4.3",
-  "candidate_version": "0.4.4",
-  "base_commit": "35704154967cb9e536228dd3f19a538ab6080259",
-  "manifest_path": ".planning/essential-tasks/2026-10-31-agent-plus-0-4-4-release-scope.txt"
+  "current_version": "0.4.4",
+  "candidate_version": "0.4.5",
+  "base_commit": "64167ba69252789d24d2f4178ce80b643d3b48de",
+  "manifest_path": ".planning/essential-tasks/2026-11-08-agent-plus-0-4-5-release-scope.txt"
 }

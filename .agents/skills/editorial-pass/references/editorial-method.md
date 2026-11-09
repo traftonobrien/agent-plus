@@ -3,6 +3,8 @@
 Use this reference for a detailed detect or edit pass. The governing rule is preservation before
 style.
 
+Use the project's plain-language guidance. In procedures and handoffs, name the next action and the condition for taking it. In public copy, keep the writer's voice and fit the length to the medium. A prose linter is optional. Check the edited meaning against the source.
+
 ## Review order
 
 1. Identify the draft's job, audience, medium, and author signals.
@@ -10,6 +12,16 @@ style.
 3. Locate pattern clusters, not isolated words or punctuation.
 4. Make the minimum change that removes the reader problem.
 5. Re-read for factual drift, meaning loss, flatness, and replacement formulas.
+
+## Worked handoff example
+
+This synthetic example uses the Next action from `examples/sample-handoff.md` and the block that limits it.
+
+| Before | After |
+| --- | --- |
+| `BLOCK-COVERAGE-EXAMPLE`: Independent inventory receipt is missing.<br>Do not replace the receipt with an estimate or an assumed complete month.<br><br>Acquire the independent inventory receipt. Compare its partitions with `example-manifest-v1`. Update the evidence record only if the reconciliation is complete and reviewable. | `BLOCK-COVERAGE-EXAMPLE`: The independent inventory receipt is missing. Do not replace the receipt with an estimate or an assumed complete month.<br><br>Get the receipt. Compare its partitions with `example-manifest-v1`. Update the evidence record only when you can show how the partitions reconcile. |
+
+Showing how the partitions reconcile means accounting for every required partition and making the comparison reviewable. If any required partition is unresolved, keep the block open.
 
 ## High-value pattern groups
 

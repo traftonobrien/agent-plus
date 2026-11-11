@@ -58,6 +58,7 @@ docs/project-integration-and-upstream.md
 docs/release-candidate-verification.md
 scripts/agent-plus
 scripts/agent-plus-init.sh
+scripts/agent_plus_init_commit.py
 scripts/agent-plus-doctor.sh
 scripts/agent_plus_manager.py
 tests/test_agent_plus_lifecycle.py

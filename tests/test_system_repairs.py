@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -45,6 +46,189 @@ class RepairTests(unittest.TestCase):
             text=True,
             check=False,
         )
+
+    def faulted_init(self, root, injection):
+        harness = root.parent / "fault-injection"
+        harness.mkdir()
+        (harness / "sitecustomize.py").write_text(
+            "import os, signal, sys\nfrom pathlib import Path\n"
+            "if Path(sys.argv[0]).name == 'agent_plus_init_commit.py':\n"
+            "    target = Path(sys.argv[2])\n"
+            "    link, mkdir = os.link, os.mkdir\n"
+            + "".join("    " + line + "\n" for line in injection.splitlines())
+        )
+        return subprocess.run(
+            [str(ROOT / "scripts/agent-plus"), "init", "--target", str(root),
+             "--profile", "research", "--brain-note", "Synthetic", "--github-actions"],
+            env={**os.environ, "PYTHONPATH": str(harness), "PYTHONDONTWRITEBYTECODE": "1"},
+            capture_output=True, text=True, check=False, timeout=15,
+        )
+
+    def test_initializer_rolls_back_after_late_directory_collision(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "project"
+            root.mkdir()
+            result = self.faulted_init(root, """
+def collide(name, *args, **kwargs):
+    if name == '.cursor':
+        mkdir(target / name)
+        (target / name / 'owner.txt').write_text('owner')
+    return mkdir(name, *args, **kwargs)
+os.mkdir = collide
+""")
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("already exists", result.stderr)
+            self.assertEqual({p.name for p in root.iterdir()}, {".cursor"})
+            self.assertEqual((root / ".cursor/owner.txt").read_text(), "owner")
+
+    def test_initializer_preserves_owner_replacement_and_late_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "project"
+            root.mkdir()
+            result = self.faulted_init(root, """
+def collide(source, name, **kwargs):
+    if name == 'CLAUDE.md':
+        replacement = target / 'replacement'
+        replacement.write_text('owner replacement')
+        replacement.replace(target / 'AGENTS.md')
+        (target / '.cursor/owner.txt').write_text('owner addition')
+        (target / 'CLAUDE.md').write_text('owner collision')
+    return link(source, name, **kwargs)
+os.link = collide
+""")
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("already exists", result.stderr)
+            self.assertEqual(
+                {p.relative_to(root).as_posix() for p in root.rglob("*")},
+                {"AGENTS.md", "CLAUDE.md", ".cursor", ".cursor/owner.txt"},
+            )
+            self.assertEqual((root / "AGENTS.md").read_text(), "owner replacement")
+            self.assertEqual((root / "CLAUDE.md").read_text(), "owner collision")
+            self.assertEqual((root / ".cursor/owner.txt").read_text(), "owner addition")
+
+    def test_initializer_preserves_directory_replaced_during_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "project"
+            root.mkdir()
+            result = self.faulted_init(root, """
+open_dir = os.open
+def replace_directory():
+    if not (target / 'displaced').exists():
+        (target / '.cursor').rename(target / 'displaced')
+        mkdir(target / '.cursor', 0o700)
+        (target / 'CLAUDE.md').write_text('owner collision')
+def replace_after_mkdir(name, *args, **kwargs):
+    mkdir(name, *args, **kwargs)
+    if name == '.cursor' and (target / name).is_dir():
+        replace_directory()
+def replace_before_open(name, *args, **kwargs):
+    if name == '.cursor' and kwargs.get('dir_fd') is not None and (target / name).exists():
+        replace_directory()
+    return open_dir(name, *args, **kwargs)
+os.mkdir = replace_after_mkdir
+os.open = replace_before_open
+""")
+            self.assertNotEqual(result.returncode, 0, result.stdout)
+            self.assertEqual(
+                {p.relative_to(root).as_posix() for p in root.rglob("*")},
+                {".cursor", "displaced", "CLAUDE.md"},
+            )
+            self.assertEqual((root / ".cursor").stat().st_mode & 0o777, 0o700)
+            self.assertEqual((root / "CLAUDE.md").read_text(), "owner collision")
+
+    def test_initializer_preserves_in_place_file_edits_after_collision(self):
+        for edit in ("content", "mode"):
+            with self.subTest(edit=edit), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory) / "project"
+                root.mkdir()
+                result = self.faulted_init(root, f"""
+def collide(source, name, **kwargs):
+    if name == 'CLAUDE.md':
+        (target / name).write_text('owner collision')
+    link(source, name, **kwargs)
+    if name == 'AGENTS.md':
+        path = target / name
+        original = path.stat()
+        if {edit!r} == 'content':
+            path.write_bytes(b'Z' * original.st_size)
+            os.utime(path, ns=(original.st_atime_ns, original.st_mtime_ns))
+        else:
+            path.chmod(0o600)
+os.link = collide
+""")
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertIn("already exists", result.stderr)
+                self.assertEqual({p.name for p in root.iterdir()}, {"AGENTS.md", "CLAUDE.md"})
+                path = root / "AGENTS.md"
+                if edit == "content":
+                    expected_size = (ROOT / "bootstrap/base/AGENTS.md").stat().st_size
+                    self.assertEqual(path.read_bytes(), b"Z" * expected_size)
+                else:
+                    self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_initializer_preserves_metadata_edits_after_collision(self):
+        edits = ("xattr", "acl") if sys.platform == "darwin" else ("xattr",)
+        for kind in ("file", "directory"):
+            for edit in edits:
+                with self.subTest(kind=kind, edit=edit), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory) / "project"
+                    root.mkdir()
+                    result = self.faulted_init(root, f"""
+import subprocess
+def collide(source, name, **kwargs):
+    if name == 'CLAUDE.md':
+        path = target / ('AGENTS.md' if {kind!r} == 'file' else '.cursor')
+        if {edit!r} == 'acl':
+            subprocess.run(['chmod', '+a', 'everyone allow read', str(path)], check=True)
+        elif sys.platform == 'darwin':
+            subprocess.run(['xattr', '-w', 'user.agentplus', 'owner', str(path)], check=True)
+        else:
+            os.setxattr(path, 'user.agentplus', b'owner')
+        (target / name).write_text('owner collision')
+    return link(source, name, **kwargs)
+os.link = collide
+""")
+                    self.assertNotEqual(result.returncode, 0, result.stdout)
+                    self.assertIn("already exists", result.stderr)
+                    path = root / ("AGENTS.md" if kind == "file" else ".cursor")
+                    self.assertTrue(path.exists())
+                    if edit == "acl":
+                        result = subprocess.run(
+                            ["ls", "-lde", str(path)], capture_output=True, text=True, check=True,
+                        )
+                        self.assertIn("everyone allow " + ("read" if kind == "file" else "list"), result.stdout)
+                    elif sys.platform == "darwin":
+                        result = subprocess.run(
+                            ["xattr", "-p", "user.agentplus", str(path)],
+                            capture_output=True, text=True, check=True,
+                        )
+                        self.assertEqual(result.stdout.strip(), "owner")
+                    else:
+                        self.assertEqual(os.getxattr(path, "user.agentplus"), b"owner")
+
+    def test_initializer_rolls_back_on_sigterm_and_can_retry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "project"
+            root.mkdir()
+            (root / "scripts").mkdir()
+            (root / "scripts/owner.txt").write_text("owner")
+            result = self.faulted_init(root, """
+def terminate(source, name, **kwargs):
+    link(source, name, **kwargs)
+    if name == 'agent-plus-doctor.yml':
+        os.kill(os.getpid(), signal.SIGTERM)
+os.link = terminate
+""")
+            self.assertEqual(result.returncode, 143, result.stdout + result.stderr)
+            self.assertIn("installation interrupted", result.stderr)
+            self.assertEqual(
+                {p.relative_to(root).as_posix() for p in root.rglob("*")},
+                {"scripts", "scripts/owner.txt"},
+            )
+            self.assertEqual((root / "scripts/owner.txt").read_text(), "owner")
+            retry = self.initialize(root)
+            self.assertEqual(retry.returncode, 0, retry.stdout + retry.stderr)
+            self.assertTrue((root / ".agent-plus/install-manifest.json").is_file())
 
     def test_bootstrap_generated_caches_are_not_installed(self):
         with tempfile.TemporaryDirectory() as directory:

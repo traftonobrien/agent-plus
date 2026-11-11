@@ -46,14 +46,14 @@ managed bytes match the current canonical source and never overwrites project-ow
    ```
 
 6. Classify the result as `CURRENT`, `UPDATE_AVAILABLE`, `LOCAL_DRIFT`, `PENDING_RECOVERY`, or
-   `BLOCK`.
+   `BLOCK`. Treat `INSTALLED_NEWER` as `BLOCK` and select the installed release or a newer one.
 7. Report installed version, available version, profile, source tag, and the exact next command.
 
 ### Sync
 
 1. Require explicit owner authorization that names the target and exact release tag.
-2. Stop if audit found local drift, a pending transaction, an invalid manifest, an untrusted source,
-   or a dirty release checkout.
+2. Stop if the audit found a newer installed release, local drift, a pending transaction, an
+   invalid manifest, an untrusted source, or a dirty release checkout.
 3. Before mutation, hash the project-owned control files that exist:
    `.agent-plus/PROJECT.md`, `.claude-memory.md`, `.planning/STATE.md`, and
    `.agent-plus/engineering-boundaries.json`.
@@ -63,8 +63,9 @@ managed bytes match the current canonical source and never overwrites project-ow
    scripts/agent-plus upgrade --target "/absolute/path/to/project"
    ```
 
-5. If the command fails, stop. The authorization is spent. Report the durable journal and exact
-   `recover --target` command. Do not recover, retry, copy files, or fall back in the same chain.
+5. If the command fails, stop. The authorization is spent. Report the error. If a durable journal
+   exists, report it and the exact `recover --target` command. Do not recover, retry, copy files, or
+   fall back in the same chain.
 6. If the command succeeds, continue directly to verification.
 
 ### Verify

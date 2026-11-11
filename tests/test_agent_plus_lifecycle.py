@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -17,9 +18,9 @@ COMMAND = ROOT / "scripts" / "agent-plus"
 
 
 class AgentPlusLifecycleTests(unittest.TestCase):
-    def run_command(self, *arguments: str, expected: int = 0) -> Any:
+    def run_command(self, *arguments: str, expected: int = 0, command: Path = COMMAND) -> Any:
         result = subprocess.run(
-            [str(COMMAND), *arguments],
+            [str(command), *arguments],
             cwd=ROOT,
             check=False,
             text=True,
@@ -457,6 +458,67 @@ class AgentPlusLifecycleTests(unittest.TestCase):
         candidate["managed_files"].pop("AGENTS.md")
         with self.assertRaisesRegex(manager.ManagerError, "Managed-file removal is not supported"):
             manager._journal_base("synthetic", "research", prior, candidate)
+
+    def test_release_order_and_same_version_repair(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            target = root / "project"
+            target.mkdir()
+            source = root / "release"
+            shutil.copytree(ROOT / "bootstrap", source / "bootstrap")
+            (source / "scripts").mkdir()
+            for script in (
+                "agent-plus", "agent-plus-init.sh", "agent-plus-doctor.sh",
+                "agent_plus_manager.py", "agent_plus_init_commit.py",
+            ):
+                shutil.copy2(ROOT / "scripts" / script, source / "scripts" / script)
+            command = source / "scripts/agent-plus"
+            version = source / "VERSION"
+            version.write_text("0.4.10\n", encoding="utf-8")
+            self.run_command("init", "--target", str(target), "--profile", "research",
+                             "--brain-note", "Example Project", command=command)
+            args = ("--target", str(target))
+            lock = target / ".agent-plus/upgrade.lock"
+
+            def snapshot() -> dict[Path, tuple[int, int, bytes | None]]:
+                return {
+                    path.relative_to(target): (
+                        path.stat().st_mode, path.stat().st_mtime_ns,
+                        path.read_bytes() if path.is_file() else None,
+                    )
+                    for path in (target, *target.rglob("*"))
+                }
+
+            version.write_text("0.4.9\n", encoding="utf-8")
+            lock.unlink(missing_ok=True)
+            for existing_lock in (False, True):
+                if existing_lock:
+                    lock.write_bytes(b"existing lease\n")
+                before = snapshot()
+                for action in ("status", "upgrade"):
+                    with self.subTest(action=action, existing_lock=existing_lock):
+                        result = self.run_command(action, *args, expected=1, command=command)
+                        self.assertIn("INSTALLED_NEWER installed=0.4.10 available=0.4.9", result.stderr)
+                        self.assertEqual(snapshot(), before)
+
+            version.write_text("0.4.11\n", encoding="utf-8")
+            result = self.run_command("status", *args, expected=3, command=command)
+            self.assertIn("UPDATE_AVAILABLE installed=0.4.10 available=0.4.11", result.stdout)
+            self.run_command("upgrade", *args, command=command)
+            result = self.run_command("status", *args, command=command)
+            self.assertIn("AGENT_PLUS_CURRENT version=0.4.11", result.stdout)
+
+            # Repair a difference between package builds, without overwriting local drift.
+            managed = "AGENTS.md"
+            repaired = (source / "bootstrap/base" / managed).read_bytes() + b"\nUpdated guidance.\n"
+            (source / "bootstrap/base" / managed).write_bytes(repaired)
+            self.assertNotEqual((target / managed).read_bytes(), repaired)
+            result = self.run_command("status", *args, expected=3, command=command)
+            self.assertIn("UPDATE_AVAILABLE installed=0.4.11 available=0.4.11", result.stdout)
+            self.run_command("upgrade", *args, command=command)
+            self.assertEqual((target / managed).read_bytes(), repaired)
+            result = self.run_command("status", *args, command=command)
+            self.assertIn("AGENT_PLUS_CURRENT version=0.4.11", result.stdout)
 
     def test_upgrade_success_preserves_project_owned_state_and_cleans_transaction(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

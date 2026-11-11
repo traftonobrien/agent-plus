@@ -9,6 +9,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import stat
 import subprocess
 import sys
@@ -641,7 +642,6 @@ class TransactionFilesystem:
         """Hold one kernel-owned lease without deleting a shared lock path."""
         del allow_stale
         agent_fd = self.open_agent()
-        token = uuid.uuid4().hex
         name = "upgrade.lock"
         flags = os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
         try:
@@ -663,11 +663,6 @@ class TransactionFilesystem:
                 os.close(lock_fd)
             raise _os_failure("Cannot acquire Agent+ lock", exc) from exc
         try:
-            os.ftruncate(lock_fd, 0)
-            os.lseek(lock_fd, 0, os.SEEK_SET)
-            _write_all(lock_fd, f"{os.getpid()}:{token}\n".encode("ascii"), "upgrade lock")
-            _fsync(lock_fd, "upgrade lock")
-            _fsync(agent_fd, "upgrade lock directory")
             yield
         finally:
             try:
@@ -1531,79 +1526,102 @@ def adopt(target: Path, profile: str) -> None:
     print(f"Agent+ legacy adoption recorded at {target.expanduser().resolve()}")
 
 
-def status(target: Path) -> int:
-    with TransactionFilesystem(target) as fs, fs.lock(allow_stale=False):
+def _release_version(value: str) -> tuple[int, ...]:
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", value):
+        raise ManagerError("Agent+ version comparison requires numeric major.minor.patch versions")
+    try:
+        return tuple(map(int, value.split(".")))
+    except ValueError as exc:
+        raise ManagerError("Agent+ release version has an oversized component") from exc
+
+
+def _refuse_downgrade(installed: str, available: str) -> None:
+    if _release_version(installed) > _release_version(available):
+        raise ManagerError(f"INSTALLED_NEWER installed={installed} available={available}; downgrade refused")
+
+
+@contextmanager
+def _lifecycle_install(target: Path) -> Iterator[tuple[TransactionFilesystem, dict[str, Any]]]:
+    with TransactionFilesystem(target) as fs:
+        if fs.transaction_record_exists():
+            raise ManagerError("Pending Agent+ transaction; run recover --target")
+        # Reject before creating the lock; reread the manifest after acquiring it.
+        _refuse_downgrade(_manifest(fs)["agent_plus_version"], _version_from_fs(fs))
+        with fs.lock(allow_stale=False):
             if fs.transaction_record_exists():
                 raise ManagerError("Pending Agent+ transaction; run recover --target")
-            manifest = _manifest(fs)
-            adoption = _adoption(fs)
-            if adoption is not None:
-                _validate_adoption(fs, adoption, manifest)
-            drift = _drift(fs, manifest)
-            if drift:
-                for item in drift:
-                    print(f"LOCAL_DRIFT {item}")
-                return 1
-            candidate = _manifest_data(fs, manifest["profile"])
-            if (
-                manifest.get("agent_plus_version") != candidate["agent_plus_version"]
-                or manifest.get("schema_version") != SCHEMA
-                or _manifest_set_id(manifest) != candidate["managed_set_id"]
-                or manifest["managed_files"] != candidate["managed_files"]
-            ):
-                print(
-                    "UPDATE_AVAILABLE "
-                    f"installed={manifest.get('agent_plus_version')} "
-                    f"available={candidate['agent_plus_version']} "
-                    f"managed_set={candidate['managed_set_id']}"
-                )
-                return 3
+            yield fs, _manifest(fs)
+
+
+def status(target: Path) -> int:
+    with _lifecycle_install(target) as (fs, manifest):
+        adoption = _adoption(fs)
+        if adoption is not None:
+            _validate_adoption(fs, adoption, manifest)
+        drift = _drift(fs, manifest)
+        if drift:
+            for item in drift:
+                print(f"LOCAL_DRIFT {item}")
+            return 1
+        candidate = _manifest_data(fs, manifest["profile"])
+        _refuse_downgrade(manifest["agent_plus_version"], candidate["agent_plus_version"])
+        if (
+            manifest.get("agent_plus_version") != candidate["agent_plus_version"]
+            or manifest.get("schema_version") != SCHEMA
+            or _manifest_set_id(manifest) != candidate["managed_set_id"]
+            or manifest["managed_files"] != candidate["managed_files"]
+        ):
             print(
-                f"AGENT_PLUS_CURRENT version={candidate['agent_plus_version']} "
-                f"profile={manifest['profile']} managed_set={candidate['managed_set_id']}"
+                "UPDATE_AVAILABLE "
+                f"installed={manifest.get('agent_plus_version')} "
+                f"available={candidate['agent_plus_version']} "
+                f"managed_set={candidate['managed_set_id']}"
             )
-            return 0
+            return 3
+        print(
+            f"AGENT_PLUS_CURRENT version={candidate['agent_plus_version']} "
+            f"profile={manifest['profile']} managed_set={candidate['managed_set_id']}"
+        )
+        return 0
 
 
 def upgrade(target: Path) -> None:
-    with TransactionFilesystem(target) as fs, fs.lock(allow_stale=False):
-            if fs.transaction_record_exists():
-                raise ManagerError("Pending Agent+ transaction; run recover --target")
-            manifest = _manifest(fs)
-            adoption = _adoption(fs)
-            if adoption is not None:
-                _validate_adoption(fs, adoption, manifest)
-            drift = _drift(fs, manifest)
-            if drift:
-                raise ManagerError("Refusing upgrade because a managed file changed locally: " + drift[0])
-            profile = manifest["profile"]
-            candidate = _manifest_data(fs, profile)
-            transaction_id = uuid.uuid4().hex
-            journal = _journal_base(transaction_id, profile, manifest, candidate)
-            _preflight_candidate_only_destinations(fs, journal["candidate_only_files"])
-            fs.write_journal(journal)
-            try:
-                with fs.workspace(transaction_id, create=True) as workspace:
-                    _copy_snapshot(fs, workspace, journal, manifest)
-                    journal["state"] = "STAGING"
-                    fs.write_journal(journal)
-                    _copy_stage(fs, workspace, journal, profile)
-                    journal["state"] = "READY"
-                    fs.write_journal(journal)
-                    journal["state"] = "COMMITTING"
-                    fs.write_journal(journal)
-                    _commit(fs, workspace, journal)
-                    _verify_committed(fs, journal)
-                    journal["state"] = "COMMITTED"
-                    fs.write_journal(journal)
-            except ManagerError as exc:
-                journal["state"] = "RECOVERY_REQUIRED" if journal["snapshot_complete"] else "ABORTED"
-                journal["last_error"] = str(exc)
+    with _lifecycle_install(target) as (fs, manifest):
+        adoption = _adoption(fs)
+        if adoption is not None:
+            _validate_adoption(fs, adoption, manifest)
+        drift = _drift(fs, manifest)
+        if drift:
+            raise ManagerError("Refusing upgrade because a managed file changed locally: " + drift[0])
+        profile = manifest["profile"]
+        candidate = _manifest_data(fs, profile)
+        _refuse_downgrade(manifest["agent_plus_version"], candidate["agent_plus_version"])
+        transaction_id = uuid.uuid4().hex
+        journal = _journal_base(transaction_id, profile, manifest, candidate)
+        _preflight_candidate_only_destinations(fs, journal["candidate_only_files"])
+        fs.write_journal(journal)
+        try:
+            with fs.workspace(transaction_id, create=True) as workspace:
+                _copy_snapshot(fs, workspace, journal, manifest)
+                journal["state"] = "STAGING"
                 fs.write_journal(journal)
-                raise ManagerError(f"{exc}; run recover --target to resume") from exc
-            _cleanup_workspace(fs, transaction_id)
-            fs.remove_journal()
-            print(f"Agent+ upgraded to {_version_from_fs(fs)} at {fs.target_path}")
+                _copy_stage(fs, workspace, journal, profile)
+                journal["state"] = "READY"
+                fs.write_journal(journal)
+                journal["state"] = "COMMITTING"
+                fs.write_journal(journal)
+                _commit(fs, workspace, journal)
+                _verify_committed(fs, journal)
+                journal["state"] = "COMMITTED"
+                fs.write_journal(journal)
+        except ManagerError as exc:
+            journal["state"] = "RECOVERY_REQUIRED" if journal["snapshot_complete"] else "ABORTED"
+            journal["last_error"] = str(exc)
+            fs.write_journal(journal)
+            raise ManagerError(f"{exc}; run recover --target to resume") from exc
+        _cleanup_workspace(fs, transaction_id)
+        fs.remove_journal()
+        print(f"Agent+ upgraded to {_version_from_fs(fs)} at {fs.target_path}")
 
 
 def recover(target: Path) -> None:

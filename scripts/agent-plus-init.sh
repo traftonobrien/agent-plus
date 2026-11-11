@@ -58,18 +58,9 @@ if [ "$WITH_GITHUB_ACTIONS" = true ] && {
 fi
 
 STAGE_DIR=$(mktemp -d "$TARGET_DIR/.agent-plus-init.XXXXXX")
-COMMITTED=''
 cleanup() {
   exit_code=$?
   trap - EXIT HUP INT TERM
-  if [ "$exit_code" -ne 0 ]; then
-    for item in $COMMITTED; do
-      if [ -e "$TARGET_DIR/$item" ]; then
-        mkdir -p "$(dirname "$STAGE_DIR/$item")"
-        mv "$TARGET_DIR/$item" "$STAGE_DIR/$item" || true
-      fi
-    done
-  fi
   rm -rf "$STAGE_DIR"
   exit "$exit_code"
 }
@@ -120,54 +111,5 @@ if [ "$WITH_GITHUB_ACTIONS" = true ]; then
   cp "$ROOT_DIR/bootstrap/github/workflows/agent-plus-doctor.yml" "$STAGE_DIR/.github/workflows/agent-plus-doctor.yml"
 fi
 
-# Derive both collision checks and leaf installation from the staged inventory.
-STAGED_LEAVES=$(cd "$STAGE_DIR" && python3 - <<'PY_LEAVES'
-from pathlib import Path
-for directory in ("scripts", "tests"):
-    for path in sorted(Path(directory).iterdir()):
-        if path.name == "__pycache__" and path.is_dir() and not path.is_symlink():
-            continue
-        if not path.is_file() or path.is_symlink() or any(c.isspace() for c in str(path)):
-            raise SystemExit("Unsafe staged installation leaf")
-        print(path.as_posix())
-PY_LEAVES
-)
-for control in $STAGED_LEAVES; do
-  if [ -e "$TARGET_DIR/$control" ] || [ -L "$TARGET_DIR/$control" ]; then
-    printf 'Refusing to overwrite existing control: %s\n' "$control" >&2
-    exit 1
-  fi
-done
-
-# Commit by exact path. Existing project-owned directories remain in place.
-for control in AGENTS.md CLAUDE.md AI_WORKFLOW.md AI_AGENT_OUTPUT_POLICY.md ESSENTIAL_WORK_PROTOCOL.md .claude-memory.md; do
-  ln "$STAGE_DIR/$control" "$TARGET_DIR/$control"
-  COMMITTED="$COMMITTED $control"
-  rm "$STAGE_DIR/$control"
-done
-mv "$STAGE_DIR/.cursor" "$TARGET_DIR/.cursor"
-COMMITTED="$COMMITTED .cursor"
-mv "$STAGE_DIR/.agent-plus" "$TARGET_DIR/.agent-plus"
-COMMITTED="$COMMITTED .agent-plus"
-mv "$STAGE_DIR/.planning" "$TARGET_DIR/.planning"
-COMMITTED="$COMMITTED .planning"
-mkdir -p "$TARGET_DIR/scripts" "$TARGET_DIR/tests"
-for control in $STAGED_LEAVES; do
-  ln "$STAGE_DIR/$control" "$TARGET_DIR/$control"
-  COMMITTED="$COMMITTED $control"
-  rm "$STAGE_DIR/$control"
-done
-if [ "$WITH_GITHUB_ACTIONS" = true ]; then
-  mkdir -p "$TARGET_DIR/.github/workflows"
-  mv "$STAGE_DIR/.github/workflows/agent-plus-doctor.yml" \
-    "$TARGET_DIR/.github/workflows/agent-plus-doctor.yml"
-  COMMITTED="$COMMITTED .github/workflows/agent-plus-doctor.yml"
-fi
-
-COMMITTED=''
-rm -rf "$STAGE_DIR"
-trap - EXIT HUP INT TERM
-
-printf 'Initialized Agent+ %s profile at %s\n' "$PROFILE" "$TARGET_DIR"
-printf 'Next: cd "%s" && scripts/agent-plus-doctor.sh --target .\n' "$TARGET_DIR"
-printf '%s\n' 'Then: use $agent-plus-discovery-grill if the decision is unclear; otherwise draft the first contract.'
+# Replace the shell so signals sent to the initializer reach the commit process.
+exec python3 "$ROOT_DIR/scripts/agent_plus_init_commit.py" "$STAGE_DIR" "$TARGET_DIR" "$PROFILE"

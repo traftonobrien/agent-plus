@@ -60,6 +60,9 @@ content. Missing, denied, mismatched, or unstructured evidence is `BLOCK`.
 
 - The target directory must already exist.
 - The initializer refuses to overwrite existing control files.
+- On failure or a handled interruption, the initializer removes its unchanged files and empty
+  directories it created. It preserves project files, including replacements and additions made
+  during setup. A force kill or power loss may leave a partial installation for inspection.
 - It creates only project-local instructions, planning records, and scripts.
 - It does not add data, secrets, or a remote repository.
 - Generic Agent+ controls remain version-managed. Put local rules in `.agent-plus/PROJECT.md`.
@@ -120,6 +123,10 @@ scripts/agent-plus upgrade --target "/absolute/path/to/baseball-project"
 # If an upgrade reports an interrupted transaction:
 scripts/agent-plus recover --target "/absolute/path/to/baseball-project"
 ```
+
+When the installed version is newer than the checkout, `status` and `upgrade` report
+`INSTALLED_NEWER` (exit 1) before writing to the target. Use the installed release or a newer one.
+A same-version upgrade can still apply managed package changes.
 
 The installation manifest records one exact managed-set identity. An upgrade stops when a managed
 file or required executable mode changed locally. It also stops before overwriting an unmanaged

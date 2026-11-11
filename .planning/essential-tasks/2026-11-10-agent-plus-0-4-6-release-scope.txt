@@ -1,0 +1,15 @@
+.agent-plus/release-candidate.json
+.agents/skills/agent-plus-sync/SKILL.md
+.claude-memory.md
+.planning/STATE.md
+.planning/essential-tasks/2026-11-10-agent-plus-0-4-6-release-scope.txt
+VERSION
+docs/bootstrap-a-baseball-project.md
+docs/releases/0.4.6.md
+scripts/agent-plus-init.sh
+scripts/agent_plus_init_commit.py
+scripts/agent_plus_manager.py
+scripts/validate-public-package.sh
+skills/agent-plus-sync/SKILL.md
+tests/test_agent_plus_lifecycle.py
+tests/test_system_repairs.py

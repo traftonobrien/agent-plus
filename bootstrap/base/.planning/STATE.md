@@ -4,13 +4,10 @@ Updated: YYYY-MM-DD
 
 ## Current phase
 
-Phase 0: Discovery or contract gate.
-
-## Current BLOCK
-
-`BLOCK-DISCOVERY-OR-CONTRACT-REQUIRED`
+Setup complete. No task started and no scientific result accepted.
 
 ## Exact next action
 
-If the decision is unclear, use `$agent-plus-discovery-grill` and obtain owner confirmation of its
-final synthesis. Otherwise create the first contract and complete an essential task card.
+Classify the owner's request through AGENTS.md. Ordinary work starts directly within existing
+authority. New research uses discovery when the decision is unclear, or the accepted-contract
+route when ready. Follow applicable substantial-work controls before execution.

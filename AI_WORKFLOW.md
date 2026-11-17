@@ -185,6 +185,11 @@ No model self-certifies. No model silently changes its tier or falls back to ano
 
 ## Engineering closure and review
 
+Each finding identifies the applicable requirement, affected code, supporting evidence and consequence.
+Distinguish demonstrated defects, unresolved risks and optional improvements. Use a reproducing case
+where practical. Preferences do not become acceptance requirements without the controlling contract
+or owner direction. Existing risk, review and stop rules still apply.
+
 Engineering diagnostics and scientific execution use different stop behavior. Scientific, live,
 destructive, and irreversible work stops at the first invalid condition. An engineering diagnostic
 blocks promotion at the first defect but continues read-only attacks across its named boundary so
@@ -281,7 +286,10 @@ Do not load private transcripts or broad history by default. Live policy, contra
 deterministic evidence outrank hot memory, planning state, the Brain, and transcripts. Memory and
 planning state route work; they do not grant authority. Reference live authority files instead of
 copying their values into task packets or chain capsules. Use `.claude-memory.md` for current
-verified state and the Obsidian Brain for durable curated knowledge.
+verified state and the Obsidian Brain for durable curated knowledge. Before related implementation,
+follow relevant accepted corrections to their owning code or template and reuse compatible checks.
+Use ESSENTIAL_WORK_PROTOCOL.md#learning-from-completed-work for recurring problems, not another
+lessons file or a full transcript review.
 
 ## Stop rules
 

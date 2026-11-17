@@ -52,7 +52,7 @@ class WorkflowDefaultTests(unittest.TestCase):
 
     def test_request_meaning_contract_reaches_new_installations(self) -> None:
         # Exercise the actual delivery path, not just the source copies.
-        for profile in ("research", "product"):
+        for profile in ("research", "product", "scouting"):
             with self.subTest(profile=profile), tempfile.TemporaryDirectory() as directory:
                 target = Path(directory)
                 result = subprocess.run(
@@ -61,6 +61,12 @@ class WorkflowDefaultTests(unittest.TestCase):
                     cwd=ROOT, capture_output=True, text=True, check=False,
                 )
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn('Ordinary work starts directly', result.stdout)
+                self.assertNotIn('otherwise draft the first contract', result.stdout)
+                for state_file in ('.claude-memory.md', '.planning/STATE.md'):
+                    state = (target / state_file).read_text()
+                    self.assertNotIn('BLOCK-DISCOVERY-OR-CONTRACT-REQUIRED', state)
+                    self.assertIn('Ordinary work', state)
                 for relative in (".planning/templates/ESSENTIAL-TASK.md", "ESSENTIAL_WORK_PROTOCOL.md"):
                     self.assertEqual((target / relative).read_bytes(), (ROOT / relative).read_bytes())
                 template = (target / ".planning/templates/ESSENTIAL-TASK.md").read_text()
@@ -82,6 +88,10 @@ class WorkflowDefaultTests(unittest.TestCase):
                 ):
                     self.assertIn(requirement, protocol)
                 instructions = (target / "AGENTS.md").read_text()
+                for requirement in ("Replace the existing handoff", "historical boundary",
+                                    "Reconcile current tracker summaries", "A stated future step"):
+                    self.assertIn(requirement, instructions)
+                self.assertIn("source-shaped fixture", protocol)
                 self.assertIn("Use applicable standing source grants", instructions)
                 self.assertIn("do not invent a metadata-only restriction", instructions)
                 if profile == "research":
@@ -139,6 +149,9 @@ class WorkflowDefaultTests(unittest.TestCase):
                           "do not create another lessons register"):
             self.assertIn(condition, handoff)
         self.assertIn("latest verified state and next action first", template)
+        self.assertIn("## Historical records", template)
+        self.assertIn("Replace its short current opening", handoff)
+        self.assertEqual(handoff, (ROOT / ".agents/skills/agent-plus-session-context-handoff/SKILL.md").read_text())
         for heading in ("## Verified state", "## Limits and BLOCKs", "## Next action", "## Restart"):
             self.assertIn(heading, template)
         for condition in ("Reuse the existing source log", "current authority",

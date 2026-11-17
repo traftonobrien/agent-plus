@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-# ai-context.sh emits complete current records and references binding procedures.
+# ai-context.sh emits current records and references binding procedures and retained history.
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
@@ -70,7 +70,7 @@ for relative in ("AGENTS.md", "AI_WORKFLOW.md", ".claude-memory.md", ".planning/
 PY
 fi
 
-# Read complete current files; never silently truncate instructions or restart state.
+# Keep binding instructions whole. Omit only explicitly separated state history.
 ROOT_DIR="$ROOT_DIR" python3 - <<'PY_CONTEXT'
 import os
 import stat
@@ -95,6 +95,10 @@ for relative in files:
             content = source.read()
     except (OSError, UnicodeError) as exc:
         raise SystemExit(f"Cannot read managed context: {relative}") from exc
+    if relative in {".claude-memory.md", ".planning/STATE.md"}:
+        current, boundary, _ = ("\n" + content).partition("\n## Historical records\n")
+        if boundary:
+            content = current.removeprefix("\n") + f"\n\nRetained history: {relative} under `## Historical records`. Read only when relevant.\n"
     packet.append(f"## {relative}\n{content.rstrip()}\n")
 packet.append("## Procedure references\nRead ESSENTIAL_WORK_PROTOCOL.md for implementation and verification. "
               "Read AI_WORKFLOW.md before model assignment, a formal chain, review, or unattended execution. "

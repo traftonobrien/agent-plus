@@ -36,8 +36,10 @@ Collect deduplicated usage and workflow events, compare them with the prior chec
 repeated or wasteful behavior, and recommend one bounded experiment or policy change. Measure
 before interpreting. Keep deterministic collection separate from model interpretation.
 
-Ordinary tasks that do not fit the outcome-audit schema use one bounded comparison artifact
-from `templates/astra-behavior-baseline.json`. Missing measurements remain null.
+Return findings in chat by default. Save a comparison only when requested or needed for durable
+measurement or restart. Reuse its existing owner instead of creating another report. For measured
+comparisons outside the outcome-audit schema, use `templates/astra-behavior-baseline.json` when it
+fits. Missing measurements remain null. Required prospective evidence remains preserved.
 
 ## Required outputs
 
@@ -46,13 +48,15 @@ limits, and whether a decision changed. If no decision changed, recommend no pol
 
 ## Acceptance checks
 
-The report must identify the evidence window, distinguish new work from repeated unchanged checks,
+The findings must identify the evidence window, distinguish new work from repeated unchanged checks,
 and name the decision or blocker affected. A policy verifier may confirm that defaults, hooks,
 budgets, and repeat guards still match the accepted workflow contract.
 
 ## Handoff requirements
 
-Record the report path, checkpoint, changed decision, open limit, and one concrete next action.
+When restart state changes, update the existing restart record with the checkpoint, changed
+decision, open limit and one next action. Link a saved comparison when one exists. A chat finding
+does not require a report file or a second summary.
 
 ## Explicit limits
 

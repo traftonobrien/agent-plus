@@ -1,13 +1,16 @@
 ---
 name: agent-plus-discovery-grill
-description: Turn an early baseball research, modeling, scouting, or analytical-product idea into a durable Agent+ discovery brief through a voice- or text-friendly interview. Use when starting a project, defining an unclear problem, stress-testing scope, or resuming discovery before a research contract exists.
+description: Clarify an unsettled baseball research, modeling, scouting, or analytical-product decision in one durable discovery brief. Use for unclear scope, explicit scope stress-testing, or resuming unfinished discovery. Not routine setup, maintenance, or a contract-ready assignment.
 ---
 
 # Agent+ Discovery Grill
 
 ## Trigger
 
-Use when starting a baseball research, modeling, scouting, or analytical-product project; when the problem or scope is unclear; or when resuming discovery before a research contract exists.
+Use when a research or analytical-product decision or scope is unclear, the owner requests scope
+stress-testing, or unfinished discovery needs to resume. A new project alone does not require
+discovery. Routine setup and maintenance use AGENTS.md. A contract-ready assignment goes directly
+to the applicable contract route without reopening settled discovery.
 
 ## Purpose
 

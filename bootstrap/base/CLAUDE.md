@@ -16,7 +16,7 @@ Apply `AI_AGENT_OUTPUT_POLICY.md` automatically. An external output-style plugin
 - Select one mode (`quick`, `standard`, `deep`, or `scientific/live`) before dispatch. Extra
   capacity changes bounded throughput only; it never changes authority, context, retries, reviewer
   count, or owner authorization.
-- For engineering, explore independently, freeze the evidence handoff, then use one exclusive
+- For substantial engineering under AGENTS.md, explore independently, freeze the evidence handoff, then use one exclusive
   maker, deterministic evaluator, fresh verifier, and controller synthesis. Use the formal evaluator small-correction rule where eligible; otherwise stop on `BLOCK`. Do not
   auto-repair after a reviewer `BLOCK`.
 - Stop after two failed attempts and write a typed `BLOCK`.

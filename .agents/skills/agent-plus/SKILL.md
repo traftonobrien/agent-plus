@@ -32,7 +32,9 @@ Confirm the project control plane, load bounded context, and route the task to t
    A missing confirmation field is `AWAITING` and fails closed after resume.
 5. Route publication-oriented detect, humanize, or de-slop requests to `$editorial-pass`. Keep the
    project's output policy active for ordinary status and technical responses.
-6. Route Agent+ release version, installation calibration, upgrade, and synchronization requests to `$agent-plus-sync`.
+6. Route installed-version checks, installation calibration, consumer upgrades and synchronization to `$agent-plus-sync`.
+   Canonical release preparation follows the repository’s `docs/release-candidate-verification.md` and applicable release authority, not consumer sync.
+   A frozen candidate configuration describes its named candidate, not the next release. Do not run it during ordinary work or replace it without an authorized release decision.
    Route model or instruction tuning to `$agent-plus-model-review`; it does not require consumer synchronization.
 7. Route prospective workflow outcome measurement and sanitized private-evidence checks to
    `$outcome-audit`. Keep its record, report, and receipt boundaries separate from the workflow

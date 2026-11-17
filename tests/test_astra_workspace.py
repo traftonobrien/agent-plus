@@ -39,6 +39,41 @@ class StartupContextTests(unittest.TestCase):
             self.assertIn('Both remain binding', result.stdout)
             self.assertIn('AI_WORKFLOW.md before model assignment', result.stdout)
 
+    def test_explicit_history_is_referenced_without_hiding_current_limits(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = self.make_project(Path(temporary))
+            for name in ['.claude-memory.md', '.planning/STATE.md']:
+                (project / name).write_text(
+                    'Current: BLOCK-SOURCE. Next: inspect authorized inputs.\n'
+                    'Restart: scripts/ai-context.sh\n\n## Historical records\n'
+                    'OBSOLETE-NEXT-ACTION\n', encoding='utf-8')
+            # The same heading never suppresses binding instructions.
+            (project / 'AGENTS.md').write_text(
+                'Instructions\n\n## Historical records\nBINDING-CONTROL\n')
+            result = self.run_context(project)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('BLOCK-SOURCE', result.stdout)
+            self.assertIn('Restart: scripts/ai-context.sh', result.stdout)
+            self.assertIn('BINDING-CONTROL', result.stdout)
+            self.assertNotIn('OBSOLETE-NEXT-ACTION', result.stdout)
+            for name in ['.claude-memory.md', '.planning/STATE.md']:
+                self.assertIn(f'Retained history: {name}', result.stdout)
+                self.assertIn('OBSOLETE-NEXT-ACTION', (project / name).read_text())
+
+    def test_history_heading_at_start_is_not_current_context(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = self.make_project(Path(temporary))
+            history = '## Historical records\nSTART-OF-FILE-ARCHIVE\n'
+            for name in ['.claude-memory.md', '.planning/STATE.md']:
+                (project / name).write_text(history, encoding='utf-8')
+            result = self.run_context(project)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertNotIn('START-OF-FILE-ARCHIVE', result.stdout)
+            self.assertIn('AGENTS.md CONTENT', result.stdout)
+            for name in ['.claude-memory.md', '.planning/STATE.md']:
+                self.assertIn(f'Retained history: {name}', result.stdout)
+                self.assertEqual((project / name).read_text(), history)
+
     def test_failing_hook_prevents_context(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             project = self.make_project(Path(temporary))

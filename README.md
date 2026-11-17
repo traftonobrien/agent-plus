@@ -149,10 +149,11 @@ remain authoritative.
 3. Install `$agent-plus-sync` when the project must audit or update its installed Agent+ controls.
 4. Install `$outcome-audit` when the project needs prospective workflow measures or a sanitized private-evidence review receipt.
 5. If the idea is still unclear, create one project-local decision brief and obtain owner confirmation before contract drafting.
-6. Copy the contract, source log, evidence record, and handoff templates into your project.
+6. Use the contract, source log, evidence record, and handoff templates when the task needs them.
+   Ordinary work starts directly. Follow ESSENTIAL_WORK_PROTOCOL.md for ordinary, substantial and completed work.
 7. Run `scripts/ai-context.sh` to load the same compact control packet used by the public example.
-8. Write a question with a decision and an explicit null or BLOCK path.
-9. Complete the [necessity card](.planning/templates/ESSENTIAL-TASK.md), then run the smallest deterministic check that can resolve the task.
+8. For research, write a question with a decision and an explicit null or BLOCK path.
+9. Complete the [necessity card](.planning/templates/ESSENTIAL-TASK.md) when required by the task classification. Run the smallest adequate check.
 10. For a multi-stage chain, copy the active-chain example and validate every transition and closeout.
 11. Request fresh verification before promoting any result to a claim.
 

@@ -28,7 +28,7 @@ Choose the lowest authority and cost that can safely close the task uncertainty.
 ## Allowed actions
 
 - Route to deterministic tooling, reversible assistance, bounded implementation, or fresh review.
-- Write a bounded work order.
+- Put the bounded work order and routing rationale in the existing formal task packet. Send a separate worker brief only when needed, referencing that packet without copying live authority values.
 - Escalate after two failed attempts.
 - Use the higher-capacity mode table in `AI_WORKFLOW.md` without expanding authority, context,
   retries, reviewer count, or owner authorization.
@@ -37,12 +37,12 @@ Choose the lowest authority and cost that can safely close the task uncertainty.
 
 ## Required outputs
 
-- Routing record with tier, exact tool or model, and rationale.
-- Work order with allowed inputs and acceptance check.
+- Tier, exact tool or model, rationale, allowed inputs and acceptance check in the existing formal task packet. These are fields, not separate document requirements.
 - Escalation or BLOCK when no safe route exists.
 - A complete task packet using the required fields in `.planning/templates/ESSENTIAL-TASK.md`.
 - A frozen evidence handoff before the exclusive maker and an independent verifier contract at the
-  promotion boundary.
+  promotion boundary. Reference retained evidence in the existing dossier and provide the bounded
+  independent review view without duplicating its source records or passing the maker transcript.
 
 ## Acceptance checks
 

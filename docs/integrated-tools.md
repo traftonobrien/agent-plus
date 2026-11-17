@@ -51,7 +51,7 @@ current upstream instructions and license before updating either installation.
 
 ## Native Agent+ skill discovery
 
-The canonical `skills/` directories are the source. Regular-file mirrors under `.agents/skills/`
+The canonical `skills/` directories are the source. Matching installed copies under `.agents/skills/`
 expose them to Codex. Public validation requires identical file sets, bytes, and modes, including
 references, assets, and license notices. All skills carry name and description metadata.
 The seven generic procedure names use an `agent-plus-` skill-name prefix to distinguish local policy
@@ -61,7 +61,7 @@ Use `$agent-plus-model-review` for prospective workflow comparison and `$agent-p
 for local closeout. The installed global `model-review` is a separate session-usage collector. It must
 not run merely because an Agent+ policy mentions model review. Explicit invocation still selects it.
 
-Consumer bootstrap installs the managed control plane. Native mirrors apply to this repository only.
+Consumer bootstrap installs the managed control plane. These installed copies apply to this repository only.
 Install optional consumer skills separately from an accepted release as described above. Existing
 third-party plugin bytes are unchanged. When maintaining a skill, update its canonical directory and
 its complete native mirror together; the parity test rejects drift.

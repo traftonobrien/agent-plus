@@ -24,6 +24,7 @@ Match every proposed claim to its required evidence level and evidence record.
 
 - Classify the claim as fit, prediction, decision value, or impact.
 - Compare evidence against the required level.
+- Update the existing register and link evidence by ID or path. Several claims may share a record only when its scope supports each claim. Do not create a file per claim or check.
 - Mark the claim supported, unsupported, or BLOCK.
 
 ## Required outputs

@@ -277,7 +277,7 @@ def main():
             shutil.rmtree(stage)
     print(f"Initialized Agent+ {profile} profile at {target}")
     print(f'Next: cd "{target}" && scripts/agent-plus-doctor.sh --target .')
-    print("Then: use $agent-plus-discovery-grill if the decision is unclear; otherwise draft the first contract.")
+    print("Then: classify the requested work through AGENTS.md. Ordinary work starts directly; new research uses discovery or a contract as applicable.")
     return 0
 
 

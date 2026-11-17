@@ -100,9 +100,22 @@ cd "/absolute/path/to/baseball-project"
 scripts/ai-context.sh
 ```
 
-## Choose the first gate
+## Resume and finish work
 
-- If the decision, user, scope, null or BLOCK path, evidence need, or claim ceiling is unclear, run
+Keep one current restart record. Existing local memory can serve that role. If a separate task
+handoff is needed, project memory points there. Replace the current opening when state changes.
+Retain material decisions, unique evidence and required exact history below a historical boundary,
+without archiving every replaced opening. Use the
+[handoff template](../templates/session-handoff-template.md) and
+[synthetic example](../examples/sample-handoff.md) when useful. New installations inherit the
+core rule through AGENTS.md. Existing projects need an authorized upgrade to receive changed
+managed instructions; a package update does not rewrite their project-owned handoffs.
+
+## Choose the first route
+
+- Start ordinary work directly within existing authority. Use the recordkeeping defaults in
+  ESSENTIAL_WORK_PROTOCOL.md for ordinary, substantial and completed work.
+- For new research or product definition, if the decision, user, scope, null or BLOCK path, evidence need, or claim ceiling is unclear, run
   `$agent-plus-discovery-grill`. It maintains one
   `.planning/discovery/PROJECT-DISCOVERY.md` decision brief.
 - If the decision is already contract-ready, draft the research contract directly.

@@ -9,6 +9,16 @@ does not require a formal packet, independent worker, or research contract. A ch
 controls, shared interfaces, scientific meaning, authority, or promotion uses the formal route.
 Routine autonomy never changes a scientific or release boundary.
 
+| Work | Minimum record |
+| --- | --- |
+| Ordinary | Use the existing task route for the result and focused check. Update the handoff only when restart state changes. No separate receipt by default. |
+| Substantial | Use the applicable contract, task packet and controls for shared interfaces, scientific work or promotion. Keep evidence once in its owning artifact. |
+| Completed | Keep one short current handoff pointing to final outputs and retained evidence. Close finished execution steps. Retire obsolete files only after checking callers and preservation requirements. |
+
+Completed is a lifecycle state, not a lower evidence tier. Completion does not clear source,
+scientific or publication limits. Do not create a new report for every check or copy the same
+result into multiple records. Required exact history and unique evidence remain preserved.
+
 ## Necessity card
 
 Before substantive, scientific, irreversible, promotion, or release work, complete [the essential
@@ -61,9 +71,16 @@ Applicable standing authorization is not revoked by a new chat.
 ### Learning from completed work
 
 Record accepted results, reusable artifact locations and relevant limits in the existing task handoff.
-Link newly accepted reusable artifacts from their existing owning index at closeout. Update the existing
-procedure when an owner correction or repeated failure demonstrates a reusable lesson, within current
-authority and with the applicable shared-control review. Task-specific observations stay in the handoff.
+Link newly accepted reusable artifacts from their existing owning index at closeout. When an owner
+correction or repeated failure demonstrates a reusable lesson, fix the owning implementation or
+simplify its interface where appropriate and retain a focused regression where useful. Update the
+existing procedure for remaining judgment or context. Apply current authority and the applicable
+shared-control review. Do not turn every correction into a new prose rule or custom linter.
+For a recurring correction, trace one concrete failing case to its owning code or template.
+Check that the focused regression detects the old behavior and accepts the correction when practical.
+If the cause is already fixed, reuse that fix and its evidence instead of adding another repair.
+Record the correction, owning artifact and check in the existing restart record only when material.
+Task-specific observations stay there. This is not a mandatory retrospective after every edit.
 At the next related task, retrieve those owners and compatible accepted work before planning new work.
 Do not create another lessons register or require every old transcript as startup context.
 
@@ -104,6 +121,10 @@ cannot reach the exhausted upstream interface.
 Before expensive execution, test shared helpers with tiny known-answer cases for scalar, vector, grouped, and missing-value behavior when applicable.
 Test signed endpoints and repeated transformations when applicable. Retain the regression that exposed a defect through refactoring or simplification.
 Use the existing focused test path. Do not create a second analytical pipeline for review.
+When launch, preparation, calculation or serialization changes, use one small source-shaped fixture
+to exercise the affected launch/read/prepare/calculate/write/readback path. Include uneven groups,
+quoted text, missing groups, warning capture or large-number arithmetic only where relevant.
+Test the changed boundary without rerunning expensive accepted ancestors.
 
 Keep historical reconstruction separate from the normal entry point when it is not a current dependency.
 Name the current run, accepted result, and reconstruction owner in the existing task card.

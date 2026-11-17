@@ -8,7 +8,7 @@ Use this repository to document a controlled AI-assisted baseball research workf
 
 ## Stable rules
 
-1. Start with a research contract before substantive analysis.
+1. Start with a research contract before substantive research analysis, not routine maintenance.
 2. Use deterministic checks for counts, schemas, hashes, tests, and official metrics.
 3. Give each model a bounded task, permitted inputs, stop condition, and acceptance check.
 4. Keep maker, evaluator, verifier, and human decision roles separate.
@@ -41,6 +41,8 @@ Carry the authorized task to its acceptance check. Read accessible evidence befo
 Use a reasonable reversible default when uncertainty does not change the outcome. Existing authorization
 persists within its scope. Prepare a concrete result before asking for any remaining required approval.
 An explanation or outline request authorizes that deliverable, not implementation or publication.
+A stated future step does not start execution. Once the owner requests the action, complete its
+necessary routine steps within the existing scope without another permission phrase.
 
 Direct owner requests cover the named action and necessary routine steps. An explicit request to edit,
 send or publish supplies action authorization when its target and content are clear from current context.
@@ -64,7 +66,9 @@ Treat later user messages as task steering. Answer side questions and resume unl
 
 ## Context and model routing
 
-Run `scripts/ai-context.sh` once at startup. It prints complete instructions, current memory, and state.
+Run `scripts/ai-context.sh` once at startup. It prints binding instructions and current memory and state. A `## Historical records` section in
+memory or state stays on disk and is referenced rather than loaded. Keep active limits and the next
+action above that boundary. Files without that boundary remain complete.
 Read the exact active artifact next. Read `ESSENTIAL_WORK_PROTOCOL.md` for implementation and verification,
 and `AI_WORKFLOW.md` before model assignment, a formal chain, review, or unattended execution.
 All three binding policy files remain authoritative even when the startup packet references them.
@@ -105,5 +109,12 @@ progress, blocker, and current-work updates. Keep exact technical records in a f
   project context to an Agent Plus Brain task without merging project memory or authority.
 
 ## Closeout
+
+Replace the existing handoff’s short current opening when work changes. Name completed lanes,
+current artifact paths, material limits, one next action and the exact restart command. Keep older
+decisions and receipts below a clearly labeled historical boundary. Do not prepend another receipt
+or competing next action after every small edit. Reconcile current tracker summaries with this
+opening. Keep deferred work separate from work completed or authorized now.
+
 
 Update verified state only after proportionate checks. Record one next action, open limits, and an exact restart command. Do not use a chat transcript as the source of truth.

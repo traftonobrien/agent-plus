@@ -1,5 +1,10 @@
 # Evidence Record — Template
 
+Update the existing record for this evidence or bounded result. Link authoritative inputs, checks
+and reviewer artifacts instead of copying them. A check does not require its own Markdown file.
+Ordinary work uses the existing task record unless its controls require separate evidence. Preserve
+required exact run history and distinct evidence identities.
+
 ## Identity
 
 - Record ID: `[ID]`

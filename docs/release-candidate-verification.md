@@ -12,6 +12,10 @@ configuration is `.agent-plus/release-candidate.json`, and that configuration na
 version, proposed version, release base commit, and exact candidate manifest. Changing any of
 those values is a new release-candidate decision and requires the normal review boundary.
 
+The frozen configuration may describe an earlier candidate. It is not authority for the next
+release. Use this route only for the authorized named candidate, not routine startup or consumer
+upgrades. Historical release plans and receipts remain evidence, not current run instructions.
+
 ## What the command proves
 
 The verifier fails closed unless all of these checks pass:

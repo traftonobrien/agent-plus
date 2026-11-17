@@ -219,6 +219,12 @@ authority files instead of copying their values into a task packet or chain caps
 | New immutable artifact | Exact ID, schema, hash, lineage, and counters. |
 | Publication release | Release validation and fresh independent review. |
 
+For a claim about workflow behavior, exercise the affected user path and inspect its actual result.
+A build, type check or test establishes only the properties it checked. In the existing evidence
+record, link the tested code revision or file version, command and exit status, exercised scenario,
+and material untested cases. Use the actual saved/exported artifact when that is the deliverable.
+Scientific validity, human acceptance and external-action authority remain separate.
+
 After adequate checks pass, broaden or repeat only for changed evidence or an unresolved concern.
 Do not add tests that merely mirror a reversible low-impact edit. Required boundary checks still apply.
 

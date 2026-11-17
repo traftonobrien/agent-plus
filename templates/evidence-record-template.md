@@ -10,19 +10,21 @@ required exact run history and distinct evidence identities.
 - Record ID: `[ID]`
 - Contract ID and version: `[ID]`
 - Artifact ID or hash: `[ID]`
+- Tested code revision or file version: `[identifier or existing source-snapshot reference]`
 - Status: `PASS | NULL | BLOCK`
 
 ## Inputs and checks
 
 - Approved inputs: `[identifiers only]`
-- Deterministic checks: `[command, schema, count, hash, or test]`
+- Deterministic checks: `[exact command and exit status; link existing check output]`
+- Exercised scenario: `[affected user path and actual inspected result, when relevant]`
 - Check result: `[result]`
 - Reviewer evidence: `[reference]`
 
 ## Interpretation
 
 - Evidence supports: `[bounded statement]`
-- Evidence does not support: `[explicit limit]`
+- Evidence does not support: `[explicit limit, including material untested behavior]`
 - Downstream action: `[next action]`
 
 ## If BLOCK

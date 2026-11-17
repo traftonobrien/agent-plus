@@ -1,0 +1,9 @@
+.agent-plus/release-candidate.json
+.claude-memory.md
+.planning/STATE.md
+.planning/essential-tasks/2026-11-16-agent-plus-0-4-8-release-scope.txt
+ESSENTIAL_WORK_PROTOCOL.md
+VERSION
+bootstrap/base/ESSENTIAL_WORK_PROTOCOL.md
+docs/releases/0.4.8.md
+templates/evidence-record-template.md

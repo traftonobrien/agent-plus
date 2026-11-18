@@ -1,5 +1,7 @@
 # Source Log — Template
 
+Update the existing source log. Reuse a compatible admitted source and record only a material scope or provenance change. Do not create another log for each read or chat.
+
 | Source ID | Citation or URL | Source type | Claim supported | Status | Notes |
 | --- | --- | --- | --- | --- | --- |
 | `[SRC-001]` | `[citation or stable URL]` | `[official, peer-reviewed, public data]` | `[claim]` | `admitted | pending | rejected` | `[provenance and limitations]` |

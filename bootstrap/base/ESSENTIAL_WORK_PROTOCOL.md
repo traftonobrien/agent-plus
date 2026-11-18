@@ -77,6 +77,10 @@ simplify its interface where appropriate and retain a focused regression where u
 existing procedure for remaining judgment or context. Apply current authority and the applicable
 shared-control review. Do not turn every correction into a new prose rule or custom linter.
 For a recurring correction, trace one concrete failing case to its owning code or template.
+Before patching another caller, find the shared source of a repeated bug, copied workaround or
+duplicated calculation. Repair that source or simplify its interface, then check affected consumers.
+Prefer one correct implementation over repeated local exceptions. Keep genuinely different methods
+and independent reference implementations separate. Do not expand a local fix into unrelated cleanup.
 Check that the focused regression detects the old behavior and accepts the correction when practical.
 If the cause is already fixed, reuse that fix and its evidence instead of adding another repair.
 Record the correction, owning artifact and check in the existing restart record only when material.

@@ -39,7 +39,8 @@ Confirm the project control plane, load bounded context, and route the task to t
 7. Route prospective workflow outcome measurement and sanitized private-evidence checks to
    `$outcome-audit`. Keep its record, report, and receipt boundaries separate from the workflow
    ledger.
-8. Select one matching procedure for the requested action. Reuse the task’s accepted evidence and
+8. For research sources or proposed claims, use `$agent-plus-source-log-workflow` or `$agent-plus-claim-evidence-register` respectively. Save changed restart state through `$agent-plus-session-context-handoff` when needed. Curated Brain retrieval and an explicitly requested save use `$agent-plus-brain-vault-retrieval` and `$agent-plus-brain-sync`. These are separate requested actions, not automatic steps at every closeout.
+9. Select one matching procedure for the requested action. Reuse the task's accepted evidence and
    output owner. Create a necessity card only when the project’s task classification requires it.
 
 ## Required outputs
@@ -69,6 +70,8 @@ Confirm the project control plane, load bounded context, and route the task to t
 Record the outcome, evidence, limits, next action, and restart command in project-local state.
 
 ## Explicit limits
+
+GSD and SuperClaude are parked integrations, not default Agent+ routes or prerequisites. Use them only when the owner explicitly selects them. The repository’s `docs/integrated-tools.md` retains their provenance.
 
 - This skill does not install Agent+ by itself.
 - This skill does not treat discovery as evidence, contract acceptance, or work authorization.

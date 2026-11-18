@@ -2,7 +2,7 @@
 
 Agent+ is a practical framework for AI-assisted baseball research and analytical products. It puts a controlled system around AI work. The system preserves context, bounds assignments, creates inspectable evidence, and keeps human scientific judgment in charge.
 
-It is designed for analysts who need more than a plausible answer. A reader should be able to trace a question to a contract, a planning gate, an evidence record, a verification result, and a restartable handoff.
+Ordinary work uses the existing task, a focused check and a short result. Research claims and material engineering work use the applicable contract, evidence and review controls. A new chat does not restart settled work.
 
 > **Public example package.** All examples are synthetic. They demonstrate process only. They do not report results from any private project or claim predictive performance, decision value, or real-world impact.
 
@@ -110,8 +110,8 @@ flowchart LR
 | `VERSION` | Canonical Agent+ release version. |
 | `scripts/agent-plus` | Small install, verify, status, upgrade, recover, and local-project interface. |
 
-The public skill set also includes [`agent-plus-discovery-grill`](skills/agent-plus-discovery-grill/SKILL.md),
-which turns a voice or text conversation into a resumable decision brief, and `model-review`, which
+The public skill set includes [`agent-plus-discovery-grill`](skills/agent-plus-discovery-grill/SKILL.md),
+which turns a voice or text conversation into a resumable decision brief, and [`agent-plus-model-review`](skills/model-review/SKILL.md), which
 audits workflow efficiency and policy drift without treating token use or artifact count as proof
 of scientific progress. [`editorial-pass`](skills/editorial-pass/SKILL.md) provides an attributed,
 voice-preserving detect and edit workflow with deterministic evidence-token checks. Its
@@ -144,18 +144,10 @@ remain authoritative.
 
 ## Quick start
 
-1. Install `$agent-plus-discovery-grill` when the project may begin before its decision is contract-ready.
-2. Install `$editorial-pass` when the project publishes prose that needs an attributed editorial workflow.
-3. Install `$agent-plus-sync` when the project must audit or update its installed Agent+ controls.
-4. Install `$outcome-audit` when the project needs prospective workflow measures or a sanitized private-evidence review receipt.
-5. If the idea is still unclear, create one project-local decision brief and obtain owner confirmation before contract drafting.
-6. Use the contract, source log, evidence record, and handoff templates when the task needs them.
-   Ordinary work starts directly. Follow ESSENTIAL_WORK_PROTOCOL.md for ordinary, substantial and completed work.
-7. Run `scripts/ai-context.sh` to load the same compact control packet used by the public example.
-8. For research, write a question with a decision and an explicit null or BLOCK path.
-9. Complete the [necessity card](.planning/templates/ESSENTIAL-TASK.md) when required by the task classification. Run the smallest adequate check.
-10. For a multi-stage chain, copy the active-chain example and validate every transition and closeout.
-11. Request fresh verification before promoting any result to a claim.
+1. Install through the command above, or resume an installed project with `scripts/ai-context.sh`. Read its current task and exact next artifact.
+2. Ordinary work starts directly. Use [ESSENTIAL_WORK_PROTOCOL.md](ESSENTIAL_WORK_PROTOCOL.md) for ordinary, substantial and completed work. Unsettled research uses discovery, while a contract-ready assignment goes directly to its contract.
+3. Use only the [matching optional procedure](docs/routing-work-by-authority.md#optional-skill-routes). The initializer does not install the whole skill catalog. No optional skill is a prerequisite for ordinary work.
+4. Check the affected behavior and update the existing restart record when state changes. Formal chains, scientific work and claim promotion retain their required evidence and independent review.
 
 The anti-loop guard uses a closed structured schema. Every decision field is a fixed enum or an
 exact identifier from the guard-owned outcome catalog. A ledger may select a subset of catalog
@@ -197,8 +189,3 @@ The synthetic [planning stack](.planning/STATE.md) mirrors the control flow of a
 ## License and contributions
 
 This package is released under the MIT License. Contributions must preserve the safety and claim boundaries in [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Astra configuration
-
-See the [Astra tuning guide](docs/astra-workspace-tuning.md), [host setup](docs/astra-host-setup.md),
-and [proposed 0.4.1 release note](docs/releases/0.4.1.md).

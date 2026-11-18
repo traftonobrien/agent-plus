@@ -39,6 +39,7 @@ STATIC_FILES = (
     "scripts/verify_release_candidate.py",
 )
 RUFF_FILES = STATIC_FILES + (
+    "scripts/agent_plus_init_commit.py",
     "tests/test_agent_plus_lifecycle.py",
     "tests/test_agent_plus_legacy_adoption.py",
     "tests/test_release_candidate_verifier.py",

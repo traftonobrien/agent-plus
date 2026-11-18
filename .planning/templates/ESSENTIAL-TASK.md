@@ -3,7 +3,7 @@ task: "<bounded deliverable>"
 owner_role: "maker | evaluator | verifier"
 tier: "0 | 1 | 2 | 3"
 time_budget: "<minutes>"
-attempt_limit: 2
+attempt_limit: "<from the controlling boundary; no implied retry>"
 orchestration_mode: "quick | standard | deep | scientific/live"
 exact_model: "<controller, explorers, maker, evaluator, reviewer>"
 reasoning: "<routine | implementation | premium | scientific>"

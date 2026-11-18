@@ -29,7 +29,7 @@ Choose the lowest authority and cost that can safely close the task uncertainty.
 
 - Route to deterministic tooling, reversible assistance, bounded implementation, or fresh review.
 - Put the bounded work order and routing rationale in the existing formal task packet. Send a separate worker brief only when needed, referencing that packet without copying live authority values.
-- Escalate after two failed attempts.
+- Apply the workflow's registered boundary and stop rule. A two-failure simplification rule does not authorize a second attempt after a first-error or reviewer BLOCK.
 - Use the higher-capacity mode table in `AI_WORKFLOW.md` without expanding authority, context,
   retries, reviewer count, or owner authorization.
 - Parallelize only independent exploration; keep one writer per repository and all later stages
@@ -60,8 +60,8 @@ Record the resolved route, result, evidence reference, and next owner.
 ## Explicit limits
 
 Do not allow silent fallback, recursive spawn, overlapping writes, or more than three workers. Do not
-give a model more data or authority than the work order allows. Do not use a premium model for
-routine search or counts. Apply the formal evaluator small-correction rule in `AI_WORKFLOW.md` where eligible.
+give a model more data or authority than the work order allows. Use deterministic tools for
+routine search or counts. Preserve the owner-selected runtime model and reasoning effort. Apply the formal evaluator small-correction rule in `AI_WORKFLOW.md` where eligible.
 Stop on maker, substantive evaluator, or reviewer `BLOCK`; never auto-repair after a
 reviewer `BLOCK`. Scientific/live work remains first-error and requires human owner authorization
 before data access, live execution, or promotion.

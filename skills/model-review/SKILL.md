@@ -7,8 +7,8 @@ description: Compare prospective Agent+ model-routing and workflow outcomes. Not
 
 ## Trigger
 
-Run after a project milestone, a model or pricing change, a routing change, or a measured slowdown.
-Do not run it only because a session restarted.
+Use for a requested workflow comparison or a measured routing problem that could change a decision.
+A milestone, model or pricing change can motivate that question, but does not automatically start an audit. Do not run it only because a session restarted.
 
 ## Purpose
 

@@ -1,10 +1,10 @@
 # Public Example State
 
-Updated: 2026-11-16
+Updated: 2026-11-17
 
 ## Engineering candidate
 
-v0.4.8 adds verification-evidence guide clarifications on v0.4.7. Scope and checks are defined by the release-candidate configuration.
+v0.4.9 refines existing workflow and skill-selection guidance on v0.4.8. Scope and checks are defined by the release-candidate configuration. The installer and recovery implementations are unchanged.
 
 ## Public research phase
 
@@ -12,5 +12,5 @@ Phase 1 remains BLOCK-COVERAGE-EXAMPLE. Engineering publication does not advance
 
 ## Next action
 
-Validate the candidate and obtain fresh independent review before owner-authorized publication.
-Restart: `./scripts/ai-context.sh`, then `docs/releases/0.4.8.md`.
+Validate the exact candidate and obtain fresh independent review before owner-authorized publication.
+Restart: `./scripts/ai-context.sh`, then `docs/releases/0.4.9.md`.

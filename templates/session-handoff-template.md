@@ -5,7 +5,7 @@ Update the current task’s existing handoff. An existing local memory file can 
 ## Verified state
 
 - Completed artifact: `[path or ID]`
-- Verification performed: `[check and result; link the owning correction and focused regression when relevant]`
+- Verification performed: `[tested revision, exact command, result and material untested behavior; link existing evidence]`
 - Completed lanes and accepted choices: `[what stays closed]`
 - Deferred work: `[what is waiting and why, or none]`
 

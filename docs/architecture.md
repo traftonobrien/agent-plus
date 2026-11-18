@@ -1,6 +1,6 @@
 # Architecture
 
-Agent+ turns a baseball research question into documented, reviewable work. It does not automate scientific judgment.
+Agent+ supports ordinary project work and controlled research. Ordinary work follows the existing task, implementation and focused check. The diagram below describes the research path, not a mandatory sequence for every edit. Agent+ does not automate scientific judgment.
 
 ```mermaid
 flowchart LR
@@ -45,7 +45,7 @@ flowchart LR
 
 ## Canonical distribution seam
 
-The Agent+ repository is the canonical module. Its external interface has four project-lifecycle
+The Agent+ repository is the canonical module. Its external interface has these project-lifecycle
 operations:
 
 1. `init` creates a project-local control plane.

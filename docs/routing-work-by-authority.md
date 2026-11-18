@@ -11,7 +11,30 @@ Route work by the authority it needs, not by which model is available. Use the l
 | 2: bounded implementation | Approved code and integration work. | Narrow acceptance checks are required. | Self-certification. |
 | 3: independent review | Leakage, hard design, adversarial review. | Fresh review of changed evidence is required. | Replacing deterministic evidence or human ownership. |
 
-Each work order names its files, inputs, owner, model or tool, time budget, attempt limit, stop condition, and acceptance check. Silent model fallback is not allowed.
+Formal work orders name their files, inputs, owner, model or tool, time budget, attempt limit, stop condition, and acceptance check. Ordinary work uses the existing task and focused check. Silent model fallback is not allowed.
+
+## Optional skill routes
+
+Select the procedure for the requested action, not a sequence of all skills. Instructions and templates remain usable without installing these optional helpers. Their files are procedures, not additional sources of project authority.
+
+| Requested action | Procedure |
+| --- | --- |
+| Select the task route | [agent-plus](../skills/agent-plus/SKILL.md) |
+| Clarify an unsettled decision | [agent-plus-discovery-grill](../skills/agent-plus-discovery-grill/SKILL.md) |
+| Admit or assess a research source | [agent-plus-source-log-workflow](../skills/source-log-workflow/SKILL.md) |
+| Check a proposed research claim | [agent-plus-claim-evidence-register](../skills/claim-evidence-register/SKILL.md) |
+| Save changed restart state | [agent-plus-session-context-handoff](../skills/session-context-handoff/SKILL.md) |
+| Retrieve bounded curated knowledge | [agent-plus-brain-vault-retrieval](../skills/brain-vault-retrieval/SKILL.md) |
+| Save verified knowledge to a named Brain note | [agent-plus-brain-sync](../skills/brain-sync/SKILL.md) |
+| Edit or assess publication prose | [editorial-pass](../skills/editorial-pass/SKILL.md) |
+| Audit or upgrade an installed project | [agent-plus-sync](../skills/agent-plus-sync/SKILL.md) |
+| Investigate a measured workflow question | [agent-plus-model-review](../skills/model-review/SKILL.md) |
+| Measure prospective workflow outcomes | [outcome-audit](../skills/outcome-audit/SKILL.md) |
+| Assign roles in an authorized formal chain | [agent-plus-tiered-model-router](../skills/tiered-model-router/SKILL.md) |
+
+Use existing project procedures for coding and code review. No coding skill suite, Brain export,
+usage audit or new handoff file is a default requirement. Synthetic plans and sample receipts
+demonstrate controls. They do not assign current work or replace the active task's record.
 
 ## Session modes and model selection
 

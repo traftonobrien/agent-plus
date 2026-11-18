@@ -81,6 +81,10 @@ choice for counts, hashes, and tests. Worker selection follows the authorized wo
 
 ## Context layers
 
+Use matching installed skills automatically for naturally phrased requests. The owner does not need
+to name a skill or use a slash command. Load only the selected procedure. Binding project rules
+still apply when an optional skill is not installed.
+
 - `AGENTS.md` defines project-wide instructions.
 - `CLAUDE.md` defines the Claude runtime profile.
 - `.claude-memory.md` records changing, verified project state.

@@ -22,4 +22,4 @@ Apply `AI_AGENT_OUTPUT_POLICY.md` automatically. An external output-style plugin
 
 ## Output boundary
 
-Return: outcome, evidence, limits, next action, and restart reference. Do not expose sensitive material in public output.
+Return outcome, evidence and limits. Include a next action and restart reference when work remains. Otherwise state complete and awaiting a new request. Do not expose sensitive material in public output.

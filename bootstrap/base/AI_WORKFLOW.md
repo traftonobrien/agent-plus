@@ -28,8 +28,11 @@ Compare lower effort on representative tasks before changing that baseline. Neve
 
 Delegate only when the owner requests it or applicable project instructions explicitly require an
 independent role. The controller owns task splitting, boundaries, progress, synthesis, and the result.
-Use Luna High for bounded routine workers and Luna xhigh for complex workers or fresh engineering
-review. Retain these cost-sensitive routes until a bounded comparison supports a change.
+Prefer Luna High for bounded routine workers and Luna xhigh for complex workers or fresh engineering
+review when available. These are worker preferences, not requirements. If a preferred worker model
+is unavailable and no exact model is pinned, select an available model suited to the bounded role
+without another owner prompt. Record the actual model, reasoning effort and reason before launch.
+Keep the controller's selected model and reasoning effort unchanged.
 Each task names its exact model, deliverable, ownership, permitted inputs, stop condition, and budget.
 Pass only needed context. A fresh verifier receives the contract, changed artifact, deterministic
 evidence, and attack matrix, not the maker transcript. The maker cannot certify its own work.
@@ -38,8 +41,10 @@ Parallelize independent read-only exploration only when it can improve the named
 most three workers, one writer per repository, no overlapping writes, and no recursive spawn.
 The default is zero workers without delegation authority. Once authorized, use only the workers
 needed, commonly one or two; worker limits are ceilings, not mandatory staffing.
-If exact required model selection is unavailable, report the missing capability and BLOCK that
-delegated stage. Continue independent authorized work where possible; do not silently substitute.
+An exact model explicitly required by the owner or a frozen task remains binding. If it is
+unavailable, report the missing capability and BLOCK only that delegated stage. Continue independent
+authorized work where possible. Choosing an available default before launch does not grant a retry
+after a failed attempt or change scientific, live, review or release controls.
 
 ## Bounded session modes
 

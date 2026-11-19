@@ -115,10 +115,12 @@ progress, blocker, and current-work updates. Keep exact technical records in a f
 ## Closeout
 
 Replace the existing handoff’s short current opening when work changes. Name completed lanes,
-current artifact paths, material limits, one next action and the exact restart command. Keep older
+current artifact paths and material limits. Include one next action and an exact restart command
+when work remains. Otherwise state complete and awaiting a new request. Do not invent work or
+repeat unchanged passing checks solely to fill a handoff. Keep older
 decisions and receipts below a clearly labeled historical boundary. Do not prepend another receipt
 or competing next action after every small edit. Reconcile current tracker summaries with this
 opening. Keep deferred work separate from work completed or authorized now.
 
 
-Update verified state only after proportionate checks. Record one next action, open limits, and an exact restart command. Do not use a chat transcript as the source of truth.
+Update verified state only after proportionate checks. Record open limits and, when work remains, one next action and an exact restart command. Do not use a chat transcript as the source of truth.

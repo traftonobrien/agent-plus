@@ -1025,16 +1025,6 @@ def _version_from_fs(fs: TransactionFilesystem) -> str:
     return value
 
 
-def _write_manifest_at(fs: TransactionFilesystem, parent_fd: int, profile: str) -> dict[str, Any]:
-    value = _manifest_data(fs, profile)
-    _atomic_write_json_at(parent_fd, "install-manifest.json", (json.dumps(value, indent=2, sort_keys=True) + "\n").encode())
-    return value
-
-
-def _record_manifest_data(fs: TransactionFilesystem, profile: str) -> dict[str, Any]:
-    return _assert_canonical_targets(fs, profile)
-
-
 def _drift(fs: TransactionFilesystem, manifest: dict[str, Any]) -> list[str]:
     drift: list[str] = []
     managed = manifest["managed_files"]
@@ -1281,16 +1271,6 @@ def _restart_action(
     return "restore"
 
 
-def _set_state(fs: TransactionFilesystem, journal: dict[str, Any], state: str, error: str = "") -> None:
-    journal["state"] = state
-    journal["last_error"] = error
-    fs.write_journal(journal)
-
-
-def _close_workspace(workspace: TransactionWorkspace) -> None:
-    workspace.close()
-
-
 def _remove_tree_at(parent_fd: int, name: str) -> None:
     child_fd = _open_dir_at(parent_fd, name)
     try:
@@ -1487,7 +1467,7 @@ def record(target: Path, profile: str) -> None:
         if _adoption(fs) is not None:
             raise ManagerError("Refusing to record over a legacy adoption declaration")
         agent_fd = fs.open_agent()
-        value = _record_manifest_data(fs, profile)
+        value = _assert_canonical_targets(fs, profile)
         _atomic_write_json_at(agent_fd, "install-manifest.json", (json.dumps(value, indent=2, sort_keys=True) + "\n").encode())
 
 
@@ -1733,7 +1713,10 @@ def context(name: str) -> int:
     command = root / "scripts" / "ai-context.sh"
     if not command.is_file():
         raise ManagerError(f"Project context command is missing: {command}")
-    return subprocess.run([str(command)], cwd=root, check=False).returncode
+    try:
+        return subprocess.run([str(command)], cwd=root, check=False).returncode
+    except OSError as exc:
+        raise _os_failure(f"Cannot run project context command {command}", exc) from exc
 
 
 def doctor(target: Path, *, readiness: bool = False) -> int:
@@ -1761,10 +1744,6 @@ def doctor(target: Path, *, readiness: bool = False) -> int:
         env=environment,
         check=False,
     ).returncode
-
-
-def _version(root: Path) -> str:
-    return (root / "VERSION").read_text(encoding="utf-8").strip()
 
 
 def _parser() -> argparse.ArgumentParser:

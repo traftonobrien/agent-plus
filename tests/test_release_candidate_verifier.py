@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -419,6 +420,47 @@ class ReleaseCandidateVerifierTests(unittest.TestCase):
         self.assertIn("mypy==2.3.1", run.call_args_list[0].args[0])
         self.assertIn("ruff==0.16.5", run.call_args_list[1].args[0])
         self.assertTrue(all(call.kwargs["env"] is env for call in run.call_args_list))
+        self.assertTrue(all(not call.kwargs["public_output"] for call in run.call_args_list))
+
+    def test_public_ci_output_requires_explicit_opt_in(self) -> None:
+        for public_output in (False, True):
+            with (
+                self.subTest(public_output=public_output),
+                mock.patch.object(MODULE.shutil, "which", return_value="uvx"),
+                mock.patch.object(MODULE, "_run", return_value=b"") as run,
+            ):
+                env = dict(MODULE._environment(), GITHUB_ACTIONS="true")
+                if public_output:
+                    MODULE._validate_candidate(self.root, env, public_output=True)
+                else:
+                    MODULE._validate_candidate(self.root, env)
+                self.assertEqual(len(run.call_args_list), 3)
+                self.assertTrue(all(
+                    call.kwargs["public_output"] is public_output
+                    for call in run.call_args_list
+                ))
+
+    def test_public_diagnostics_stream_but_private_diagnostics_do_not(self) -> None:
+        child = (
+            "import sys; print('sample.py:12: error: incompatible type'); "
+            "print('sample.py:14: F401 unused import', file=sys.stderr); sys.exit(7)"
+        )
+        for public_output in (False, True):
+            driver = (
+                "import os, runpy, sys\nfrom pathlib import Path\n"
+                f"checker = runpy.run_path({str(ROOT / 'scripts/verify_release_candidate.py')!r})\n"
+                "try:\n"
+                f"    checker['_run']((sys.executable, '-c', {child!r}), Path.cwd(), "
+                f"env=os.environ.copy(), code='E_TEST', public_output={public_output!r})\n"
+                "except checker['CandidateError']:\n    sys.exit(7)\n"
+            )
+            result = subprocess.run(
+                [sys.executable, "-c", driver], cwd=self.root,
+                capture_output=True, check=False,
+            )
+            self.assertEqual(result.returncode, 7)
+            self.assertEqual(b"sample.py:12" in result.stdout, public_output)
+            self.assertEqual(b"sample.py:14" in result.stderr, public_output)
 
     def test_failure_diagnostics_are_bounded_and_do_not_copy_stderr(self) -> None:
         with self.assertRaises(MODULE.CandidateError) as caught:

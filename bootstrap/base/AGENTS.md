@@ -98,10 +98,12 @@ technical records in a final `Technical details` section only when they are need
 ## Closeout
 
 Replace the existing handoff’s short current opening when work changes. Name completed lanes,
-current artifact paths, material limits, one next action and the exact restart command. Keep older
+current artifact paths and material limits. Include one next action and an exact restart command
+when work remains. Otherwise state complete and awaiting a new request. Do not invent work or
+repeat unchanged passing checks solely to fill a handoff. Keep older
 decisions and receipts below a clearly labeled historical boundary. Do not prepend another receipt
 or competing next action after every small edit. Reconcile current tracker summaries with this
 opening. Keep deferred work separate from work completed or authorized now.
 
 
-Verify changed state proportionately. Update local memory and one handoff. State one exact next action and restart command.
+Verify changed state proportionately. Update the existing restart record when state changes. State one next action and an exact restart command only when work remains.

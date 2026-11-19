@@ -1,16 +1,17 @@
 # Public Example State
 
-Updated: 2026-11-17
+Updated: 2026-11-18
 
 ## Engineering candidate
 
-v0.4.9 refines existing workflow and skill-selection guidance on v0.4.8. Scope and checks are defined by the release-candidate configuration. The installer and recovery implementations are unchanged.
+v0.5.0 consolidates compatible refinements on published v0.4.9. Exact scope is defined by the
+release-candidate configuration and manifest. See docs/releases/0.5.0.md for behavior and limits.
 
 ## Public research phase
 
-Phase 1 remains BLOCK-COVERAGE-EXAMPLE. Engineering publication does not advance science.
+Phase 1 remains BLOCK-COVERAGE-EXAMPLE. Engineering readiness does not advance science.
 
-## Next action
+## Task routing
 
-Validate the exact candidate and obtain fresh independent review before owner-authorized publication.
-Restart: `./scripts/ai-context.sh`, then `docs/releases/0.4.9.md`.
+Use the owner's current request. Do not infer a new assignment, publication or consumer update
+from candidate metadata. A completed task may await a new request without another check.

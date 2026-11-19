@@ -283,6 +283,7 @@ def _run(
     code: str,
     input_bytes: bytes | None = None,
     timeout: int = 240,
+    public_output: bool = False,
 ) -> bytes:
     try:
         result = subprocess.run(
@@ -290,24 +291,26 @@ def _run(
             cwd=cwd,
             env=env,
             input=input_bytes,
-            capture_output=True,
+            capture_output=not public_output,
             check=False,
             timeout=timeout,
         )
     except (OSError, subprocess.SubprocessError) as exc:
         raise CandidateError(code, "required command could not complete") from exc
     if result.returncode:
+        details: dict[str, object] = {"exit_status": result.returncode}
+        if not public_output:
+            details.update(
+                stderr_bytes=len(result.stderr),
+                stderr_sha256=_digest_bytes(result.stderr),
+                stdout_sha256=_digest_bytes(result.stdout),
+            )
         raise CandidateError(
             code,
             "required command failed",
-            {
-                "exit_status": result.returncode,
-                "stderr_bytes": len(result.stderr),
-                "stderr_sha256": _digest_bytes(result.stderr),
-                "stdout_sha256": _digest_bytes(result.stdout),
-            },
+            details,
         )
-    return result.stdout
+    return result.stdout or b""
 
 
 def _source_git(
@@ -567,7 +570,9 @@ def _files_digest(files: dict[str, FileValue]) -> str:
     )
 
 
-def _validate_candidate(root: Path, env: dict[str, str]) -> None:
+def _validate_candidate(
+    root: Path, env: dict[str, str], *, public_output: bool = False
+) -> None:
     user_bin = Path(pwd.getpwuid(os.getuid()).pw_dir) / ".local" / "bin"
     tool_path = os.pathsep.join((str(user_bin), "/opt/homebrew/bin", os.defpath))
     uvx = shutil.which("uvx", path=tool_path)
@@ -578,18 +583,21 @@ def _validate_candidate(root: Path, env: dict[str, str]) -> None:
         root,
         env=env,
         code="E_MYPY",
+        public_output=public_output,
     )
     _run(
         (uvx, "--from", f"ruff=={RUFF_VERSION}", "ruff", "check", *RUFF_FILES),
         root,
         env=env,
         code="E_RUFF",
+        public_output=public_output,
     )
     _run(
         ("sh", "scripts/validate-public-package.sh"),
         root,
         env=env,
         code="E_PUBLIC_VALIDATOR",
+        public_output=public_output,
     )
 
 

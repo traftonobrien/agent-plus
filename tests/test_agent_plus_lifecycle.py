@@ -29,6 +29,92 @@ class AgentPlusLifecycleTests(unittest.TestCase):
         self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
         return result
 
+    def registry_command(self, base: Path, entries: dict[str, Any]) -> Path:
+        distribution = base / "distribution"
+        (distribution / "scripts").mkdir(parents=True)
+        (distribution / ".agent-plus").mkdir()
+        for name in ("agent-plus", "agent_plus_manager.py"):
+            shutil.copy2(ROOT / "scripts" / name, distribution / "scripts" / name)
+        (distribution / ".agent-plus/local-projects.json").write_text(
+            json.dumps({"projects": entries}), encoding="utf-8"
+        )
+        return distribution / "scripts/agent-plus"
+
+    def test_projects_lists_sorted_roles_and_roots(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            entries = {
+                "zulu": {"root": str(base / "z project"), "role": "producer"},
+                "alpha": {"root": str(base / "a project")},
+            }
+            command = self.registry_command(base, entries)
+            result = self.run_command("projects", command=command)
+            self.assertEqual(result.stdout.splitlines(), [
+                f"alpha\tconsumer\t{base / 'a project'}",
+                f"zulu\tproducer\t{base / 'z project'}",
+            ])
+
+    def test_context_uses_project_directory_and_forwards_exit_status(self) -> None:
+        for code in (0, 7):
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as directory:
+                base = Path(directory)
+                project = base / "consumer with spaces"
+                (project / "scripts").mkdir(parents=True)
+                startup = project / "scripts/ai-context.sh"
+                startup.write_text(f"#!/bin/sh\npwd\nexit {code}\n", encoding="utf-8")
+                startup.chmod(0o755)
+                command = self.registry_command(base, {"fixture": {"root": str(project)}})
+                result = self.run_command("context", "fixture", expected=code, command=command)
+                self.assertEqual(result.stdout.strip(), str(project.resolve()))
+                self.assertNotIn("Traceback", result.stderr)
+
+    def test_registry_commands_report_missing_registry(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            command = self.registry_command(Path(directory), {})
+            (command.parent.parent / ".agent-plus/local-projects.json").unlink()
+            for arguments in (("projects",), ("context", "fixture")):
+                result = self.run_command(*arguments, expected=1, command=command)
+                self.assertIn("AGENT_PLUS_ERROR Local project registry", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+
+    def test_registry_commands_reject_bad_entries_and_unknown_projects(self) -> None:
+        cases = (
+            (("projects",), {"fixture": None}, "Invalid local project entry"),
+            (("context", "fixture"), {"fixture": {"root": 7}}, "Unknown local project"),
+            (("context", "fixture"), {}, "Unknown local project"),
+        )
+        for arguments, entries, error in cases:
+            with self.subTest(arguments=arguments, entries=entries), tempfile.TemporaryDirectory() as directory:
+                command = self.registry_command(Path(directory), entries)
+                result = self.run_command(*arguments, expected=1, command=command)
+                self.assertIn(f"AGENT_PLUS_ERROR {error}", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+
+    def test_context_reports_missing_startup(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            command = self.registry_command(base, {"fixture": {"root": str(base / "missing")}})
+            result = self.run_command("context", "fixture", expected=1, command=command)
+            self.assertIn("AGENT_PLUS_ERROR Project context command is missing", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+
+    def test_context_nonexecutable_startup_is_a_clear_error(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            project = base / "consumer"
+            (project / "scripts").mkdir(parents=True)
+            startup = project / "scripts/ai-context.sh"
+            contents = "#!/bin/sh\necho unexpected-startup\n"
+            startup.write_text(contents, encoding="utf-8")
+            startup.chmod(0o644)
+            command = self.registry_command(base, {"fixture": {"root": str(project)}})
+            result = self.run_command("context", "fixture", expected=1, command=command)
+            self.assertIn("AGENT_PLUS_ERROR Cannot run project context command", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+            self.assertEqual(result.stdout, "")
+            self.assertEqual(startup.read_text(), contents)
+            self.assertEqual(startup.stat().st_mode & 0o777, 0o644)
+
     def initialize(self, target: Path) -> None:
         self.run_command(
             "init",

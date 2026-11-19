@@ -29,6 +29,14 @@ class WorkflowDefaultTests(unittest.TestCase):
                 for phrase in ("one authorized launch", "must not poll", "one result"):
                     self.assertIn(phrase, canonical, relative)
                     self.assertIn(phrase, bootstrap, relative)
+                for phrase in (
+                    "worker preferences, not requirements",
+                    "without another owner prompt",
+                    "explicitly required by the owner or a frozen task remains binding",
+                    "does not grant a retry",
+                ):
+                    self.assertIn(phrase, " ".join(canonical.split()), relative)
+                self.assertEqual(canonical, bootstrap, relative)
             elif relative == "ESSENTIAL_WORK_PROTOCOL.md":
                 for phrase in ("AI_WORKFLOW.md#unattended-execution", "AI_WORKFLOW.md#attempt-boundary-and-pre-attempt-correction", "AI_WORKFLOW.md#capacity-and-context-limits"):
                     self.assertIn(phrase, canonical, relative)
@@ -152,6 +160,11 @@ class WorkflowDefaultTests(unittest.TestCase):
         self.assertIn("## Historical records", template)
         self.assertIn("Replace its short current opening", handoff)
         self.assertEqual(handoff, (ROOT / ".agents/skills/agent-plus-session-context-handoff/SKILL.md").read_text())
+        for text in (handoff, template, (ROOT / "AGENTS.md").read_text(),
+                     (ROOT / "bootstrap/base/AGENTS.md").read_text()):
+            normalized = " ".join(text.split())
+            self.assertIn("complete and awaiting a new request", normalized)
+            self.assertIn("repeat unchanged passing checks solely to fill a handoff", normalized)
         for heading in ("## Verified state", "## Limits and BLOCKs", "## Next action", "## Restart"):
             self.assertIn(heading, template)
         for condition in ("Reuse the existing source log", "current authority",

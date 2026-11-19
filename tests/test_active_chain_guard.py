@@ -102,6 +102,35 @@ class ActiveChainGuardTests(unittest.TestCase):
         self.write(value)
         self.assertIn("ACTIVE_CHAIN_CONTINUE", MODULE.validate(self.capsule, self.root, "continue"))
 
+    def test_cumulative_failures_preserve_reset_requirement_and_terminal_states(self) -> None:
+        for count in (3, 4, 2**63 - 1):
+            with self.subTest(count=count):
+                value = self.value()
+                value["same_interface_failures"] = count
+                self.write(value)
+                with self.assertRaisesRegex(MODULE.ChainError, "BLOCK_CHAIN_ARCHITECTURE_RESET_REQUIRED"):
+                    MODULE.validate(self.capsule, self.root, "continue")
+                value["change_kind"] = "architecture_reset"
+                self.write(value)
+                self.assertIn("ACTIVE_CHAIN_CONTINUE", MODULE.validate(self.capsule, self.root, "continue"))
+                for terminal in ("block", "null"):
+                    value["change_kind"] = "local_repair"
+                    value["status"] = terminal
+                    value["current_stage"] = None
+                    value["stages"][1]["status"] = terminal  # type: ignore[index]
+                    value["stages"][1]["evidence"] = "receipt.md"  # type: ignore[index]
+                    self.write(value)
+                    self.assertIn(f"CLOSEOUT_{terminal.upper()}", MODULE.validate(self.capsule, self.root, "closeout"))
+
+    def test_cumulative_failure_count_rejects_out_of_range_and_nonintegers(self) -> None:
+        for count in (-1, 2**63, 4.0, "4", False):
+            with self.subTest(count=count):
+                value = self.value()
+                value["same_interface_failures"] = count
+                self.write(value)
+                with self.assertRaisesRegex(MODULE.ChainError, "BLOCK_CHAIN_FAILURE_COUNT"):
+                    MODULE.validate(self.capsule, self.root, "continue")
+
     def test_authority_reference_must_be_live_safe_file(self) -> None:
         value = self.value()
         value["authority_refs"] = ["../outside.md"]

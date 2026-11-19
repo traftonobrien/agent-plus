@@ -1,11 +1,11 @@
 # Public Example State
 
-Updated: 2026-11-18
+Updated: 2026-11-19
 
 ## Engineering candidate
 
-v0.5.0 consolidates compatible refinements on published v0.4.9. Exact scope is defined by the
-release-candidate configuration and manifest. See docs/releases/0.5.0.md for behavior and limits.
+v0.5.1 contains two compatible repairs on published v0.5.0. The release-candidate configuration and
+manifest define exact scope. See docs/releases/0.5.1.md for changes and limits.
 
 ## Public research phase
 
@@ -13,5 +13,5 @@ Phase 1 remains BLOCK-COVERAGE-EXAMPLE. Engineering readiness does not advance s
 
 ## Task routing
 
-Use the owner's current request. Do not infer a new assignment, publication or consumer update
-from candidate metadata. A completed task may await a new request without another check.
+Use the owner's current request. Candidate metadata does not authorize publication or consumer
+updates. Completed work may await a new request without another check.

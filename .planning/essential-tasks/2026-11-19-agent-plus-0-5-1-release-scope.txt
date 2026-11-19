@@ -1,0 +1,13 @@
+.agent-plus/release-candidate.json
+.claude-memory.md
+.planning/STATE.md
+.planning/essential-tasks/2026-11-19-agent-plus-0-5-1-release-scope.txt
+VERSION
+bootstrap/base/scripts/active_chain_guard.py
+docs/active-chain-capsule.md
+docs/project-integration-and-upstream.md
+docs/releases/0.5.1.md
+scripts/active_chain_guard.py
+scripts/agent_plus_manager.py
+tests/test_active_chain_guard.py
+tests/test_agent_plus_lifecycle.py

@@ -15,6 +15,8 @@ private evidence.
 not the active-chain guard, decides whether a local repair, architecture reset, execution, or review
 is authorized. The active-chain guard only rejects a route that claims another local repair after
 the capsule already records two failures.
+Keep the full cumulative count through signed 64-bit range, including counts above two. Do not reset
+history to fit the routing limit. Counts of two or more still require architecture reset for continuation.
 
 ## File location
 

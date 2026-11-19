@@ -1507,10 +1507,16 @@ def adopt(target: Path, profile: str) -> None:
 
 
 def _release_version(value: str) -> tuple[int, ...]:
-    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", value):
-        raise ManagerError("Agent+ version comparison requires numeric major.minor.patch versions")
+    version = re.fullmatch(
+        r"([0-9]+\.[0-9]+\.[0-9]+)(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?", value
+    )
+    if version is None:
+        raise ManagerError(
+            "Agent+ version comparison requires numeric major.minor.patch versions "
+            "with optional +build metadata"
+        )
     try:
-        return tuple(map(int, value.split(".")))
+        return tuple(map(int, version.group(1).split(".")))
     except ValueError as exc:
         raise ManagerError("Agent+ release version has an oversized component") from exc
 

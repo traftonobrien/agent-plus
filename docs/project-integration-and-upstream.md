@@ -30,6 +30,10 @@ boundary.
 Do not copy private plans, data, receipts, paths, or transcripts into Agent+. Do not copy an
 unreviewed proving-project control directly into the canonical repository.
 
+Local version labels may append `+build.metadata` to a numeric release. Lifecycle ordering compares
+the numeric release and retains the full label in records. Metadata does not grant upgrade authority,
+permit managed-file drift, or establish exact upstream synchronization. Prerelease labels remain unsupported.
+
 ## Local Agent Plus Brain registry
 
 The canonical checkout can keep a private registry at `.agent-plus/local-projects.json`. This file

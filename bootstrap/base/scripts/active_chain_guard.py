@@ -200,9 +200,9 @@ def validate(path: Path, root: Path, mode: str) -> str:
         raise _error("BLOCK_CHAIN_FAILURE_LIMIT", str(failure_limit))
     if isinstance(failure_count, bool) or not isinstance(failure_count, int):
         raise _error("BLOCK_CHAIN_FAILURE_COUNT", str(failure_count))
-    if not 0 <= failure_count <= failure_limit:
+    if not 0 <= failure_count <= 2**63 - 1:
         raise _error("BLOCK_CHAIN_FAILURE_COUNT", str(failure_count))
-    if failure_count == failure_limit and change_kind != "architecture_reset" and status not in {"block", "null"}:
+    if failure_count >= failure_limit and change_kind != "architecture_reset" and status not in {"block", "null"}:
         raise _error("BLOCK_CHAIN_ARCHITECTURE_RESET_REQUIRED", chain_id)
 
     authority_refs = _validate_string_list(

@@ -545,6 +545,43 @@ class AgentPlusLifecycleTests(unittest.TestCase):
         with self.assertRaisesRegex(manager.ManagerError, "Managed-file removal is not supported"):
             manager._journal_base("synthetic", "research", prior, candidate)
 
+    def test_build_metadata_comparison_rejects_malformed_and_prerelease_versions(self) -> None:
+        manager = self.load_manager()
+        for version in ("0.4.2+example.local.2", "0.4.2+build-7", "0.4.2+42"):
+            with self.subTest(version=version):
+                self.assertEqual(manager._release_version(version), (0, 4, 2))
+        for version in ("0.4.2+", "0.4.2+a..b", "0.4.2+a_b", "0.4.2-rc.1", "0.4.2+one+two", "0.4.2+two words"):
+            with self.subTest(version=version), self.assertRaisesRegex(manager.ManagerError, "version comparison requires"):
+                manager._release_version(version)
+
+    def test_adapted_versions_upgrade_and_repair_but_never_bypass_preflight(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "project"
+            target.mkdir()
+            self.initialize(target)
+            manifest_path = target / ".agent-plus/install-manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            current = manifest["agent_plus_version"]
+            history = target / "accepted-history.txt"
+            history.write_text("Preserve accumulated failure history and accepted evidence.\n")
+            for version in ("0.0.1+example.local.2", current + "+example.local.3"):
+                manifest["agent_plus_version"] = version
+                manifest_path.write_text(json.dumps(manifest))
+                self.run_command("status", "--target", str(target), expected=3)
+                self.run_command("upgrade", "--target", str(target))
+                self.assertIn(f"AGENT_PLUS_CURRENT version={current}", self.run_command("status", "--target", str(target)).stdout)
+                self.assertEqual(history.read_text(), "Preserve accumulated failure history and accepted evidence.\n")
+            for version in ("999.0.0+example.local.2", "0.4.2+", "0.4.2-rc.1"):
+                manifest["agent_plus_version"] = version
+                manifest_path.write_text(json.dumps(manifest))
+                (target / ".agent-plus/upgrade.lock").unlink(missing_ok=True)
+                before = {p.relative_to(target): (p.stat().st_mode, p.stat().st_mtime_ns, p.read_bytes() if p.is_file() else None) for p in (target, *target.rglob("*"))}
+                for action in ("status", "upgrade"):
+                    with self.subTest(version=version, action=action):
+                        self.run_command(action, "--target", str(target), expected=1)
+                        after = {p.relative_to(target): (p.stat().st_mode, p.stat().st_mtime_ns, p.read_bytes() if p.is_file() else None) for p in (target, *target.rglob("*"))}
+                        self.assertEqual(after, before)
+
     def test_release_order_and_same_version_repair(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
